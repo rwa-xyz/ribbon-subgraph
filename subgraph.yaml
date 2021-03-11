@@ -48,8 +48,8 @@ dataSources:
       eventHandlers:
         - event: OpenShort(indexed address,uint256,address)
           handler: handleOpenShort
-        # - event: CloseShort(indexed address,uint256,address)
-        #   handler: handleCloseShort
+        - event: CloseShort(indexed address,uint256,address)
+          handler: handleCloseShort
   # - kind: ethereum/contract
   #   name: Airswap
   #   network: mainnet

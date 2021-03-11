@@ -31,14 +31,13 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.save();
 }
 
-// export function handleCloseShort(event: CloseShort): void {
-//   log.debug("pass handleCloseShort", []);
-//   let shortPosition = VaultShortPosition.load(event.params.options.toHex());
-//   if (shortPosition !== null) {
-//     shortPosition.closedAt = event.block.timestamp;
-//     shortPosition.save();
-//   }
-// }
+export function handleCloseShort(event: CloseShort): void {
+  let shortPosition = VaultShortPosition.load(event.params.options.toHex());
+  if (shortPosition != null) {
+    shortPosition.closedAt = event.block.timestamp;
+    shortPosition.save();
+  }
+}
 
 // export function handleSwap(event: Swap): void {
 //   let optionToken = event.params.signerToken;
