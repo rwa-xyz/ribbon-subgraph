@@ -140,3 +140,105 @@ export class InstrumentPosition extends Entity {
     }
   }
 }
+
+export class VaultShortPosition extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save VaultShortPosition entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save VaultShortPosition entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("VaultShortPosition", id.toString(), this);
+  }
+
+  static load(id: string): VaultShortPosition | null {
+    return store.get("VaultShortPosition", id) as VaultShortPosition | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get option(): Bytes {
+    let value = this.get("option");
+    return value.toBytes();
+  }
+
+  set option(value: Bytes) {
+    this.set("option", Value.fromBytes(value));
+  }
+
+  get depositAmount(): BigInt {
+    let value = this.get("depositAmount");
+    return value.toBigInt();
+  }
+
+  set depositAmount(value: BigInt) {
+    this.set("depositAmount", Value.fromBigInt(value));
+  }
+
+  get initiatedBy(): Bytes {
+    let value = this.get("initiatedBy");
+    return value.toBytes();
+  }
+
+  set initiatedBy(value: Bytes) {
+    this.set("initiatedBy", Value.fromBytes(value));
+  }
+
+  get strikePrice(): BigInt {
+    let value = this.get("strikePrice");
+    return value.toBigInt();
+  }
+
+  set strikePrice(value: BigInt) {
+    this.set("strikePrice", Value.fromBigInt(value));
+  }
+
+  get expiry(): BigInt {
+    let value = this.get("expiry");
+    return value.toBigInt();
+  }
+
+  set expiry(value: BigInt) {
+    this.set("expiry", Value.fromBigInt(value));
+  }
+
+  get openedAt(): BigInt {
+    let value = this.get("openedAt");
+    return value.toBigInt();
+  }
+
+  set openedAt(value: BigInt) {
+    this.set("openedAt", Value.fromBigInt(value));
+  }
+
+  get closedAt(): BigInt | null {
+    let value = this.get("closedAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set closedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("closedAt");
+    } else {
+      this.set("closedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+}
