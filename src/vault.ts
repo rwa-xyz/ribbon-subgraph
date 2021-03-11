@@ -3,9 +3,10 @@ import {
   OpenShort,
   CloseShort
 } from "../generated/RibbonOptionsVault/RibbonOptionsVault";
-import { VaultShortPosition, VaultOptionTrade } from "../generated/schema";
+import { VaultShortPosition } from "../generated/schema";
+// import { VaultShortPosition, VaultOptionTrade } from "../generated/schema";
 import { Otoken } from "../generated/RibbonOptionsVault/Otoken";
-import { Swap } from "../generated/Airswap/Airswap";
+// import { Swap } from "../generated/Airswap/Airswap";
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
@@ -30,48 +31,49 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.save();
 }
 
-export function handleCloseShort(event: CloseShort): void {
-  let shortPosition = VaultShortPosition.load(event.params.options.toHex());
-  if (shortPosition !== null) {
-    shortPosition.closedAt = event.block.timestamp;
-    shortPosition.save();
-  }
-}
+// export function handleCloseShort(event: CloseShort): void {
+//   log.debug("pass handleCloseShort", []);
+//   let shortPosition = VaultShortPosition.load(event.params.options.toHex());
+//   if (shortPosition !== null) {
+//     shortPosition.closedAt = event.block.timestamp;
+//     shortPosition.save();
+//   }
+// }
 
-export function handleSwap(event: Swap): void {
-  let optionToken = event.params.signerToken;
-  let vault = event.params.signerWallet;
+// export function handleSwap(event: Swap): void {
+//   let optionToken = event.params.signerToken;
+//   let vault = event.params.signerWallet;
 
-  let shortPosition = VaultShortPosition.load(optionToken.toHex());
+//   let shortPosition = VaultShortPosition.load(optionToken.toHex());
 
-  if (shortPosition == null) {
-    return;
-  }
-  // Needs to match a swap with the vault, if not it could be a random swap
-  // that's unrelated to the vault's functionality
-  if (shortPosition.vault !== null) {
-    if (vault !== shortPosition.vault) {
-      return;
-    }
-  } else {
-    return;
-  }
+//   if (shortPosition == null) {
+//     return;
+//   }
+//   // Needs to match a swap with the vault, if not it could be a random swap
+//   // that's unrelated to the vault's functionality
+//   if (shortPosition.vault !== null) {
+//     if (vault !== shortPosition.vault) {
+//       return;
+//     }
+//   } else {
+//     return;
+//   }
 
-  let swapID =
-    event.transaction.hash.toHex() + "-" + event.transactionLogIndex.toString();
-  let premium = event.params.senderAmount;
+//   let swapID =
+//     event.transaction.hash.toHex() + "-" + event.transactionLogIndex.toString();
+//   let premium = event.params.senderAmount;
 
-  let optionTrade = new VaultOptionTrade(swapID);
-  optionTrade.vault = vault;
-  optionTrade.buyer = event.params.senderWallet;
-  optionTrade.sellAmount = event.params.signerAmount;
-  optionTrade.premium = event.params.senderAmount;
-  optionTrade.optionToken = event.params.signerToken;
-  optionTrade.premiumToken = event.params.senderToken;
+//   let optionTrade = new VaultOptionTrade(swapID);
+//   optionTrade.vault = vault;
+//   optionTrade.buyer = event.params.senderWallet;
+//   optionTrade.sellAmount = event.params.signerAmount;
+//   optionTrade.premium = event.params.senderAmount;
+//   optionTrade.optionToken = event.params.signerToken;
+//   optionTrade.premiumToken = event.params.senderToken;
 
-  optionTrade.save();
+//   optionTrade.save();
 
-  shortPosition.premiumEarned = shortPosition.premiumEarned.plus(premium);
-  shortPosition.trades.push(swapID);
-  shortPosition.save();
-}
+//   shortPosition.premiumEarned = shortPosition.premiumEarned.plus(premium);
+//   shortPosition.trades.push(swapID);
+//   shortPosition.save();
+// }

@@ -23,7 +23,6 @@ type VaultShortPosition @entity {
   openedAt: BigInt!
   closedAt: BigInt
   premiumEarned: BigInt!
-  trades: [VaultOptionTrade!]!
 }
 
 type VaultOptionTrade @entity {
