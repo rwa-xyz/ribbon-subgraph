@@ -14,6 +14,7 @@ type InstrumentPosition @entity {
 
 type VaultShortPosition @entity {
   id: ID!
+  vault: Bytes
   option: Bytes!
   depositAmount: BigInt!
   initiatedBy: Bytes!
@@ -21,4 +22,16 @@ type VaultShortPosition @entity {
   expiry: BigInt!
   openedAt: BigInt!
   closedAt: BigInt
+  premiumEarned: BigInt!
+  trades: [VaultOptionTrade!]!
+}
+
+type VaultOptionTrade @entity {
+  id: ID!
+  vault: Bytes!
+  buyer: Bytes!
+  sellAmount: BigInt!
+  premium: BigInt!
+  optionToken: Bytes!
+  premiumToken: Bytes!
 }

@@ -171,6 +171,23 @@ export class VaultShortPosition extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get vault(): Bytes | null {
+    let value = this.get("vault");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set vault(value: Bytes | null) {
+    if (value === null) {
+      this.unset("vault");
+    } else {
+      this.set("vault", Value.fromBytes(value as Bytes));
+    }
+  }
+
   get option(): Bytes {
     let value = this.get("option");
     return value.toBytes();
@@ -240,5 +257,108 @@ export class VaultShortPosition extends Entity {
     } else {
       this.set("closedAt", Value.fromBigInt(value as BigInt));
     }
+  }
+
+  get premiumEarned(): BigInt {
+    let value = this.get("premiumEarned");
+    return value.toBigInt();
+  }
+
+  set premiumEarned(value: BigInt) {
+    this.set("premiumEarned", Value.fromBigInt(value));
+  }
+
+  get trades(): Array<string> {
+    let value = this.get("trades");
+    return value.toStringArray();
+  }
+
+  set trades(value: Array<string>) {
+    this.set("trades", Value.fromStringArray(value));
+  }
+}
+
+export class VaultOptionTrade extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save VaultOptionTrade entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save VaultOptionTrade entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("VaultOptionTrade", id.toString(), this);
+  }
+
+  static load(id: string): VaultOptionTrade | null {
+    return store.get("VaultOptionTrade", id) as VaultOptionTrade | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get vault(): Bytes {
+    let value = this.get("vault");
+    return value.toBytes();
+  }
+
+  set vault(value: Bytes) {
+    this.set("vault", Value.fromBytes(value));
+  }
+
+  get buyer(): Bytes {
+    let value = this.get("buyer");
+    return value.toBytes();
+  }
+
+  set buyer(value: Bytes) {
+    this.set("buyer", Value.fromBytes(value));
+  }
+
+  get sellAmount(): BigInt {
+    let value = this.get("sellAmount");
+    return value.toBigInt();
+  }
+
+  set sellAmount(value: BigInt) {
+    this.set("sellAmount", Value.fromBigInt(value));
+  }
+
+  get premium(): BigInt {
+    let value = this.get("premium");
+    return value.toBigInt();
+  }
+
+  set premium(value: BigInt) {
+    this.set("premium", Value.fromBigInt(value));
+  }
+
+  get optionToken(): Bytes {
+    let value = this.get("optionToken");
+    return value.toBytes();
+  }
+
+  set optionToken(value: Bytes) {
+    this.set("optionToken", Value.fromBytes(value));
+  }
+
+  get premiumToken(): Bytes {
+    let value = this.get("premiumToken");
+    return value.toBytes();
+  }
+
+  set premiumToken(value: Bytes) {
+    this.set("premiumToken", Value.fromBytes(value));
   }
 }
