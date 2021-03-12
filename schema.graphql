@@ -11,3 +11,28 @@ type InstrumentPosition @entity {
   expiry: BigInt!
   exerciseProfit: BigInt
 }
+
+type VaultShortPosition @entity {
+  id: ID!
+  vault: Bytes
+  option: Bytes!
+  depositAmount: BigInt!
+  initiatedBy: Bytes!
+  strikePrice: BigInt!
+  expiry: BigInt!
+  openedAt: BigInt!
+  closedAt: BigInt
+  premiumEarned: BigInt!
+  trades: [VaultOptionTrade!]! @derivedFrom(field: "vaultShortPosition")
+}
+
+type VaultOptionTrade @entity {
+  id: ID!
+  vaultShortPosition: VaultShortPosition!
+  vault: Bytes!
+  buyer: Bytes!
+  sellAmount: BigInt!
+  premium: BigInt!
+  optionToken: Bytes!
+  premiumToken: Bytes!
+}

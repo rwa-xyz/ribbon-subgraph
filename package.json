@@ -1,6 +1,6 @@
 {
-  "name": "RibbonFinanceSubgraph",
-  "license": "UNLICENSED",
+  "name": "ribbon-finance-subgraph",
+  "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
