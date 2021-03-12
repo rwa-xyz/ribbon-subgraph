@@ -267,6 +267,15 @@ export class VaultShortPosition extends Entity {
   set premiumEarned(value: BigInt) {
     this.set("premiumEarned", Value.fromBigInt(value));
   }
+
+  get trades(): Array<string> {
+    let value = this.get("trades");
+    return value.toStringArray();
+  }
+
+  set trades(value: Array<string>) {
+    this.set("trades", Value.fromStringArray(value));
+  }
 }
 
 export class VaultOptionTrade extends Entity {
@@ -297,6 +306,15 @@ export class VaultOptionTrade extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get vaultShortPosition(): string {
+    let value = this.get("vaultShortPosition");
+    return value.toString();
+  }
+
+  set vaultShortPosition(value: string) {
+    this.set("vaultShortPosition", Value.fromString(value));
   }
 
   get vault(): Bytes {

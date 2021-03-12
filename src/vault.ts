@@ -49,7 +49,11 @@ export function handleSwap(event: Swap): void {
   }
 
   let swapID =
-    event.transaction.hash.toHex() + "-" + event.transactionLogIndex.toString();
+    optionToken.toHex() +
+    "-" +
+    event.transaction.hash.toHex() +
+    "-" +
+    event.transactionLogIndex.toString();
   let premium = event.params.senderAmount;
 
   let optionTrade = new VaultOptionTrade(swapID);
@@ -59,10 +63,9 @@ export function handleSwap(event: Swap): void {
   optionTrade.premium = event.params.senderAmount;
   optionTrade.optionToken = event.params.signerToken;
   optionTrade.premiumToken = event.params.senderToken;
-
+  optionTrade.vaultShortPosition = optionToken.toHex();
   optionTrade.save();
 
   shortPosition.premiumEarned = shortPosition.premiumEarned.plus(premium);
-  //   shortPosition.trades.push(swapID);
   shortPosition.save();
 }
