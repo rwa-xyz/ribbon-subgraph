@@ -39,6 +39,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
+        - Vault
         - VaultShortPosition
       abis:
         - name: RibbonOptionsVault
@@ -50,6 +51,8 @@ dataSources:
           handler: handleOpenShort
         - event: CloseShort(indexed address,uint256,address)
           handler: handleCloseShort
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
   - kind: ethereum/contract
     name: Airswap
     network: mainnet
@@ -63,6 +66,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
+        - Vault
         - VaultShortPosition
         - VaultOptionTrade
       abis:

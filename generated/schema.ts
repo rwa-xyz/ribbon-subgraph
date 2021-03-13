@@ -141,6 +141,91 @@ export class InstrumentPosition extends Entity {
   }
 }
 
+export class Vault extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Vault entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Vault entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Vault", id.toString(), this);
+  }
+
+  static load(id: string): Vault | null {
+    return store.get("Vault", id) as Vault | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get numDepositors(): i32 {
+    let value = this.get("numDepositors");
+    return value.toI32();
+  }
+
+  set numDepositors(value: i32) {
+    this.set("numDepositors", Value.fromI32(value));
+  }
+
+  get totalPremiumEarned(): BigInt {
+    let value = this.get("totalPremiumEarned");
+    return value.toBigInt();
+  }
+
+  set totalPremiumEarned(value: BigInt) {
+    this.set("totalPremiumEarned", Value.fromBigInt(value));
+  }
+
+  get totalWithdrawalFee(): BigInt {
+    let value = this.get("totalWithdrawalFee");
+    return value.toBigInt();
+  }
+
+  set totalWithdrawalFee(value: BigInt) {
+    this.set("totalWithdrawalFee", Value.fromBigInt(value));
+  }
+
+  get depositors(): Array<Bytes> {
+    let value = this.get("depositors");
+    return value.toBytesArray();
+  }
+
+  set depositors(value: Array<Bytes>) {
+    this.set("depositors", Value.fromBytesArray(value));
+  }
+}
+
 export class VaultShortPosition extends Entity {
   constructor(id: string) {
     super();
@@ -171,21 +256,13 @@ export class VaultShortPosition extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): Bytes | null {
+  get vault(): string {
     let value = this.get("vault");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
+    return value.toString();
   }
 
-  set vault(value: Bytes | null) {
-    if (value === null) {
-      this.unset("vault");
-    } else {
-      this.set("vault", Value.fromBytes(value as Bytes));
-    }
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
   }
 
   get option(): Bytes {
@@ -308,6 +385,15 @@ export class VaultOptionTrade extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get vault(): string {
+    let value = this.get("vault");
+    return value.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
   get vaultShortPosition(): string {
     let value = this.get("vaultShortPosition");
     return value.toString();
@@ -315,15 +401,6 @@ export class VaultOptionTrade extends Entity {
 
   set vaultShortPosition(value: string) {
     this.set("vaultShortPosition", Value.fromString(value));
-  }
-
-  get vault(): Bytes {
-    let value = this.get("vault");
-    return value.toBytes();
-  }
-
-  set vault(value: Bytes) {
-    this.set("vault", Value.fromBytes(value));
   }
 
   get buyer(): Bytes {

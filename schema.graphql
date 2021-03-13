@@ -12,9 +12,19 @@ type InstrumentPosition @entity {
   exerciseProfit: BigInt
 }
 
+type Vault @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  numDepositors: Int!
+  totalPremiumEarned: BigInt!
+  totalWithdrawalFee: BigInt!
+  depositors: [Bytes!]!
+}
+
 type VaultShortPosition @entity {
   id: ID!
-  vault: Bytes
+  vault: Vault!
   option: Bytes!
   depositAmount: BigInt!
   initiatedBy: Bytes!
@@ -28,8 +38,8 @@ type VaultShortPosition @entity {
 
 type VaultOptionTrade @entity {
   id: ID!
+  vault: Vault!
   vaultShortPosition: VaultShortPosition!
-  vault: Bytes!
   buyer: Bytes!
   sellAmount: BigInt!
   premium: BigInt!
