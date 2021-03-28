@@ -53,6 +53,8 @@ dataSources:
           handler: handleCloseShort
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
+        - event: Withdraw(indexed address,uint256,uint256,uint256)
+          handler: handleWithdraw
   - kind: ethereum/contract
     name: Airswap
     network: mainnet
@@ -69,6 +71,7 @@ dataSources:
         - Vault
         - VaultShortPosition
         - VaultOptionTrade
+        - VaultTransaction
       abis:
         - name: Airswap
           file: ./abis/Airswap.json

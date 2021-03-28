@@ -1,13 +1,15 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   OpenShort,
   CloseShort,
-  Deposit
+  Deposit,
+  Withdraw
 } from "../generated/RibbonOptionsVault/RibbonOptionsVault";
 import {
   Vault,
   VaultShortPosition,
-  VaultOptionTrade
+  VaultOptionTrade,
+  VaultTransaction
 } from "../generated/schema";
 import { RibbonOptionsVault } from "../generated/RibbonOptionsVault/RibbonOptionsVault";
 import { Otoken } from "../generated/RibbonOptionsVault/Otoken";
@@ -115,4 +117,75 @@ export function handleDeposit(event: Deposit): void {
   vault.depositors = depositors;
   vault.numDepositors = depositors.length;
   vault.save();
+
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHex() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  newTransaction(
+    txid,
+    "deposit",
+    vaultAddress,
+    event.params.account,
+    event.transaction.hash,
+    event.block.timestamp,
+    event.params.amount,
+    BigInt.fromI32(0) // zero fees on deposit
+  );
+}
+
+export function handleWithdraw(event: Withdraw): void {
+  if (event.transaction.to == null) {
+    return;
+  }
+
+  let vaultAddress = event.transaction.to.toHex();
+  let vault = Vault.load(vaultAddress);
+
+  if (vault == null) {
+    vault = newVault(vaultAddress);
+    vault.save();
+  }
+
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHex() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  newTransaction(
+    txid,
+    "withdraw",
+    vaultAddress,
+    event.params.account,
+    event.transaction.hash,
+    event.block.timestamp,
+    event.params.amount,
+    event.params.fee
+  );
+}
+
+function newTransaction(
+  txid: string,
+  type: string,
+  vaultAddress: string,
+  account: Address,
+  txhash: Bytes,
+  timestamp: BigInt,
+  amount: BigInt,
+  fee: BigInt
+): void {
+  let transaction = new VaultTransaction(txid);
+  transaction.type = type;
+  transaction.vault = vaultAddress;
+  transaction.address = account;
+  transaction.txhash = txhash;
+  transaction.timestamp = timestamp;
+  transaction.amount = amount;
+  transaction.fee = fee;
+  transaction.save();
 }

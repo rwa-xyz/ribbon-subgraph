@@ -48,3 +48,14 @@ type VaultOptionTrade @entity {
   timestamp: BigInt!
   txhash: Bytes!
 }
+
+type VaultTransaction @entity {
+  id: ID!
+  vault: Vault!
+  type: String!
+  address: Bytes!
+  txhash: Bytes!
+  timestamp: BigInt!
+  amount: BigInt!
+  fee: BigInt!
+}
