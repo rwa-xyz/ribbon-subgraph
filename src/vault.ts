@@ -37,6 +37,7 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.initiatedBy = event.params.manager;
   shortPosition.openedAt = event.block.timestamp;
   shortPosition.premiumEarned = BigInt.fromI32(0);
+  shortPosition.openTxhash = event.transaction.hash;
 
   let otoken = Otoken.bind(optionAddress);
   shortPosition.expiry = otoken.expiryTimestamp();
@@ -65,6 +66,7 @@ export function handleCloseShort(event: CloseShort): void {
   );
   if (shortPosition != null) {
     shortPosition.closedAt = event.block.timestamp;
+    shortPosition.closeTxhash = event.transaction.hash;
     shortPosition.save();
   }
 }

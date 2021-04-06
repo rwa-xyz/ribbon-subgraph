@@ -354,6 +354,32 @@ export class VaultShortPosition extends Entity {
     this.set("premiumEarned", Value.fromBigInt(value));
   }
 
+  get openTxhash(): Bytes {
+    let value = this.get("openTxhash");
+    return value.toBytes();
+  }
+
+  set openTxhash(value: Bytes) {
+    this.set("openTxhash", Value.fromBytes(value));
+  }
+
+  get closeTxhash(): Bytes | null {
+    let value = this.get("closeTxhash");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set closeTxhash(value: Bytes | null) {
+    if (value === null) {
+      this.unset("closeTxhash");
+    } else {
+      this.set("closeTxhash", Value.fromBytes(value as Bytes));
+    }
+  }
+
   get trades(): Array<string> {
     let value = this.get("trades");
     return value.toStringArray();
