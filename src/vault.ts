@@ -172,7 +172,12 @@ export function handleWithdraw(event: Withdraw): void {
     vault.save();
   }
 
-  createVaultAccount(event.transaction.to as Address, event.params.account);
+  let vaultAccount = createVaultAccount(
+    event.transaction.to as Address,
+    event.params.account
+  );
+  vaultAccount.totalDeposits = vaultAccount.totalDeposits - event.params.amount;
+  vaultAccount.save();
 
   let txid =
     vaultAddress +
