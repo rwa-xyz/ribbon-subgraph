@@ -26,11 +26,7 @@ export function handleOpenShort(event: OpenShort): void {
 
   let shortPosition = new VaultShortPosition(optionAddress.toHexString());
 
-  if (event.transaction.to == null) {
-    return;
-  }
-
-  let vaultAddress = event.transaction.to.toHexString();
+  let vaultAddress = event.address.toHexString();
   shortPosition.vault = vaultAddress;
   shortPosition.option = optionAddress;
   shortPosition.depositAmount = event.params.depositAmount;
@@ -115,10 +111,7 @@ export function handleSwap(event: Swap): void {
 }
 
 export function handleDeposit(event: Deposit): void {
-  if (event.transaction.to == null) {
-    return;
-  }
-  let vaultAddress = event.transaction.to.toHexString();
+  let vaultAddress = event.address.toHexString();
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
@@ -126,10 +119,7 @@ export function handleDeposit(event: Deposit): void {
     vault.save();
   }
 
-  let vaultAccount = createVaultAccount(
-    event.transaction.to as Address,
-    event.params.account
-  );
+  let vaultAccount = createVaultAccount(event.address, event.params.account);
   vaultAccount.totalDeposits = vaultAccount.totalDeposits + event.params.amount;
   vaultAccount.save();
 
@@ -152,7 +142,7 @@ export function handleDeposit(event: Deposit): void {
   );
 
   triggerBalanceUpdate(
-    event.transaction.to as Address,
+    event.address,
     event.params.account,
     event.block.timestamp.toI32(),
     false
@@ -160,11 +150,7 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  if (event.transaction.to == null) {
-    return;
-  }
-
-  let vaultAddress = event.transaction.to.toHexString();
+  let vaultAddress = event.address.toHexString();
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
@@ -172,11 +158,9 @@ export function handleWithdraw(event: Withdraw): void {
     vault.save();
   }
 
-  let vaultAccount = createVaultAccount(
-    event.transaction.to as Address,
-    event.params.account
-  );
-  vaultAccount.totalDeposits = vaultAccount.totalDeposits - event.params.amount;
+  let vaultAccount = createVaultAccount(event.address, event.params.account);
+  vaultAccount.totalDeposits =
+    vaultAccount.totalDeposits - event.params.amount - event.params.fee;
   vaultAccount.save();
 
   let txid =
@@ -198,7 +182,7 @@ export function handleWithdraw(event: Withdraw): void {
   );
 
   triggerBalanceUpdate(
-    event.transaction.to as Address,
+    event.address,
     event.params.account,
     event.block.timestamp.toI32(),
     false
