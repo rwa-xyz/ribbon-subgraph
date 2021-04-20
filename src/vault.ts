@@ -87,7 +87,7 @@ export function handleSwap(event: Swap): void {
     event.transaction.hash.toHexString() +
     "-" +
     event.transactionLogIndex.toString();
-  let premium = event.params.senderAmount;
+  let premium = event.params.signerAmount;
 
   let optionTrade = new VaultOptionTrade(swapID);
   optionTrade.vault = vaultAddress.toHexString();

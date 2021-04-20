@@ -3,10 +3,41 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: RibbonOptionsVault
+    name: RibbonETHCoveredCall
     network: kovan
     source:
       address: "0x88729C2FFEE36Ec3b154750c28828ACC3956BdfE"
+      abi: RibbonOptionsVault
+      startBlock: 24050701
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: RibbonOptionsVault
+          file: ./abis/RibbonOptionsVault.json
+        - name: Otoken
+          file: ./abis/Otoken.json
+      eventHandlers:
+        - event: OpenShort(indexed address,uint256,address)
+          handler: handleOpenShort
+        - event: CloseShort(indexed address,uint256,address)
+          handler: handleCloseShort
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,uint256,uint256,uint256)
+          handler: handleWithdraw
+  - kind: ethereum/contract
+    name: RibbonWBTCCoveredCall
+    network: kovan
+    source:
+      address: "0x18C17C8b410a0A4C85E00351Fd078Ba0D6B9c407"
       abi: RibbonOptionsVault
       startBlock: 24050701
     mapping:
