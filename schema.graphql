@@ -21,6 +21,8 @@ type Vault @entity {
   numDepositors: Int!
   depositors: [Bytes!]!
   vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
+  totalBalance: BigInt!
+  cap: BigInt!
 }
 
 type VaultShortPosition @entity {

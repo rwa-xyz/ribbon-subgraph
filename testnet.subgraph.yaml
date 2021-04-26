@@ -37,7 +37,7 @@ dataSources:
     name: RibbonWBTCCoveredCall
     network: kovan
     source:
-      address: "0x18C17C8b410a0A4C85E00351Fd078Ba0D6B9c407"
+      address: "0x1616b4Db185E813DAcA6A7C6D288cb988BA45982"
       abi: RibbonOptionsVault
       startBlock: 24050701
     mapping:

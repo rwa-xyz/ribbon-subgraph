@@ -233,6 +233,24 @@ export class Vault extends Entity {
   set vaultAccounts(value: Array<string>) {
     this.set("vaultAccounts", Value.fromStringArray(value));
   }
+
+  get totalBalance(): BigInt {
+    let value = this.get("totalBalance");
+    return value.toBigInt();
+  }
+
+  set totalBalance(value: BigInt) {
+    this.set("totalBalance", Value.fromBigInt(value));
+  }
+
+  get cap(): BigInt {
+    let value = this.get("cap");
+    return value.toBigInt();
+  }
+
+  set cap(value: BigInt) {
+    this.set("cap", Value.fromBigInt(value));
+  }
 }
 
 export class VaultShortPosition extends Entity {

@@ -42,6 +42,10 @@ export function triggerBalanceUpdate(
     vaultAddress.toHexString() + "-" + accountAddress.toHexString()
   );
 
+  let vault = Vault.load(vaultID);
+  vault.totalBalance = vaultContract.totalBalance();
+  vault.save();
+
   if (vaultAccount == null) {
     return;
   }

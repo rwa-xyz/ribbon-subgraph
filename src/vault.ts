@@ -53,6 +53,8 @@ function newVault(vaultAddress: string): Vault {
   vault.depositors = [];
   vault.totalPremiumEarned = BigInt.fromI32(0);
   vault.totalWithdrawalFee = BigInt.fromI32(0);
+  vault.cap = optionsVaultContract.cap();
+  vault.totalBalance = optionsVaultContract.totalBalance();
   return vault;
 }
 
@@ -157,6 +159,9 @@ export function handleWithdraw(event: Withdraw): void {
     vault = newVault(vaultAddress);
     vault.save();
   }
+
+  vault.totalWithdrawalFee = vault.totalWithdrawalFee + event.params.fee;
+  vault.save();
 
   let vaultAccount = createVaultAccount(event.address, event.params.account);
   vaultAccount.totalDeposits =
