@@ -30,6 +30,9 @@ type VaultShortPosition @entity {
   vault: Vault!
   option: Bytes!
   depositAmount: BigInt!
+  withdrawAmount: BigInt
+  loss: BigInt
+  isExercised: Boolean
   initiatedBy: Bytes!
   strikePrice: BigInt!
   expiry: BigInt!

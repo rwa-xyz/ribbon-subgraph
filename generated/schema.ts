@@ -310,6 +310,49 @@ export class VaultShortPosition extends Entity {
     this.set("depositAmount", Value.fromBigInt(value));
   }
 
+  get withdrawAmount(): BigInt | null {
+    let value = this.get("withdrawAmount");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set withdrawAmount(value: BigInt | null) {
+    if (value === null) {
+      this.unset("withdrawAmount");
+    } else {
+      this.set("withdrawAmount", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get loss(): BigInt | null {
+    let value = this.get("loss");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set loss(value: BigInt | null) {
+    if (value === null) {
+      this.unset("loss");
+    } else {
+      this.set("loss", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get isExercised(): boolean {
+    let value = this.get("isExercised");
+    return value.toBoolean();
+  }
+
+  set isExercised(value: boolean) {
+    this.set("isExercised", Value.fromBoolean(value));
+  }
+
   get initiatedBy(): Bytes {
     let value = this.get("initiatedBy");
     return value.toBytes();

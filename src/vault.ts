@@ -65,6 +65,10 @@ export function handleCloseShort(event: CloseShort): void {
     event.params.options.toHexString()
   );
   if (shortPosition != null) {
+    let loss = shortPosition.depositAmount - event.params.withdrawAmount;
+    shortPosition.loss = loss;
+    shortPosition.withdrawAmount = event.params.withdrawAmount;
+    shortPosition.isExercised = loss > BigInt.fromI32(0);
     shortPosition.closedAt = event.block.timestamp;
     shortPosition.closeTxhash = event.transaction.hash;
     shortPosition.save();
