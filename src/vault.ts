@@ -61,6 +61,7 @@ function newVault(vaultAddress: string): Vault {
 }
 
 export function handleCloseShort(event: CloseShort): void {
+  let vaultAddress = event.address;
   let shortPosition = VaultShortPosition.load(
     event.params.options.toHexString()
   );
@@ -72,6 +73,8 @@ export function handleCloseShort(event: CloseShort): void {
     shortPosition.closedAt = event.block.timestamp;
     shortPosition.closeTxhash = event.transaction.hash;
     shortPosition.save();
+
+    refreshAllAccountBalances(vaultAddress, event.block.timestamp.toI32());
   }
 }
 
@@ -153,6 +156,7 @@ export function handleDeposit(event: Deposit): void {
     event.address,
     event.params.account,
     event.block.timestamp.toI32(),
+    false,
     false
   );
 }
@@ -196,7 +200,8 @@ export function handleWithdraw(event: Withdraw): void {
     event.address,
     event.params.account,
     event.block.timestamp.toI32(),
-    false
+    false,
+    true
   );
 }
 
@@ -211,19 +216,58 @@ export function handleTransfer(event: Transfer): void {
     return;
   }
 
-  let vaultAccount = createVaultAccount(event.address, event.params.to);
-  vaultAccount.save();
+  let vaultAddress = event.address.toHexString();
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  let senderVaultAccount = createVaultAccount(event.address, event.params.from);
+  senderVaultAccount.totalDeposits =
+    senderVaultAccount.totalDeposits - event.params.value;
+  senderVaultAccount.save();
+
+  newTransaction(
+    txid + "-T", // Indicate transfer
+    "transfer",
+    vaultAddress,
+    event.params.from,
+    event.transaction.hash,
+    event.block.timestamp,
+    event.params.value,
+    BigInt.fromI32(0) // zero fees on transfer
+  );
+
+  let receiverVaultAccount = createVaultAccount(event.address, event.params.to);
+  receiverVaultAccount.totalDeposits =
+    receiverVaultAccount.totalDeposits + event.params.value;
+  receiverVaultAccount.save();
+
+  newTransaction(
+    txid + "-R", // Indicate receive
+    "receive",
+    vaultAddress,
+    event.params.to,
+    event.transaction.hash,
+    event.block.timestamp,
+    event.params.value,
+    BigInt.fromI32(0) // zero fees on transfer
+  );
 
   triggerBalanceUpdate(
     event.address,
     event.params.from,
     event.block.timestamp.toI32(),
-    false
+    false,
+    true
   );
   triggerBalanceUpdate(
     event.address,
     event.params.to,
     event.block.timestamp.toI32(),
+    false,
     false
   );
 }

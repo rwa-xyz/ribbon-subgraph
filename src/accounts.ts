@@ -21,7 +21,8 @@ export function refreshAllAccountBalances(
           vaultAddress,
           depositorAddress as Address,
           timestamp,
-          true
+          true,
+          false
         );
       }
     }
@@ -32,7 +33,8 @@ export function triggerBalanceUpdate(
   vaultAddress: Address,
   accountAddress: Address,
   timestamp: i32,
-  accruesYield: bool
+  accruesYield: bool,
+  isWithdraw: bool
 ): void {
   let vaultID = vaultAddress.toHexString();
 
@@ -70,6 +72,7 @@ export function triggerBalanceUpdate(
     update.timestamp = timestamp;
     update.balance = balance;
     update.yieldEarned = BigInt.fromI32(0);
+    update.isWithdraw = isWithdraw;
 
     if (accruesYield) {
       let prevUpdateID =
@@ -93,6 +96,7 @@ export function triggerBalanceUpdate(
     }
     update.save();
 
+    vaultAccount.totalBalance = balance;
     vaultAccount.updateCounter = updateCounter;
     vaultAccount.save();
   } else {
@@ -124,6 +128,7 @@ export function createVaultAccount(
     vaultAccount.vault = vaultAddress.toHexString();
     vaultAccount.account = accountAddress;
     vaultAccount.totalDeposits = BigInt.fromI32(0);
+    vaultAccount.totalBalance = BigInt.fromI32(0);
     vaultAccount.totalYieldEarned = BigInt.fromI32(0);
     vaultAccount.updateCounter = 0;
     vaultAccount.save();
