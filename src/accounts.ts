@@ -2,6 +2,8 @@ import { BigInt, Address, log } from "@graphprotocol/graph-ts";
 import { RibbonOptionsVault } from "../generated/RibbonOptionsVault/RibbonOptionsVault";
 import {
   BalanceUpdate,
+  ERC20Token,
+  ERC20TokenAccount,
   Vault,
   VaultAccount,
   VaultLiquidityMiningPool,
@@ -68,10 +70,19 @@ export function triggerBalanceUpdate(
     "-" +
     updateCounter.toString();
 
-  let callResult = vaultContract.try_accountVaultBalance(accountAddress);
+  const balanceCallResult = vaultContract.try_accountVaultBalance(
+    accountAddress
+  );
+  const stakeBalanceCallResult = vaultContract.try_withdrawAmountWithShares(
+    vaultAccount.totalStakedShares
+  );
 
-  if (!callResult.reverted) {
-    let balance = callResult.value;
+  if (!balanceCallResult.reverted && !stakeBalanceCallResult.reverted) {
+    // TODO: The yield still does not fully represent one that occured after staked, need more calculation in calculating yield in it as well. Still figuring out how to do it
+
+    let stakeBalance =
+      stakeBalanceCallResult.value.value0 + stakeBalanceCallResult.value.value1;
+    let balance = balanceCallResult.value + stakeBalance;
     let update = new BalanceUpdate(updateID);
     update.vault = vaultID;
     update.account = accountAddress;
@@ -79,6 +90,7 @@ export function triggerBalanceUpdate(
     update.balance = balance;
     update.yieldEarned = BigInt.fromI32(0);
     update.isWithdraw = isWithdraw;
+    update.stakedBalance = stakeBalance;
 
     if (accruesYield) {
       let prevUpdateID =
@@ -100,10 +112,12 @@ export function triggerBalanceUpdate(
         }
       }
     }
+
     update.save();
 
-    vaultAccount.totalBalance = balance;
     vaultAccount.updateCounter = updateCounter;
+    vaultAccount.totalStakedBalance = stakeBalance;
+    vaultAccount.totalBalance = balance;
     vaultAccount.save();
   } else {
     log.error("calling accountVaultBalance({}) on vault {}", [
@@ -137,6 +151,8 @@ export function createVaultAccount(
     vaultAccount.totalBalance = BigInt.fromI32(0);
     vaultAccount.totalYieldEarned = BigInt.fromI32(0);
     vaultAccount.updateCounter = 0;
+    vaultAccount.totalStakedShares = BigInt.fromI32(0);
+    vaultAccount.totalStakedBalance = BigInt.fromI32(0);
     vaultAccount.save();
   }
   return vaultAccount as VaultAccount;
@@ -144,14 +160,14 @@ export function createVaultAccount(
 
 export function getOrCreateLiquidityMiningPoolAccount(
   poolAddress: Address,
-  accountAddress: Address
+  accountAddress: Address,
+  pool: VaultLiquidityMiningPool
 ): VaultLiquidityMiningPoolAccount {
   let poolAccountID =
     poolAddress.toHexString() + "-" + accountAddress.toHexString();
 
   let poolAccount = VaultLiquidityMiningPoolAccount.load(poolAccountID);
   if (poolAccount == null) {
-    let pool = VaultLiquidityMiningPool.load(poolAddress.toHexString());
     let depositors = pool.depositors;
     depositors.push(accountAddress);
     pool.depositors = depositors;
@@ -167,4 +183,30 @@ export function getOrCreateLiquidityMiningPoolAccount(
     poolAccount.save();
   }
   return poolAccount as VaultLiquidityMiningPoolAccount;
+}
+
+export function getOrCreateTokenAccount(
+  tokenAddress: Address,
+  accountAddress: Address,
+  token: ERC20Token
+): ERC20TokenAccount {
+  let tokenAccountID =
+    tokenAddress.toHexString() + "-" + accountAddress.toHexString();
+
+  let tokenAccount = ERC20TokenAccount.load(tokenAccountID);
+  if (tokenAccount == null) {
+    let holders = token.holders;
+    holders.push(accountAddress);
+    token.holders = holders;
+
+    token.numHolders = token.numHolders + 1;
+    token.save();
+
+    tokenAccount = new ERC20TokenAccount(tokenAccountID);
+    tokenAccount.token = tokenAddress.toHexString();
+    tokenAccount.account = accountAddress;
+    tokenAccount.balance = BigInt.fromI32(0);
+    tokenAccount.save();
+  }
+  return tokenAccount as ERC20TokenAccount;
 }
