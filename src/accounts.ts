@@ -14,23 +14,27 @@ export function refreshAllAccountBalances(
   vaultAddress: Address,
   timestamp: i32
 ): void {
-  log.debug("trigger refresh", []);
   let vault = Vault.load(vaultAddress.toHexString());
+  let vaultContract = RibbonOptionsVault.bind(vaultAddress);
+  let totalBalance = vaultContract.totalBalance();
+  let totalSupply = vaultContract.totalSupply();
+  vault.totalBalance = totalBalance;
+  vault.lockedAmount = vaultContract.lockedAmount();
+  vault.save();
 
   if (vault != null) {
     for (let i = 0; i < vault.numDepositors; i++) {
       let depositors = vault.depositors;
       let depositorAddress = depositors[i];
       if (depositorAddress != null) {
-        log.debug("refresh balance with premium {}", [
-          depositorAddress.toHexString()
-        ]);
-        triggerBalanceUpdate(
+        _triggerBalanceUpdate(
           vaultAddress,
           depositorAddress as Address,
           timestamp,
           true,
-          false
+          false,
+          totalBalance,
+          totalSupply
         );
       }
     }
@@ -44,6 +48,34 @@ export function triggerBalanceUpdate(
   accruesYield: bool,
   isWithdraw: bool
 ): void {
+  let vault = Vault.load(vaultAddress.toHexString());
+  let vaultContract = RibbonOptionsVault.bind(vaultAddress);
+  let totalBalance = vaultContract.totalBalance();
+  let totalSupply = vaultContract.totalSupply();
+  vault.totalBalance = totalBalance;
+  vault.lockedAmount = vaultContract.lockedAmount();
+  vault.save();
+
+  _triggerBalanceUpdate(
+    vaultAddress,
+    accountAddress,
+    timestamp,
+    accruesYield,
+    isWithdraw,
+    totalBalance,
+    totalSupply
+  );
+}
+
+export function _triggerBalanceUpdate(
+  vaultAddress: Address,
+  accountAddress: Address,
+  timestamp: i32,
+  accruesYield: bool,
+  isWithdraw: bool,
+  totalBalance: BigInt,
+  totalSupply: BigInt
+): void {
   let vaultID = vaultAddress.toHexString();
 
   let vaultContract = RibbonOptionsVault.bind(vaultAddress);
@@ -51,11 +83,6 @@ export function triggerBalanceUpdate(
   let vaultAccount = VaultAccount.load(
     vaultAddress.toHexString() + "-" + accountAddress.toHexString()
   );
-
-  let vault = Vault.load(vaultID);
-  vault.totalBalance = vaultContract.totalBalance();
-  vault.lockedAmount = vaultContract.lockedAmount();
-  vault.save();
 
   if (vaultAccount == null) {
     return;
@@ -75,8 +102,7 @@ export function triggerBalanceUpdate(
 
   if (!balanceCallResult.reverted) {
     let stakeBalance =
-      (vaultAccount.totalStakedShares * vaultContract.totalBalance()) /
-      vaultContract.totalSupply();
+      (vaultAccount.totalStakedShares * totalBalance) / totalSupply;
     let balance = balanceCallResult.value + stakeBalance;
     let update = new BalanceUpdate(updateID);
     update.vault = vaultID;
