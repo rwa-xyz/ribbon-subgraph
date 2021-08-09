@@ -33,6 +33,7 @@ export function refreshAllAccountBalances(
           timestamp,
           true,
           false,
+          false,
           totalBalance,
           totalSupply
         );
@@ -62,6 +63,7 @@ export function triggerBalanceUpdate(
     timestamp,
     accruesYield,
     isWithdraw,
+    true,
     totalBalance,
     totalSupply
   );
@@ -73,6 +75,7 @@ export function _triggerBalanceUpdate(
   timestamp: i32,
   accruesYield: bool,
   isWithdraw: bool,
+  isRefresh: bool,
   totalBalance: BigInt,
   totalSupply: BigInt
 ): void {
@@ -98,54 +101,64 @@ export function _triggerBalanceUpdate(
     "-" +
     updateCounter.toString();
 
-  let balanceCallResult = vaultContract.try_accountVaultBalance(accountAddress);
+  let shares: BigInt;
 
-  if (!balanceCallResult.reverted) {
-    let stakeBalance =
-      (vaultAccount.totalStakedShares * totalBalance) / totalSupply;
-    let balance = balanceCallResult.value + stakeBalance;
-    let update = new BalanceUpdate(updateID);
-    update.vault = vaultID;
-    update.account = accountAddress;
-    update.timestamp = timestamp;
-    update.balance = balance;
-    update.yieldEarned = BigInt.fromI32(0);
-    update.isWithdraw = isWithdraw;
-    update.stakedBalance = stakeBalance;
+  if (isRefresh) {
+    let balanceCallResult = vaultContract.try_balanceOf(accountAddress);
+    if (balanceCallResult.reverted) {
+      log.error("calling balanceOf({}) on vault {}", [
+        accountAddress.toHexString(),
+        vaultAddress.toHexString()
+      ]);
+      return;
+    }
+    shares = balanceCallResult.value;
+  } else {
+    shares = vaultAccount.shares;
+  }
 
-    if (accruesYield) {
-      let prevUpdateID =
-        vaultAddress.toHexString() +
-        "-" +
-        accountAddress.toHexString() +
-        "-" +
-        prevUpdateCounter.toString();
+  let accountBalance = (shares * totalBalance) / totalSupply;
+  let stakeBalance =
+    (vaultAccount.totalStakedShares * totalBalance) / totalSupply;
+  let balance = accountBalance + stakeBalance;
 
-      let prevUpdate = BalanceUpdate.load(prevUpdateID);
-      if (prevUpdate != null) {
-        let yieldEarned = balance.minus(prevUpdate.balance);
+  let update = new BalanceUpdate(updateID);
+  update.vault = vaultID;
+  update.account = accountAddress;
+  update.timestamp = timestamp;
+  update.balance = balance;
+  update.yieldEarned = BigInt.fromI32(0);
+  update.isWithdraw = isWithdraw;
+  update.stakedBalance = stakeBalance;
 
-        if (yieldEarned.gt(BigInt.fromI32(0))) {
-          update.yieldEarned = yieldEarned;
-          vaultAccount.totalYieldEarned = vaultAccount.totalYieldEarned.plus(
-            yieldEarned
-          );
-        }
+  if (accruesYield) {
+    let prevUpdateID =
+      vaultAddress.toHexString() +
+      "-" +
+      accountAddress.toHexString() +
+      "-" +
+      prevUpdateCounter.toString();
+
+    let prevUpdate = BalanceUpdate.load(prevUpdateID);
+    if (prevUpdate != null) {
+      let yieldEarned = balance.minus(prevUpdate.balance);
+
+      if (yieldEarned.gt(BigInt.fromI32(0))) {
+        update.yieldEarned = yieldEarned;
+        vaultAccount.totalYieldEarned = vaultAccount.totalYieldEarned.plus(
+          yieldEarned
+        );
       }
     }
-
-    update.save();
-
-    vaultAccount.updateCounter = updateCounter;
-    vaultAccount.totalStakedBalance = stakeBalance;
-    vaultAccount.totalBalance = balance;
-    vaultAccount.save();
-  } else {
-    log.error("calling accountVaultBalance({}) on vault {}", [
-      accountAddress.toHexString(),
-      vaultAddress.toHexString()
-    ]);
   }
+
+  update.save();
+
+  vaultAccount.updateCounter = updateCounter;
+  vaultAccount.totalStakedBalance = stakeBalance;
+  vaultAccount.totalBalance = balance;
+  vaultAccount.shares = shares;
+  vaultAccount.save();
 }
 
 export function createVaultAccount(
@@ -168,6 +181,7 @@ export function createVaultAccount(
     vaultAccount = new VaultAccount(vaultAccountID);
     vaultAccount.vault = vaultAddress.toHexString();
     vaultAccount.account = accountAddress;
+    vaultAccount.shares = BigInt.fromI32(0);
     vaultAccount.totalDeposits = BigInt.fromI32(0);
     vaultAccount.totalBalance = BigInt.fromI32(0);
     vaultAccount.totalYieldEarned = BigInt.fromI32(0);
