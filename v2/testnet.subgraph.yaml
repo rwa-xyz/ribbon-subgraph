@@ -6,9 +6,9 @@ dataSources:
     name: RibbonETHCoveredCall
     network: kovan
     source:
-      address: "0x5770745d644CCA4D33E08f0abfBBE3aA8c836c33"
+      address: "0x9467726c3cFe3f9112Cd0fA3963223d5b8b3C4B1"
       abi: RibbonThetaVault
-      startBlock: 26763526
+      startBlock: 27129833
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -44,9 +44,9 @@ dataSources:
     name: RibbonWBTCCoveredCall
     network: kovan
     source:
-      address: "0x1775e7Bdd034d2De74a3ef131044395373880dA1"
+      address: "0x6e08c6659132dB4aF0352c409e4b3067C8E97ac2"
       abi: RibbonThetaVault
-      startBlock: 26766248
+      startBlock: 26850566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -86,7 +86,7 @@ dataSources:
     source:
       address: "0x3D1D40101E185E1fE3aedCF05FE2F5BA0Af1f25D"
       abi: GnosisAuction
-      startBlock: 26704479
+      startBlock: 26850566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

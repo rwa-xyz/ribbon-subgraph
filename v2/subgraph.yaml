@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: RibbonETHCoveredCall
-    network:  mainnet
+    network: mainnet
     source:
-      address: "0xcfCf97F4300aFAa94566696fbF116C4d881FB3bc"
+      address: "0x25751853Eab4D0eB3652B5eB6ecB102A2789644B"
       abi: RibbonThetaVault
-      startBlock: 13048000
+      startBlock: 13201665
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -25,27 +25,27 @@ dataSources:
         - name: Otoken
           file: ./abis/Otoken.json
       eventHandlers:
-        - event: OpenShort(indexed address,uint256,address)
+        - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
-        - event: CloseShort(indexed address,uint256,address)
+        - event: CloseShort(indexed address,uint256,indexed address)
           handler: handleCloseShort
-        - event: Deposit(indexed address,uint256,uint16)
+        - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
-        - event: Withdraw(address,uint256,uint256)
+        - event: InitiateWithdraw(indexed address,uint256,uint256)
+          handler: handleInitiateWithdraw
+        - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: CapSet(uint256,uint256,address)
-          handler: handleCapSet
-        - event: InitiateGnosisAuction(address,address,uint256,address)
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
   - kind: ethereum/contract
     name: RibbonWBTCCoveredCall
     network: mainnet
     source:
-      address: "0x9d1d31190f945b72f6de8f1c72b97931c9d5014a"
+      address: "0x65a833afDc250D9d38f8CD9bC2B1E3132dB13B2F"
       abi: RibbonThetaVault
-      startBlock: 13058000
+      startBlock: 13195539
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -62,19 +62,19 @@ dataSources:
         - name: Otoken
           file: ./abis/Otoken.json
       eventHandlers:
-        - event: OpenShort(indexed address,uint256,address)
+        - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
-        - event: CloseShort(indexed address,uint256,address)
+        - event: CloseShort(indexed address,uint256,indexed address)
           handler: handleCloseShort
-        - event: Deposit(indexed address,uint256,uint16)
+        - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
-        - event: Withdraw(address,uint256,uint256)
+        - event: InitiateWithdraw(indexed address,uint256,uint256)
+          handler: handleInitiateWithdraw
+        - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: CapSet(uint256,uint256,address)
-          handler: handleCapSet
-        - event: InitiateGnosisAuction(address,address,uint256,address)
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
   - kind: ethereum/contract
     name: GnosisAuction
@@ -82,7 +82,7 @@ dataSources:
     source:
       address: "0x0b7fFc1f4AD541A4Ed16b40D8c37f0929158D101"
       abi: GnosisAuction
-      startBlock: 13058000
+      startBlock: 13195539
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -96,10 +96,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: GnosisAuction
-          file: ./abis/GnosisEasyAuction.json
         - name: RibbonThetaVault
           file: ./abis/RibbonThetaVault.json
+        - name: GnosisAuction
+          file: ./abis/GnosisEasyAuction.json
       eventHandlers:
         - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
           handler: handleAuctionCleared

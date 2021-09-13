@@ -58,6 +58,32 @@ export class AuctionDurationSet__Params {
   }
 }
 
+export class CapSet extends ethereum.Event {
+  get params(): CapSet__Params {
+    return new CapSet__Params(this);
+  }
+}
+
+export class CapSet__Params {
+  _event: CapSet;
+
+  constructor(event: CapSet) {
+    this._event = event;
+  }
+
+  get oldCap(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get newCap(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get manager(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+}
+
 export class CloseShort extends ethereum.Event {
   get params(): CloseShort__Params {
     return new CloseShort__Params(this);
@@ -107,6 +133,10 @@ export class CollectVaultFees__Params {
 
   get round(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+
+  get feeRecipient(): Address {
+    return this._event.parameters[3].value.toAddress();
   }
 }
 
@@ -218,6 +248,28 @@ export class InstantWithdraw__Params {
   }
 }
 
+export class ManagementFeeSet extends ethereum.Event {
+  get params(): ManagementFeeSet__Params {
+    return new ManagementFeeSet__Params(this);
+  }
+}
+
+export class ManagementFeeSet__Params {
+  _event: ManagementFeeSet;
+
+  constructor(event: ManagementFeeSet) {
+    this._event = event;
+  }
+
+  get managementFee(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get newManagementFee(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class NewOptionStrikeSelected extends ethereum.Event {
   get params(): NewOptionStrikeSelected__Params {
     return new NewOptionStrikeSelected__Params(this);
@@ -285,6 +337,28 @@ export class OwnershipTransferred__Params {
 
   get newOwner(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class PerformanceFeeSet extends ethereum.Event {
+  get params(): PerformanceFeeSet__Params {
+    return new PerformanceFeeSet__Params(this);
+  }
+}
+
+export class PerformanceFeeSet__Params {
+  _event: PerformanceFeeSet;
+
+  constructor(event: PerformanceFeeSet) {
+    this._event = event;
+  }
+
+  get performanceFee(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get newPerformanceFee(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -547,6 +621,21 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return new RibbonThetaVault("RibbonThetaVault", address);
   }
 
+  DELAY(): BigInt {
+    let result = super.call("DELAY", "DELAY():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_DELAY(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("DELAY", "DELAY():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   GAMMA_CONTROLLER(): Address {
     let result = super.call(
       "GAMMA_CONTROLLER",
@@ -625,6 +714,21 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  PERIOD(): BigInt {
+    let result = super.call("PERIOD", "PERIOD():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_PERIOD(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("PERIOD", "PERIOD():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   USDC(): Address {
@@ -803,7 +907,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   currentOtokenPremium(): BigInt {
     let result = super.call(
       "currentOtokenPremium",
-      "currentOtokenPremium():(uint104)",
+      "currentOtokenPremium():(uint256)",
       []
     );
 
@@ -813,7 +917,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   try_currentOtokenPremium(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "currentOtokenPremium",
-      "currentOtokenPremium():(uint104)",
+      "currentOtokenPremium():(uint256)",
       []
     );
     if (result.reverted) {
@@ -868,21 +972,6 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  delay(): BigInt {
-    let result = super.call("delay", "delay():(uint256)", []);
-
-    return result[0].toBigInt();
-  }
-
-  try_delay(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("delay", "delay():(uint256)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   depositReceipts(param0: Address): RibbonThetaVault__depositReceiptsResult {
@@ -967,20 +1056,35 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  lastStrikeOverride(): i32 {
+  keeper(): Address {
+    let result = super.call("keeper", "keeper():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_keeper(): ethereum.CallResult<Address> {
+    let result = super.tryCall("keeper", "keeper():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  lastStrikeOverrideRound(): i32 {
     let result = super.call(
-      "lastStrikeOverride",
-      "lastStrikeOverride():(uint16)",
+      "lastStrikeOverrideRound",
+      "lastStrikeOverrideRound():(uint16)",
       []
     );
 
     return result[0].toI32();
   }
 
-  try_lastStrikeOverride(): ethereum.CallResult<i32> {
+  try_lastStrikeOverrideRound(): ethereum.CallResult<i32> {
     let result = super.tryCall(
-      "lastStrikeOverride",
-      "lastStrikeOverride():(uint16)",
+      "lastStrikeOverrideRound",
+      "lastStrikeOverrideRound():(uint16)",
       []
     );
     if (result.reverted) {
@@ -1144,7 +1248,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   overriddenStrikePrice(): BigInt {
     let result = super.call(
       "overriddenStrikePrice",
-      "overriddenStrikePrice():(uint128)",
+      "overriddenStrikePrice():(uint256)",
       []
     );
 
@@ -1154,7 +1258,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   try_overriddenStrikePrice(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "overriddenStrikePrice",
-      "overriddenStrikePrice():(uint128)",
+      "overriddenStrikePrice():(uint256)",
       []
     );
     if (result.reverted) {
@@ -1201,7 +1305,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   premiumDiscount(): BigInt {
     let result = super.call(
       "premiumDiscount",
-      "premiumDiscount():(uint32)",
+      "premiumDiscount():(uint256)",
       []
     );
 
@@ -1211,7 +1315,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
   try_premiumDiscount(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "premiumDiscount",
-      "premiumDiscount():(uint32)",
+      "premiumDiscount():(uint256)",
       []
     );
     if (result.reverted) {
@@ -1240,21 +1344,21 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  roundPricePerShare(param0: i32): BigInt {
+  roundPricePerShare(param0: BigInt): BigInt {
     let result = super.call(
       "roundPricePerShare",
-      "roundPricePerShare(uint16):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+      "roundPricePerShare(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_roundPricePerShare(param0: i32): ethereum.CallResult<BigInt> {
+  try_roundPricePerShare(param0: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "roundPricePerShare",
-      "roundPricePerShare(uint16):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+      "roundPricePerShare(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1950,44 +2054,48 @@ export class InitializeCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _feeRecipient(): Address {
+  get _keeper(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _managementFee(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+  get _feeRecipient(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 
-  get _performanceFee(): BigInt {
+  get _managementFee(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
   }
 
-  get tokenName(): string {
-    return this._call.inputValues[4].value.toString();
+  get _performanceFee(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
   }
 
-  get tokenSymbol(): string {
+  get _tokenName(): string {
     return this._call.inputValues[5].value.toString();
   }
 
-  get _optionsPremiumPricer(): Address {
-    return this._call.inputValues[6].value.toAddress();
+  get _tokenSymbol(): string {
+    return this._call.inputValues[6].value.toString();
   }
 
-  get _strikeSelection(): Address {
+  get _optionsPremiumPricer(): Address {
     return this._call.inputValues[7].value.toAddress();
   }
 
-  get _premiumDiscount(): BigInt {
-    return this._call.inputValues[8].value.toBigInt();
+  get _strikeSelection(): Address {
+    return this._call.inputValues[8].value.toAddress();
   }
 
-  get _auctionDuration(): BigInt {
+  get _premiumDiscount(): BigInt {
     return this._call.inputValues[9].value.toBigInt();
   }
 
+  get _auctionDuration(): BigInt {
+    return this._call.inputValues[10].value.toBigInt();
+  }
+
   get _vaultParams(): InitializeCall_vaultParamsStruct {
-    return this._call.inputValues[10].value.toTuple() as InitializeCall_vaultParamsStruct;
+    return this._call.inputValues[11].value.toTuple() as InitializeCall_vaultParamsStruct;
   }
 }
 
@@ -2042,7 +2150,7 @@ export class InitiateWithdrawCall__Inputs {
     this._call = call;
   }
 
-  get shares(): BigInt {
+  get numShares(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 }
@@ -2098,7 +2206,7 @@ export class RedeemCall__Inputs {
     this._call = call;
   }
 
-  get shares(): BigInt {
+  get numShares(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 }
@@ -2283,6 +2391,66 @@ export class SetManagementFeeCall__Outputs {
   }
 }
 
+export class SetNewKeeperCall extends ethereum.Call {
+  get inputs(): SetNewKeeperCall__Inputs {
+    return new SetNewKeeperCall__Inputs(this);
+  }
+
+  get outputs(): SetNewKeeperCall__Outputs {
+    return new SetNewKeeperCall__Outputs(this);
+  }
+}
+
+export class SetNewKeeperCall__Inputs {
+  _call: SetNewKeeperCall;
+
+  constructor(call: SetNewKeeperCall) {
+    this._call = call;
+  }
+
+  get newKeeper(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetNewKeeperCall__Outputs {
+  _call: SetNewKeeperCall;
+
+  constructor(call: SetNewKeeperCall) {
+    this._call = call;
+  }
+}
+
+export class SetOptionsPremiumPricerCall extends ethereum.Call {
+  get inputs(): SetOptionsPremiumPricerCall__Inputs {
+    return new SetOptionsPremiumPricerCall__Inputs(this);
+  }
+
+  get outputs(): SetOptionsPremiumPricerCall__Outputs {
+    return new SetOptionsPremiumPricerCall__Outputs(this);
+  }
+}
+
+export class SetOptionsPremiumPricerCall__Inputs {
+  _call: SetOptionsPremiumPricerCall;
+
+  constructor(call: SetOptionsPremiumPricerCall) {
+    this._call = call;
+  }
+
+  get newOptionsPremiumPricer(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetOptionsPremiumPricerCall__Outputs {
+  _call: SetOptionsPremiumPricerCall;
+
+  constructor(call: SetOptionsPremiumPricerCall) {
+    this._call = call;
+  }
+}
+
 export class SetPerformanceFeeCall extends ethereum.Call {
   get inputs(): SetPerformanceFeeCall__Inputs {
     return new SetPerformanceFeeCall__Inputs(this);
@@ -2330,8 +2498,8 @@ export class SetPremiumDiscountCall__Inputs {
     this._call = call;
   }
 
-  get newPremiumDiscount(): i32 {
-    return this._call.inputValues[0].value.toI32();
+  get newPremiumDiscount(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
   }
 }
 
@@ -2369,6 +2537,36 @@ export class SetStrikePriceCall__Outputs {
   _call: SetStrikePriceCall;
 
   constructor(call: SetStrikePriceCall) {
+    this._call = call;
+  }
+}
+
+export class SetStrikeSelectionCall extends ethereum.Call {
+  get inputs(): SetStrikeSelectionCall__Inputs {
+    return new SetStrikeSelectionCall__Inputs(this);
+  }
+
+  get outputs(): SetStrikeSelectionCall__Outputs {
+    return new SetStrikeSelectionCall__Outputs(this);
+  }
+}
+
+export class SetStrikeSelectionCall__Inputs {
+  _call: SetStrikeSelectionCall;
+
+  constructor(call: SetStrikeSelectionCall) {
+    this._call = call;
+  }
+
+  get newStrikeSelection(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetStrikeSelectionCall__Outputs {
+  _call: SetStrikeSelectionCall;
+
+  constructor(call: SetStrikeSelectionCall) {
     this._call = call;
   }
 }

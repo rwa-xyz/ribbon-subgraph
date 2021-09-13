@@ -15,7 +15,8 @@ import {
   GnosisAuction,
   VaultOptionTrade,
   VaultTransaction,
-  VaultAccount
+  VaultAccount,
+  VaultPerformanceUpdate
 } from "../generated/schema";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
@@ -29,7 +30,7 @@ import {
 import { getOtokenMintAmount, getPricePerShare, sharesToAssets } from "./utils";
 import { updateVaultPerformance } from "./vaultPerformance";
 
-function newVault(vaultAddress: string): Vault {
+function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   let vault = new Vault(vaultAddress);
   let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
   let assetAddress = vaultContract.vaultParams().value2;
@@ -48,6 +49,14 @@ function newVault(vaultAddress: string): Vault {
   vault.underlyingSymbol = asset.symbol();
   vault.underlyingDecimals = asset.decimals();
   vault.performanceUpdateCounter = 0;
+
+  // We create an initial VaultPerformanceUpdate with the default pricePerShare
+  let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
+  performanceUpdate.vault = vault.id;
+  performanceUpdate.pricePerShare = vaultContract.pricePerShare();
+  performanceUpdate.timestamp = creationTimestamp;
+  performanceUpdate.save();
+
   return vault;
 }
 
@@ -95,7 +104,7 @@ export function handleCloseShort(event: CloseShort): void {
   if (shortPosition != null) {
     let vault = Vault.load(vaultAddress);
     if (vault == null) {
-      vault = newVault(vaultAddress);
+      vault = newVault(vaultAddress, event.block.timestamp.toI32());
     }
     vault.save();
 
@@ -186,7 +195,7 @@ export function handleDeposit(event: Deposit): void {
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
-    vault = newVault(vaultAddress);
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
     vault.save();
   }
 
@@ -269,7 +278,7 @@ export function handleWithdraw(event: Withdraw): void {
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
-    vault = newVault(vaultAddress);
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
     vault.save();
   }
 
