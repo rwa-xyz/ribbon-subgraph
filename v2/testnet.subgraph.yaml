@@ -26,19 +26,19 @@ dataSources:
         - name: Otoken
           file: ./abis/Otoken.json
       eventHandlers:
-        - event: OpenShort(indexed address,uint256,address)
+        - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
-        - event: CloseShort(indexed address,uint256,address)
+        - event: CloseShort(indexed address,uint256,indexed address)
           handler: handleCloseShort
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
-        - event: InitiateWithdraw(address,uint256,uint256)
+        - event: InitiateWithdraw(indexed address,uint256,uint256)
           handler: handleInitiateWithdraw
-        - event: Withdraw(address,uint256,uint256)
+        - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: InitiateGnosisAuction(address,address,uint256,address)
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
   - kind: ethereum/contract
     name: RibbonWBTCCoveredCall
@@ -64,21 +64,19 @@ dataSources:
         - name: Otoken
           file: ./abis/Otoken.json
       eventHandlers:
-        - event: OpenShort(indexed address,uint256,address)
+        - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
-        - event: CloseShort(indexed address,uint256,address)
+        - event: CloseShort(indexed address,uint256,indexed address)
           handler: handleCloseShort
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
-        - event: InitiateWithdraw(address,uint256,uint256)
+        - event: InitiateWithdraw(indexed address,uint256,uint256)
           handler: handleInitiateWithdraw
-        - event: Withdraw(address,uint256,uint256)
+        - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
-        - event: InstantWithdraw(indexed address,uint256,uint256)
-          handler: handleInstantWithdraw
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: InitiateGnosisAuction(address,address,uint256,address)
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
   - kind: ethereum/contract
     name: GnosisAuction
