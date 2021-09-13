@@ -1,0 +1,105 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RibbonETHCoveredCall
+    network:  mainnet
+    source:
+      address: "0xcfCf97F4300aFAa94566696fbF116C4d881FB3bc"
+      abi: RibbonThetaVault
+      startBlock: 13048000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+        - name: Otoken
+          file: ./abis/Otoken.json
+      eventHandlers:
+        - event: OpenShort(indexed address,uint256,address)
+          handler: handleOpenShort
+        - event: CloseShort(indexed address,uint256,address)
+          handler: handleCloseShort
+        - event: Deposit(indexed address,uint256,uint16)
+          handler: handleDeposit
+        - event: Withdraw(address,uint256,uint256)
+          handler: handleWithdraw
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: CapSet(uint256,uint256,address)
+          handler: handleCapSet
+        - event: InitiateGnosisAuction(address,address,uint256,address)
+          handler: handleInitiateGnosisAuction
+  - kind: ethereum/contract
+    name: RibbonWBTCCoveredCall
+    network: mainnet
+    source:
+      address: "0x9d1d31190f945b72f6de8f1c72b97931c9d5014a"
+      abi: RibbonThetaVault
+      startBlock: 13058000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+        - name: Otoken
+          file: ./abis/Otoken.json
+      eventHandlers:
+        - event: OpenShort(indexed address,uint256,address)
+          handler: handleOpenShort
+        - event: CloseShort(indexed address,uint256,address)
+          handler: handleCloseShort
+        - event: Deposit(indexed address,uint256,uint16)
+          handler: handleDeposit
+        - event: Withdraw(address,uint256,uint256)
+          handler: handleWithdraw
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: CapSet(uint256,uint256,address)
+          handler: handleCapSet
+        - event: InitiateGnosisAuction(address,address,uint256,address)
+          handler: handleInitiateGnosisAuction
+  - kind: ethereum/contract
+    name: GnosisAuction
+    network: mainnet
+    source:
+      address: "0x0b7fFc1f4AD541A4Ed16b40D8c37f0929158D101"
+      abi: GnosisAuction
+      startBlock: 13058000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultOptionTrade
+        - VaultTransaction
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: GnosisAuction
+          file: ./abis/GnosisEasyAuction.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+      eventHandlers:
+        - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
+          handler: handleAuctionCleared
