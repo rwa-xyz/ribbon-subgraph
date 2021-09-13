@@ -53,7 +53,9 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   // We create an initial VaultPerformanceUpdate with the default pricePerShare
   let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
   performanceUpdate.vault = vault.id;
-  performanceUpdate.pricePerShare = vaultContract.pricePerShare();
+  performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
+    u8(vault.underlyingDecimals)
+  );
   performanceUpdate.timestamp = creationTimestamp;
   performanceUpdate.save();
 
