@@ -7,7 +7,8 @@ import {
   Transfer,
   InitiateGnosisAuction,
   InitiateWithdraw,
-  InstantWithdraw
+  InstantWithdraw,
+  CollectVaultFees
 } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import {
   Vault,
@@ -49,6 +50,9 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.underlyingSymbol = asset.symbol();
   vault.underlyingDecimals = asset.decimals();
   vault.performanceUpdateCounter = 0;
+  vault.performanceFeeCollected = BigInt.fromI32(0);
+  vault.managementFeeCollected = BigInt.fromI32(0);
+  vault.totalFeeCollected = BigInt.fromI32(0);
 
   // We create an initial VaultPerformanceUpdate with the default pricePerShare
   let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
@@ -470,4 +474,19 @@ function newTransaction(
   transaction.amount = amount;
   transaction.underlyingAmount = underlyingAmount || amount;
   transaction.save();
+}
+
+export function handleCollectVaultFees(event: CollectVaultFees): void {
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+
+  let performanceFee = event.params.performanceFee;
+  let totalFee = event.params.vaultFee;
+  let managementFee = totalFee - performanceFee;
+
+  vault.performanceFeeCollected =
+    vault.performanceFeeCollected + performanceFee;
+  vault.managementFeeCollected = vault.managementFeeCollected + managementFee;
+  vault.totalFeeCollected = vault.totalFeeCollected + totalFee;
+  vault.save();
 }

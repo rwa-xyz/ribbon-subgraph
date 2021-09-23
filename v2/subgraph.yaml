@@ -41,6 +41,8 @@ dataSources:
           handler: handleTransfer
         - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
+        - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
+          handler: handleCollectVaultFees
   - kind: ethereum/contract
     name: RibbonWBTCCoveredCall
     network: mainnet
@@ -80,6 +82,8 @@ dataSources:
           handler: handleTransfer
         - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
           handler: handleInitiateGnosisAuction
+        - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
+          handler: handleCollectVaultFees
   - kind: ethereum/contract
     name: GnosisAuction
     network: mainnet

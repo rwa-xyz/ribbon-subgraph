@@ -13,6 +13,9 @@ type Vault @entity {
   totalBalance: BigInt!
   cap: BigInt!
   round: Int!
+  performanceFeeCollected: BigInt!
+  managementFeeCollected: BigInt!
+  totalFeeCollected: BigInt!
 
   "Internally used to track performance updates"
   performanceUpdateCounter: Int!

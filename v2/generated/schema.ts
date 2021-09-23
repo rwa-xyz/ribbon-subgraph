@@ -159,6 +159,33 @@ export class Vault extends Entity {
     this.set("round", Value.fromI32(value));
   }
 
+  get performanceFeeCollected(): BigInt {
+    let value = this.get("performanceFeeCollected");
+    return value.toBigInt();
+  }
+
+  set performanceFeeCollected(value: BigInt) {
+    this.set("performanceFeeCollected", Value.fromBigInt(value));
+  }
+
+  get managementFeeCollected(): BigInt {
+    let value = this.get("managementFeeCollected");
+    return value.toBigInt();
+  }
+
+  set managementFeeCollected(value: BigInt) {
+    this.set("managementFeeCollected", Value.fromBigInt(value));
+  }
+
+  get totalFeeCollected(): BigInt {
+    let value = this.get("totalFeeCollected");
+    return value.toBigInt();
+  }
+
+  set totalFeeCollected(value: BigInt) {
+    this.set("totalFeeCollected", Value.fromBigInt(value));
+  }
+
   get performanceUpdateCounter(): i32 {
     let value = this.get("performanceUpdateCounter");
     return value.toI32();
