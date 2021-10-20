@@ -12,7 +12,8 @@ import {
   Vault,
   VaultShortPosition,
   VaultOptionTrade,
-  VaultTransaction
+  VaultTransaction,
+  VaultPerformanceUpdate
 } from "../generated/schema";
 import { RibbonOptionsVault } from "../generated/RibbonOptionsVault/RibbonOptionsVault";
 import { Otoken } from "../generated/RibbonOptionsVault/Otoken";
@@ -25,6 +26,7 @@ import {
 } from "./accounts";
 import { isMiningPool } from "./data/constant";
 import { getOtokenMintAmount } from "./utils";
+import { updateVaultPerformance } from "./vaultPerformance";
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
@@ -58,7 +60,7 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.save();
 }
 
-function newVault(vaultAddress: string): Vault {
+function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   let vault = new Vault(vaultAddress);
   let optionsVaultContract = RibbonOptionsVault.bind(
     Address.fromString(vaultAddress)
@@ -79,6 +81,16 @@ function newVault(vaultAddress: string): Vault {
   vault.underlyingName = otoken.name();
   vault.underlyingSymbol = otoken.symbol();
   vault.underlyingDecimals = otoken.decimals();
+  vault.performanceUpdateCounter = 0;
+
+  let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
+  performanceUpdate.vault = vault.id;
+  performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
+    u8(vault.underlyingDecimals)
+  );
+  performanceUpdate.timestamp = creationTimestamp;
+  performanceUpdate.save();
+
   return vault;
 }
 
@@ -88,6 +100,11 @@ export function handleCloseShort(event: CloseShort): void {
     event.params.options.toHexString()
   );
   if (shortPosition != null) {
+    updateVaultPerformance(
+      vaultAddress.toHexString(),
+      event.block.timestamp.toI32()
+    );
+
     let loss = shortPosition.depositAmount - event.params.withdrawAmount;
     shortPosition.loss = loss;
     shortPosition.withdrawAmount = event.params.withdrawAmount;
@@ -113,6 +130,11 @@ export function handleSwap(event: Swap): void {
   if (vault == null) {
     return;
   }
+
+  updateVaultPerformance(
+    vaultAddress.toHexString(),
+    event.block.timestamp.toI32()
+  );
 
   let swapID =
     optionToken.toHexString() +
@@ -148,7 +170,7 @@ export function handleDeposit(event: Deposit): void {
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
-    vault = newVault(vaultAddress);
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
     vault.save();
   }
 
@@ -189,7 +211,7 @@ export function handleWithdraw(event: Withdraw): void {
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
-    vault = newVault(vaultAddress);
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
     vault.save();
   }
 

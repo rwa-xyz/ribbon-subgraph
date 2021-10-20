@@ -296,6 +296,15 @@ export class Vault extends Entity {
   set cap(value: BigInt) {
     this.set("cap", Value.fromBigInt(value));
   }
+
+  get performanceUpdateCounter(): i32 {
+    let value = this.get("performanceUpdateCounter");
+    return value.toI32();
+  }
+
+  set performanceUpdateCounter(value: i32) {
+    this.set("performanceUpdateCounter", Value.fromI32(value));
+  }
 }
 
 export class VaultShortPosition extends Entity {
@@ -1221,5 +1230,69 @@ export class ERC20TokenAccount extends Entity {
 
   set account(value: Bytes) {
     this.set("account", Value.fromBytes(value));
+  }
+}
+
+export class VaultPerformanceUpdate extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save VaultPerformanceUpdate entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save VaultPerformanceUpdate entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("VaultPerformanceUpdate", id.toString(), this);
+  }
+
+  static load(id: string): VaultPerformanceUpdate | null {
+    return store.get(
+      "VaultPerformanceUpdate",
+      id
+    ) as VaultPerformanceUpdate | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get vault(): string {
+    let value = this.get("vault");
+    return value.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
+  get pricePerShare(): BigInt {
+    let value = this.get("pricePerShare");
+    return value.toBigInt();
+  }
+
+  set pricePerShare(value: BigInt) {
+    this.set("pricePerShare", Value.fromBigInt(value));
+  }
+
+  get timestamp(): i32 {
+    let value = this.get("timestamp");
+    return value.toI32();
+  }
+
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
   }
 }

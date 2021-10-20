@@ -28,6 +28,9 @@ type Vault @entity {
   totalBalance: BigInt!
   lockedAmount: BigInt!
   cap: BigInt!
+
+  "Internally used to track performance updates"
+  performanceUpdateCounter: Int!
 }
 
 type VaultShortPosition @entity {
@@ -131,4 +134,11 @@ type ERC20TokenAccount @entity {
   token: ERC20Token!
   balance: BigInt!
   account: Bytes!
+}
+
+type VaultPerformanceUpdate @entity {
+  id: ID!
+  vault: Vault!
+  pricePerShare: BigInt!
+  timestamp: Int!
 }

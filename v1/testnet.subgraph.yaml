@@ -6,9 +6,9 @@ dataSources:
     name: RibbonETHCoveredCall
     network: kovan
     source:
-      address: "0x85b188851D15D49a950674e1194A96332d94fc1f"
+      address: "0xf9AB3aC5Dc1e07FD1ad51C99272E0322d6570b4B"
       abi: RibbonOptionsVault
-      startBlock: 26827291
+      startBlock: 27176396
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -43,9 +43,9 @@ dataSources:
     name: RibbonWBTCCoveredCall
     network: kovan
     source:
-      address: "0xD796b1f0E20C4D35057DaD636Dc6204AC03f17B2"
+      address: "0xE3BfAC64Ea541B76BaBE5286e3f561AaC4866360"
       abi: RibbonOptionsVault
-      startBlock: 26824253
+      startBlock: 27176475
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -80,9 +80,9 @@ dataSources:
     name: RibbonETHPutVault
     network: kovan
     source:
-      address: "0x5B292d7FCe9E8a4b6b14CFc5EAE4b326cD841B55"
+      address: "0x0D92414fc704039635BB072c0A0E7145d29f7c84"
       abi: RibbonOptionsVault
-      startBlock: 26796272
+      startBlock: 27132222
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
