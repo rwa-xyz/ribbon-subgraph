@@ -25,7 +25,7 @@ export const isMiningPool = (address: Address): boolean => {
   return false;
 };
 
-export const getThetaVaultFromYearnStrategy = (name: string): string => {
+export const getThetaVaultFromYearnStrategy = (name: string): string | null => {
   // Yearn USDC Vault Strategy
   if (
     name == "StrategyGenericLevCompFarm" ||
@@ -43,5 +43,5 @@ export const getThetaVaultFromYearnStrategy = (name: string): string => {
     return "0x8FE74471F198E426e96bE65f40EeD1F8BA96e54f";
   }
 
-  return "";
+  return null;
 };
