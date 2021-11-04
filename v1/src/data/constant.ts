@@ -28,12 +28,17 @@ export const isMiningPool = (address: Address): boolean => {
 export const getThetaVaultFromYearnStrategy = (name: string): string => {
   // Yearn USDC Vault Strategy
   if (
-    name == "StrategyIdleidleUSDCYield" ||
     name == "StrategyGenericLevCompFarm" ||
+    name == "StrategyAH2EarncyUSDC" ||
+    name == "StrategyIdleidleUSDCYield" ||
+    name == "IBLevComp" ||
+    name == "SingleSidedCrvUSDC" ||
+    name == "StrategyMasterchefGenericMod" ||
     name == "PoolTogether USD Coin" ||
     name == "StrategyRook USD Coin" ||
-    name == "StrategyAH2EarncyUSDC" ||
-    name == "SingleSidedCrvUSDC"
+    name == "SingleSidedBalancer staBAL3Pool USDC" ||
+    name == "GenLevCompV3" ||
+    name == "StrategyGenLevAAVE-Flashmint"
   ) {
     return "0x8FE74471F198E426e96bE65f40EeD1F8BA96e54f";
   }

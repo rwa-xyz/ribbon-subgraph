@@ -10,8 +10,10 @@ export function handleUpdateReward(event: Harvested): void {
   let yearnVault = YearnStrategyHarvest.bind(event.address);
   let vaultAddress = getThetaVaultFromYearnStrategy(yearnVault.name());
 
-  refreshAllAccountBalances(
-    Address.fromString(vaultAddress),
-    event.block.timestamp.toI32()
-  );
+  if (vaultAddress != "") {
+    refreshAllAccountBalances(
+      Address.fromString(vaultAddress),
+      event.block.timestamp.toI32()
+    );
+  }
 }
