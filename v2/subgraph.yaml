@@ -126,6 +126,47 @@ dataSources:
         - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
           handler: handleCollectVaultFees
   - kind: ethereum/contract
+    name: RibbonstETHCoveredCall
+    network: mainnet
+    source:
+      address: "0xc5f2cf5C4C874C296281e2A73a2E44C9FBA55741"
+      abi: RibbonThetaVault
+      startBlock: 13555515
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+        - name: Otoken
+          file: ./abis/Otoken.json
+      eventHandlers:
+        - event: OpenShort(indexed address,uint256,indexed address)
+          handler: handleOpenShort
+        - event: CloseShort(indexed address,uint256,indexed address)
+          handler: handleCloseShort
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: InitiateWithdraw(indexed address,uint256,uint256)
+          handler: handleInitiateWithdraw
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: InstantWithdraw(indexed address,uint256,uint256)
+          handler: handleInstantWithdraw
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
+          handler: handleInitiateGnosisAuction
+        - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
+          handler: handleCollectVaultFees
+  - kind: ethereum/contract
     name: GnosisAuction
     network: mainnet
     source:
