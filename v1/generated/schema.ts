@@ -243,6 +243,15 @@ export class Vault extends Entity {
     this.set("totalWithdrawalFee", Value.fromBigInt(value));
   }
 
+  get totalNominalVolume(): BigInt {
+    let value = this.get("totalNominalVolume");
+    return value.toBigInt();
+  }
+
+  set totalNominalVolume(value: BigInt) {
+    this.set("totalNominalVolume", Value.fromBigInt(value));
+  }
+
   get numDepositors(): i32 {
     let value = this.get("numDepositors");
     return value.toI32();

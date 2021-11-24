@@ -42,6 +42,7 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.numDepositors = 0;
   vault.depositors = [];
   vault.totalPremiumEarned = BigInt.fromI32(0);
+  vault.totalNominalVolume = BigInt.fromI32(0);
   vault.cap = vaultContract.cap();
   vault.round = 1;
   vault.totalBalance = vaultContract.totalBalance();
@@ -204,6 +205,9 @@ export function handleDeposit(event: Deposit): void {
     vault = newVault(vaultAddress, event.block.timestamp.toI32());
     vault.save();
   }
+
+  vault.totalNominalVolume = vault.totalNominalVolume + event.params.amount;
+  vault.save();
 
   let vaultAccount = createVaultAccount(event.address, event.params.account);
   vaultAccount.totalDeposits = vaultAccount.totalDeposits + event.params.amount;

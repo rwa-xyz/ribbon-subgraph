@@ -63,7 +63,7 @@ export function getTotalPendingDeposit(
   let receiptRound = depositReceipt.value0;
   let depositAmount = depositReceipt.value1;
 
-  if (receiptRound <= currentRound) {
+  if (receiptRound >= currentRound) {
     return depositAmount;
   }
   return BigInt.fromI32(0);

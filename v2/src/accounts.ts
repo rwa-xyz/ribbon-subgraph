@@ -123,9 +123,7 @@ export function _triggerBalanceUpdate(
     scheduledWithdrawalShares = withdrawal.value1;
     totalShares = shares + scheduledWithdrawalShares;
   } else {
-    let hasDeposit = vaultAccount.depositInRound >= 1;
-    let depositIsProcessed =
-      hasDeposit && vault.round > vaultAccount.depositInRound;
+    let depositIsProcessed = vault.round > vaultAccount.depositInRound
 
     totalPendingDeposit = depositIsProcessed
       ? BigInt.fromI32(0)

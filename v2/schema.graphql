@@ -7,6 +7,7 @@ type Vault @entity {
   underlyingSymbol: String!
   underlyingDecimals: Int!
   totalPremiumEarned: BigInt!
+  totalNominalVolume: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!
   vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
