@@ -129,9 +129,9 @@ dataSources:
     name: RibbonstETHCoveredCall
     network: mainnet
     source:
-      address: "0xc5f2cf5C4C874C296281e2A73a2E44C9FBA55741"
+      address: "0x53773E034d9784153471813dacAFF53dBBB78E8c"
       abi: RibbonThetaVault
-      startBlock: 13555515
+      startBlock: 13670377
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
