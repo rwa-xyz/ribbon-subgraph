@@ -40,3 +40,16 @@ export const getThetaVaultFromYearnStrategy = (name: string): string => {
 
   return "";
 };
+
+// These are the exceptions for which we ignore the new vault updates
+export const isExceptionForNewUpdate = (
+  vaultAddress: string,
+  timestamp: number
+): bool => {
+  if (vaultAddress == "0xe63151a0ed4e5fafdc951d877102cf0977abd365") {
+    if (timestamp == 1637928710) {
+      return true;
+    }
+  }
+  return false;
+};

@@ -1,12 +1,14 @@
-import { BigInt, Address, log } from "@graphprotocol/graph-ts";
+import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import {
   BalanceUpdate,
   ERC20Token,
   ERC20TokenAccount,
   Vault,
-  VaultAccount
+  VaultAccount,
+  VaultPerformanceUpdate
 } from "../generated/schema";
+import { isExceptionForNewUpdate } from "./data/constant";
 import {
   getPricePerShare,
   getTotalPendingDeposit,
@@ -21,6 +23,16 @@ export function refreshAllAccountBalances(
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let decimals = vault.underlyingDecimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
+
+  if (isExceptionForNewUpdate(vaultAddress.toHexString(), timestamp)) {
+    // Default to previous performance update
+    let prevCounter = vault.performanceUpdateCounter;
+    let prevUpdate = VaultPerformanceUpdate.load(
+      vault.id + "-" + prevCounter.toString()
+    );
+    assetPerShare = prevUpdate.pricePerShare;
+  }
+
   let totalBalance = vaultContract.totalBalance();
   vault.totalBalance = totalBalance;
   vault.save();
@@ -123,7 +135,7 @@ export function _triggerBalanceUpdate(
     scheduledWithdrawalShares = withdrawal.value1;
     totalShares = shares + scheduledWithdrawalShares;
   } else {
-    let depositIsProcessed = vault.round > vaultAccount.depositInRound
+    let depositIsProcessed = vault.round > vaultAccount.depositInRound;
 
     totalPendingDeposit = depositIsProcessed
       ? BigInt.fromI32(0)

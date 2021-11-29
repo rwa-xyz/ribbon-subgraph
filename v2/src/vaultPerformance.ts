@@ -1,6 +1,7 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import { Vault, VaultPerformanceUpdate } from "../generated/schema";
+import { isExceptionForNewUpdate } from "./data/constant";
 
 export function updateVaultPerformance(
   vaultAddress: string,
@@ -24,6 +25,10 @@ export function updateVaultPerformance(
 
   vault.performanceUpdateCounter = vault.performanceUpdateCounter + 1;
   vault.save();
+
+  if (isExceptionForNewUpdate(vaultAddress, timestamp)) {
+    newPricePerShare = prevUpdate.pricePerShare;
+  }
 
   let performanceUpdate = new VaultPerformanceUpdate(updateID);
   performanceUpdate.vault = vault.id;
