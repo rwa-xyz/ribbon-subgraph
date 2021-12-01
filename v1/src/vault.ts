@@ -176,7 +176,7 @@ export function handleDeposit(event: Deposit): void {
   }
 
   vault.totalNominalVolume = vault.totalNominalVolume + event.params.amount;
-  vault.save()
+  vault.save();
 
   let vaultAccount = createVaultAccount(event.address, event.params.account);
   vaultAccount.totalDeposits = vaultAccount.totalDeposits + event.params.amount;
@@ -385,12 +385,6 @@ export function handleMigrate(event: Migrate): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  /**
-   * Calculate underlying amount
-   * Staking: To be able to calculate USD value that had been staked
-   * Transfer: Transfer are always in the unit of underlying
-   */
-  let vaultContract = RibbonOptionsVault.bind(event.address);
   let migrateAmount = event.params.amount;
 
   /**

@@ -20,15 +20,16 @@ export function refreshAllAccountBalances(
   timestamp: i32
 ): void {
   let vault = Vault.load(vaultAddress.toHexString());
+  let round = vault.round;
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let decimals = vault.underlyingDecimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
 
   if (isExceptionForNewUpdate(vaultAddress.toHexString(), timestamp)) {
     // Default to previous performance update
-    let prevCounter = vault.performanceUpdateCounter;
+    let prevRound = round - 1;
     let prevUpdate = VaultPerformanceUpdate.load(
-      vault.id + "-" + prevCounter.toString()
+      vault.id + "-" + prevRound.toString()
     );
     assetPerShare = prevUpdate.pricePerShare;
   }

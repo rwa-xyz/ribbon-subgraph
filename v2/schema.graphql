@@ -17,9 +17,6 @@ type Vault @entity {
   performanceFeeCollected: BigInt!
   managementFeeCollected: BigInt!
   totalFeeCollected: BigInt!
-
-  "Internally used to track performance updates"
-  performanceUpdateCounter: Int!
 }
 
 type VaultShortPosition @entity {
@@ -117,10 +114,19 @@ type BalanceUpdate @entity {
 }
 
 type VaultPerformanceUpdate @entity {
-  id: ID!
+  id: ID! # vaultId-round
   vault: Vault!
   pricePerShare: BigInt!
   timestamp: Int!
+  round: Int!
+}
+
+type VaultPerformanceUpdateHistory @entity {
+  id: ID! # vaultId-round-counter
+  vault: Vault!
+  pricePerShare: BigInt!
+  timestamp: Int!
+  round: Int!
 }
 
 type ERC20Token @entity {

@@ -1,4 +1,4 @@
-import { Address, dataSource } from "@graphprotocol/graph-ts";
+import { Address, BigInt, dataSource } from "@graphprotocol/graph-ts";
 
 export const isMiningPool = (address: Address): boolean => {
   let miningPoolAddresses: string[] =
@@ -45,11 +45,37 @@ export const getThetaVaultFromYearnStrategy = (name: string): string => {
 export const isExceptionForNewUpdate = (
   vaultAddress: string,
   timestamp: number
-): bool => {
+): boolean => {
   if (vaultAddress == "0xe63151a0ed4e5fafdc951d877102cf0977abd365") {
     if (timestamp == 1637928710) {
       return true;
     }
   }
   return false;
+};
+
+export const isRoundExceptionForNewUpdate = (
+  vaultAddress: string,
+  round: number
+): boolean => {
+  if (vaultAddress == "0xe63151a0ed4e5fafdc951d877102cf0977abd365") {
+    if (round == 4) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const fallbackPricePerShareForException = (
+  vaultAddress: string,
+  round: number
+): BigInt => {
+  if (vaultAddress == "0xe63151a0ed4e5fafdc951d877102cf0977abd365") {
+    if (round == 4) {
+      return BigInt.fromString("1005164152810266944");
+    }
+  }
+
+  return BigInt.fromI32(0);
 };

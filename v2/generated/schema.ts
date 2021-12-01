@@ -194,15 +194,6 @@ export class Vault extends Entity {
   set totalFeeCollected(value: BigInt) {
     this.set("totalFeeCollected", Value.fromBigInt(value));
   }
-
-  get performanceUpdateCounter(): i32 {
-    let value = this.get("performanceUpdateCounter");
-    return value.toI32();
-  }
-
-  set performanceUpdateCounter(value: i32) {
-    this.set("performanceUpdateCounter", Value.fromI32(value));
-  }
 }
 
 export class VaultShortPosition extends Entity {
@@ -933,6 +924,88 @@ export class VaultPerformanceUpdate extends Entity {
 
   set timestamp(value: i32) {
     this.set("timestamp", Value.fromI32(value));
+  }
+
+  get round(): i32 {
+    let value = this.get("round");
+    return value.toI32();
+  }
+
+  set round(value: i32) {
+    this.set("round", Value.fromI32(value));
+  }
+}
+
+export class VaultPerformanceUpdateHistory extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save VaultPerformanceUpdateHistory entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save VaultPerformanceUpdateHistory entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("VaultPerformanceUpdateHistory", id.toString(), this);
+  }
+
+  static load(id: string): VaultPerformanceUpdateHistory | null {
+    return store.get(
+      "VaultPerformanceUpdateHistory",
+      id
+    ) as VaultPerformanceUpdateHistory | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get vault(): string {
+    let value = this.get("vault");
+    return value.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
+  get pricePerShare(): BigInt {
+    let value = this.get("pricePerShare");
+    return value.toBigInt();
+  }
+
+  set pricePerShare(value: BigInt) {
+    this.set("pricePerShare", Value.fromBigInt(value));
+  }
+
+  get timestamp(): i32 {
+    let value = this.get("timestamp");
+    return value.toI32();
+  }
+
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
+  }
+
+  get round(): i32 {
+    let value = this.get("round");
+    return value.toI32();
+  }
+
+  set round(value: i32) {
+    this.set("round", Value.fromI32(value));
   }
 }
 
