@@ -6,10 +6,11 @@
     "create-local": "graph create ribbon-finance/ribbon-v2 --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy ribbon-finance/ribbon-v2 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "codegen-testnet": "graph codegen testnet.subgraph.yaml",
     "build-testnet": "graph build testnet.subgraph.yaml",
+    "deploy": "graph deploy ribbon-finance/ribbon-v2 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-testnet": "graph deploy ribbon-finance/ribbon-v2-kovan --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ testnet.subgraph.yaml",
+    "deploy-avax": "graph deploy ribbon-finance/ribbon-avax --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ avax.subgraph.yaml",
     "deploy-local": "graph deploy ribbon-finance/ribbon-v2 --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
