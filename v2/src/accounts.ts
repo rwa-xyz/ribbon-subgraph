@@ -5,10 +5,8 @@ import {
   ERC20Token,
   ERC20TokenAccount,
   Vault,
-  VaultAccount,
-  VaultPerformanceUpdate
+  VaultAccount
 } from "../generated/schema";
-import { isExceptionForNewUpdate } from "./data/constant";
 import {
   getPricePerShare,
   getTotalPendingDeposit,
@@ -24,15 +22,6 @@ export function refreshAllAccountBalances(
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let decimals = vault.underlyingDecimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
-
-  if (isExceptionForNewUpdate(vaultAddress.toHexString(), timestamp)) {
-    // Default to previous performance update
-    let prevRound = round - 1;
-    let prevUpdate = VaultPerformanceUpdate.load(
-      vault.id + "-" + prevRound.toString()
-    );
-    assetPerShare = prevUpdate.pricePerShare;
-  }
 
   let totalBalance = vaultContract.totalBalance();
   vault.totalBalance = totalBalance;

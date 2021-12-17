@@ -121,14 +121,6 @@ type VaultPerformanceUpdate @entity {
   round: Int!
 }
 
-type VaultPerformanceUpdateHistory @entity {
-  id: ID! # vaultId-round-counter
-  vault: Vault!
-  pricePerShare: BigInt!
-  timestamp: Int!
-  round: Int!
-}
-
 type ERC20Token @entity {
   id: ID! # token contract address
   name: String!

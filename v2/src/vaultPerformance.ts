@@ -1,15 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
-import {
-  Vault,
-  VaultPerformanceUpdate,
-  VaultPerformanceUpdateHistory
-} from "../generated/schema";
-import {
-  fallbackPricePerShareForException,
-  isExceptionForNewUpdate,
-  isRoundExceptionForNewUpdate
-} from "./data/constant";
+import { Vault, VaultPerformanceUpdate } from "../generated/schema";
+import { getVaultStartRound } from "./data/constant";
 
 export function updateVaultPerformance(
   vaultAddress: string,
@@ -20,16 +12,15 @@ export function updateVaultPerformance(
   let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
   let vaultPerformanceUpdateId = vault.id + "-" + round.toString();
 
+  /**
+   * Skip if we had not reach the round for indexing
+   */
+  if (getVaultStartRound(vault.symbol) > vault.round) {
+    return;
+  }
+
   let performanceUpdate = VaultPerformanceUpdate.load(vaultPerformanceUpdateId);
   let newPricePerShare = vaultContract.pricePerShare();
-
-  if (isExceptionForNewUpdate(vaultAddress, timestamp)) {
-    let prevRound = round - 1;
-    let prevPerformanceUpdate = VaultPerformanceUpdate.load(
-      vault.id + "-" + prevRound.toString()
-    );
-    newPricePerShare = prevPerformanceUpdate.pricePerShare;
-  }
 
   let vaultPerformanceUpdateHistoryId = vaultPerformanceUpdateId;
 
@@ -54,18 +45,6 @@ export function updateVaultPerformance(
 
   performanceUpdate.timestamp = i32(timestamp);
   performanceUpdate.save();
-
-  /**
-   * TODO: History are only for debugging purposes
-   */
-  let history = new VaultPerformanceUpdateHistory(
-    vaultPerformanceUpdateHistoryId
-  );
-  history.vault = vault.id;
-  history.pricePerShare = performanceUpdate.pricePerShare;
-  history.timestamp = performanceUpdate.timestamp;
-  history.round = performanceUpdate.round;
-  history.save();
 }
 
 export function finalizePrevRoundVaultPerformance(
@@ -77,17 +56,17 @@ export function finalizePrevRoundVaultPerformance(
   let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
   let vaultPerformanceUpdateId = vault.id + "-" + finalizeRound.toString();
 
+  /**
+   * Skip if the vault round not officially started
+   */
+  if (getVaultStartRound(vault.symbol) > finalizeRound) {
+    return;
+  }
+
   let performanceUpdate = VaultPerformanceUpdate.load(vaultPerformanceUpdateId);
   let finalizedPricePerShare = vaultContract.roundPricePerShare(
     BigInt.fromI32(finalizeRound)
   );
-
-  if (isRoundExceptionForNewUpdate(vaultAddress, finalizeRound)) {
-    finalizedPricePerShare = fallbackPricePerShareForException(
-      vaultAddress,
-      finalizeRound
-    );
-  }
 
   if (performanceUpdate != null) {
     performanceUpdate.pricePerShare = finalizedPricePerShare;

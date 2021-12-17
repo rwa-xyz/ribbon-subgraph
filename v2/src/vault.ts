@@ -33,6 +33,7 @@ import {
   finalizePrevRoundVaultPerformance,
   updateVaultPerformance
 } from "./vaultPerformance";
+import { getVaultStartRound } from "./data/constant";
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   let vault = new Vault(vaultAddress);
@@ -57,15 +58,17 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.managementFeeCollected = BigInt.fromI32(0);
   vault.totalFeeCollected = BigInt.fromI32(0);
 
-  // We create an initial VaultPerformanceUpdate with the default pricePerShare
-  let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
-  performanceUpdate.vault = vault.id;
-  performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
-    u8(vault.underlyingDecimals)
-  );
-  performanceUpdate.timestamp = creationTimestamp;
-  performanceUpdate.round = 0;
-  performanceUpdate.save();
+  if (getVaultStartRound(vault.symbol) == 0) {
+    // We create an initial VaultPerformanceUpdate with the default pricePerShare
+    let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
+    performanceUpdate.vault = vault.id;
+    performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
+      u8(vault.underlyingDecimals)
+    );
+    performanceUpdate.timestamp = creationTimestamp;
+    performanceUpdate.round = 0;
+    performanceUpdate.save();
+  }
 
   return vault;
 }
