@@ -176,8 +176,6 @@ export function handleAuctionCleared(event: AuctionCleared): void {
     return;
   }
 
-  updateVaultPerformance(shortPosition.vault, event.block.timestamp.toI32());
-
   let tradeID =
     optionToken.toHexString() +
     "-" +
@@ -187,6 +185,15 @@ export function handleAuctionCleared(event: AuctionCleared): void {
 
   let optionsSold = event.params.soldAuctioningTokens;
   let totalPremium = event.params.soldBiddingTokens;
+
+  // If there are no premiums exchanging hands,
+  // This means that the auction is settled without any bids
+  // This is rare, but has happened before.
+  if (totalPremium === BigInt.fromI32(0)) {
+    return;
+  }
+
+  updateVaultPerformance(shortPosition.vault, event.block.timestamp.toI32());
 
   let optionTrade = new VaultOptionTrade(tradeID);
   optionTrade.vault = shortPosition.vault;

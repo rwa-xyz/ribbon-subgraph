@@ -49,6 +49,8 @@ export const getVaultStartRound = (vaultSymbol: string): i32 => {
     return 5;
   } else if (vaultSymbol == "rstETH-THETA") {
     return 2;
+  } else if (vaultSymbol == "rAVAX-THETA") {
+    return 3;
   }
 
   return 0;
