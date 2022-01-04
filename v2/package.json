@@ -8,10 +8,13 @@
     "build": "graph build",
     "codegen-testnet": "graph codegen testnet.subgraph.yaml",
     "build-testnet": "graph build testnet.subgraph.yaml",
+    "codegen-testnet-treasury": "graph codegen testnet.treasury.subgraph.yaml",
+    "build-testnet-treasury": "graph build testnet.treasury.subgraph.yaml",
     "deploy": "graph deploy ribbon-finance/ribbon-v2 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-testnet": "graph deploy ribbon-finance/ribbon-v2-kovan --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ testnet.subgraph.yaml",
     "deploy-avax": "graph deploy ribbon-finance/ribbon-avax --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ avax.subgraph.yaml",
-    "deploy-local": "graph deploy ribbon-finance/ribbon-v2 --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local": "graph deploy ribbon-finance/ribbon-v2 --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy-testnet-treasury": "graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/Playground testnet.treasury.subgraph.yaml"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",

@@ -11,6 +11,9 @@ import {
   CollectVaultFees
 } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import {
+  DistributePremium,
+} from "../generated/RibbonTreasuryVaultPERP/RibbonTreasuryVault";
+import {
   Vault,
   VaultShortPosition,
   GnosisAuction,
@@ -514,4 +517,38 @@ export function handleCollectVaultFees(event: CollectVaultFees): void {
   vault.managementFeeCollected = vault.managementFeeCollected + managementFee;
   vault.totalFeeCollected = vault.totalFeeCollected + totalFee;
   vault.save();
+}
+
+export function handleDistributePremium(event: DistributePremium): void {
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+
+  if (vault == null) {
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
+    vault.save();
+  }
+
+  let recipients = event.params.recipients
+  let amounts = event.params.amounts
+
+  for (let i=0; i < event.params.recipients.length; i++) {
+    
+    let txid =
+      vaultAddress +
+      "-" +
+      event.transaction.hash.toHexString() +
+      "-" +
+      event.transactionLogIndex.toString();
+    
+    newTransaction(
+      txid,
+      "distribute",
+      vaultAddress,
+      recipients[i],
+      event.transaction.hash,
+      event.block.timestamp,
+      amounts[i],
+      amounts[i],
+    );
+  }
 }
