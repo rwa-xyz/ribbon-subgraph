@@ -192,7 +192,7 @@ export function handleAuctionCleared(event: AuctionCleared): void {
   // If there are no premiums exchanging hands,
   // This means that the auction is settled without any bids
   // This is rare, but has happened before.
-  if (totalPremium === BigInt.fromI32(0)) {
+  if (totalPremium == BigInt.fromI32(0)) {
     return;
   }
 

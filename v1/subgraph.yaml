@@ -111,6 +111,8 @@ dataSources:
           handler: handleTransfer
         - event: CapSet(uint256,uint256,address)
           handler: handleCapSet
+        - event: Migrate(address,address,uint256,uint256)
+          handler: handleMigrate
   - kind: ethereum/contract
     name: RibbonYearnETHPut
     network: mainnet
@@ -146,6 +148,8 @@ dataSources:
           handler: handleTransfer
         - event: CapSet(uint256,uint256,address)
           handler: handleCapSet
+        - event: Migrate(address,address,uint256,uint256)
+          handler: handleMigrate
   - kind: ethereum/contract
     name: Airswap
     network: mainnet
