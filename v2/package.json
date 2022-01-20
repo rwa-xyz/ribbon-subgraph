@@ -13,6 +13,7 @@
     "deploy": "graph deploy ribbon-finance/ribbon-v2 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-testnet": "graph deploy ribbon-finance/ribbon-v2-kovan --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ testnet.subgraph.yaml",
     "deploy-avax": "graph deploy ribbon-finance/ribbon-avax --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ avax.subgraph.yaml",
+    "deploy-aurora": "graph deploy ribbon-finance/ribbon-aurora --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ aurora.subgraph.yaml",
     "deploy-local": "graph deploy ribbon-finance/ribbon-v2 --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "deploy-testnet-treasury": "graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/Playground testnet.treasury.subgraph.yaml"
   },
