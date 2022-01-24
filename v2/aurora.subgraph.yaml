@@ -6,7 +6,7 @@ dataSources:
     name: RibbonAURORACoveredCall
     network: aurora
     source:
-      address: "0x50bd17b895D1e1285442b539C9fcaFf67484E716"
+      address: "0xC5DB388DB490f88A81be75c32d60F28579556145"
       abi: RibbonThetaVault
       startBlock: 57748992
     mapping:
@@ -45,10 +45,10 @@ dataSources:
           handler: handleCollectVaultFees
 
   - kind: ethereum/contract
-    name: RibbonNEARCoveredCall
+    name: RibbonWNEARCoveredCall
     network: aurora
     source:
-      address: "0x68811C21b2358E89d30Fb842e91d5d3E233a81c7"
+      address: "0x7796d6B1706855303655EB12F54FaE294c468a66"
       abi: RibbonThetaVault
       startBlock: 57748992
     mapping:
