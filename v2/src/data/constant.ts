@@ -25,22 +25,6 @@ export const isMiningPool = (address: Address): boolean => {
   return false;
 };
 
-export const getThetaVaultFromYearnStrategy = (name: string): string => {
-  // Yearn USDC Vault Strategy
-  if (
-    name == "StrategyIdleidleUSDCYield" ||
-    name == "StrategyGenericLevCompFarm" ||
-    name == "PoolTogether USD Coin" ||
-    name == "StrategyRook USD Coin" ||
-    name == "StrategyAH2EarncyUSDC" ||
-    name == "SingleSidedCrvUSDC"
-  ) {
-    return "0x8FE74471F198E426e96bE65f40EeD1F8BA96e54f";
-  }
-
-  return "";
-};
-
 /**
  * This function return the round of a vault officially started
  */
@@ -56,4 +40,14 @@ export const getVaultStartRound = (vaultSymbol: string): i32 => {
   }
 
   return 0;
+};
+
+
+export const getThetaVaultFromYearnVault = (symbol: string): string | null => {
+  // Yearn USDC Vault Strategy
+  if (symbol == "yvUSDC") {
+    return "0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624";
+  }
+
+  return null;
 };

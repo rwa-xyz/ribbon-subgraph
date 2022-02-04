@@ -234,3 +234,27 @@ dataSources:
           handler: handleInitiateGnosisAuction
         - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
           handler: handleCollectVaultFees
+  - kind: ethereum/contract
+    name: YearnUSDCVault
+    network: mainnet
+    source:
+      address: "0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9"
+      abi: yvHEGIC
+      startBlock: 13769714
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/yearn.ts
+      entities:
+        - Vault
+        - VaultAccount
+        - BalanceUpdate
+      abis:
+        - name: yvHEGIC
+          file: ./abis/yvHEGIC.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+      eventHandlers:
+        - event: StrategyReported(indexed address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleStrategyReported
