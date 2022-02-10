@@ -1,0 +1,19 @@
+{
+  "name": "ribbon-governance",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ ribbon-finance/ribbon-governance",
+    "codegen-testnet": "graph codegen testnet.subgraph.yaml",
+    "build-testnet": "graph build testnet.subgraph.yaml",
+    "deploy-testnet": "graph deploy ribbon-finance/ribbon-governance-kovan --node https://api.thegraph.com/deploy/ testnet.subgraph.yaml",
+    "create-local": "graph create --node http://localhost:8020/ ribbon-finance/ribbon-governance",
+    "remove-local": "graph remove --node http://localhost:8020/ ribbon-finance/ribbon-governance",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 ribbon-finance/ribbon-governance"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.25.3",
+    "@graphprotocol/graph-ts": "0.24.1"
+  }
+}

@@ -281,9 +281,9 @@ dataSources:
     name: RibbonToken
     network: kovan
     source:
-      address: "0xfD55C3bB2d78d4FB67EB27807c9FD9B36F5ce592"
+      address: "0x80Ba81056BA048c82b7b01eB8bffE342fDe1998D"
       abi: ERC20
-      startBlock: 25232535
+      startBlock: 24741089
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

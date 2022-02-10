@@ -1,0 +1,65 @@
+type RBNToken @entity {
+  "Token contract address"
+  id: ID!
+
+  "Name of RBN Token"
+  name: String!
+  
+  "Symbol of RBN Token"
+  symbol: String!
+  
+  "Number of holders of RBN Token"
+  numHolders: Int!
+  
+  "List of address of holders of RBN Token"
+  holders: [Bytes!]!
+  
+  "List of token accounts"
+  tokenAccounts: [RBNAccount!]! @derivedFrom(field: "token")
+  
+  "Total supply of RBN Token"
+  totalSupply: BigInt!
+  
+  "Total staked amount of RBN in VotingEscrow contract"
+  totalStaked: BigInt!
+}
+
+type RBNAccount @entity {
+  "Wallet address"
+  id: ID!
+  
+  "Object reference to RBN Token"
+  token: RBNToken!
+  
+  "Total RBN balance of wallet. Total balance = balance in wallet + staked balance in VotingEscrow contract"
+  totalBalance: BigInt!
+  
+  "Total staked balance of RBN token in VotingEscrow contract"
+  lockedBalance: BigInt!
+  
+  "Stake start timestamp"
+  lockStartTimestamp: BigInt
+  
+  "Stake end timestamp"
+  lockEndTimestamp: BigInt
+}
+
+type GovernanceTransaction @entity {
+  "Transaction hash"
+  id: ID!
+  
+  "Type of transaction: stake, unstake, increaseStakeDuration, increaseStakeAmount, gaugeBoosting"
+  type: String!
+  
+  "Address of the wallet that carried out the transaction"
+  address: Bytes!
+  
+  "Transaction hash"
+  txhash: Bytes!
+  
+  "Timestamp of the transaction, in seconds"
+  timestamp: BigInt!
+  
+  "Amount of the transaction"
+  amount: BigInt 
+}

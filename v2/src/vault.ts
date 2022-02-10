@@ -10,9 +10,7 @@ import {
   InstantWithdraw,
   CollectVaultFees
 } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
-import {
-  DistributePremium,
-} from "../generated/RibbonTreasuryVaultPERP/RibbonTreasuryVault";
+import { DistributePremium } from "../generated/RibbonTreasuryVaultPERP/RibbonTreasuryVault";
 import {
   Vault,
   VaultShortPosition,
@@ -36,7 +34,7 @@ import {
   finalizePrevRoundVaultPerformance,
   updateVaultPerformance
 } from "./vaultPerformance";
-import { getVaultStartRound } from "./data/constant";
+import { getVaultStartRound, ignoreTransfer } from "./data/constant";
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   let vault = new Vault(vaultAddress);
@@ -115,6 +113,14 @@ export function handleOpenShort(event: OpenShort): void {
    */
   finalizePrevRoundVaultPerformance(
     vaultAddress,
+    event.block.timestamp.toI32()
+  );
+
+  /**
+   * Refresh all account balances to turn their balance locked
+   */
+  refreshAllAccountBalances(
+    Address.fromString(vaultAddress),
     event.block.timestamp.toI32()
   );
 }
@@ -394,15 +400,14 @@ export function handleInstantWithdraw(event: InstantWithdraw): void {
  * We will store both underlying and amount as asset amount. In this case, the user transfer "underlying" instead of shares.
  */
 export function handleTransfer(event: Transfer): void {
-  // Just skip if it's a new deposit or withdrawal
-  if (
-    event.params.from.toHexString() ==
-      "0x0000000000000000000000000000000000000000" ||
-    event.params.to.toHexString() ==
-      "0x0000000000000000000000000000000000000000" ||
-    event.params.from.toHexString() == event.address.toHexString() ||
-    event.params.to.toHexString() == event.address.toHexString()
-  ) {
+  /**
+   * We skip when the transfer is one of the following events
+   * - Normal deposit
+   * - Normal withdrawal
+   * - Staking into Liquidity Guage
+   * - Unstaking into Liquidity Gauge
+   */
+  if (ignoreTransfer(event)) {
     return;
   }
 
@@ -483,7 +488,7 @@ export function handleTransfer(event: Transfer): void {
   );
 }
 
-function newTransaction(
+export function newTransaction(
   txid: string,
   type: string,
   vaultAddress: string,
@@ -528,18 +533,17 @@ export function handleDistributePremium(event: DistributePremium): void {
     vault.save();
   }
 
-  let recipients = event.params.recipients
-  let amounts = event.params.amounts
+  let recipients = event.params.recipients;
+  let amounts = event.params.amounts;
 
-  for (let i=0; i < event.params.recipients.length; i++) {
-    
+  for (let i = 0; i < event.params.recipients.length; i++) {
     let txid =
       vaultAddress +
       "-" +
       event.transaction.hash.toHexString() +
       "-" +
       event.transactionLogIndex.toString();
-    
+
     newTransaction(
       txid,
       "distribute",
@@ -548,7 +552,7 @@ export function handleDistributePremium(event: DistributePremium): void {
       event.transaction.hash,
       event.block.timestamp,
       amounts[i],
-      amounts[i],
+      amounts[i]
     );
   }
 }

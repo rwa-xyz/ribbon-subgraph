@@ -197,12 +197,12 @@ export function createVaultAccount(
   vaultAddress: Address,
   accountAddress: Address
 ): VaultAccount {
-  let vault = Vault.load(vaultAddress.toHexString());
   let vaultAccountID =
     vaultAddress.toHexString() + "-" + accountAddress.toHexString();
-
   let vaultAccount = VaultAccount.load(vaultAccountID);
+
   if (vaultAccount == null) {
+    let vault = Vault.load(vaultAddress.toHexString());
     let depositors = vault.depositors;
     depositors.push(accountAddress);
     vault.depositors = depositors;
