@@ -542,7 +542,7 @@ export function handleDistributePremium(event: DistributePremium): void {
       "-" +
       event.transaction.hash.toHexString() +
       "-" +
-      event.transactionLogIndex.toString();
+      i.toString();
 
     newTransaction(
       txid,
