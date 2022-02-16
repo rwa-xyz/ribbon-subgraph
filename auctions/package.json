@@ -1,0 +1,35 @@
+{
+  "name": "ribbon-finance-subgraph-v2",
+  "license": "MIT",
+  "version": "0.1.0",
+  "scripts": {
+    "create-local": "graph create ribbon-finance/ribbon-v2 --node http://127.0.0.1:8020",
+    "codegen-mainnet": "graph codegen mainnet.yaml",
+    "codegen-avax": "graph codegen avax.yaml",
+    "codegen-kovan": "graph codegen kovan.yaml",
+    "codegen-fuji": "graph codegen fuji.yaml",
+    "codegen-aurora": "graph codegen aurora.yaml",
+    "build-mainnet": "graph build mainnet.yaml",
+    "build-avax": "graph build avax.yaml",
+    "deploy-aurora": "yarn codegen-aurora && graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/gnosis-auction-aurora aurora.yaml",
+    "deploy-mainnet": "yarn codegen-mainnet && graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/gnosis-auction mainnet.yaml",
+    "deploy-avax": "yarn codegen-avax && graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/gnosis-auction-avax avax.yaml",
+    "deploy-kovan": "yarn codegen-kovan && graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/gnosis-auction-kovan kovan.yaml",
+    "deploy-fuji": "yarn codegen-fuji && graph deploy --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ stevenwal/gnosis-auction-fuji fuji.yaml",
+    "deploy": "yarn deploy-mainnet && yarn deploy-avax && yarn deploy-kovan && yarn deploy-fuji"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.20.1",
+    "@graphprotocol/graph-ts": "^0.20.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "hardhat": "^2.6.1",
+    "solc": "^0.8.7-fixed",
+    "truffle": "^5.0.4",
+    "truffle-contract": "^4.0.5",
+    "truffle-hdwallet-provider": "^1.0.4",
+    "ethers": "5.4.0"
+  }
+}

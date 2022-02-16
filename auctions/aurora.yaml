@@ -1,0 +1,37 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: GnosisAuction
+    network: aurora
+    source:
+      address: "0x63E60d5ED31F242d29cEC3C3486850224B72c261"
+      abi: GnosisAuction
+      startBlock: 57748992
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/handlers.ts
+      entities:
+        - Auction
+        - Account
+      abis:
+        - name: GnosisAuction
+          file: ./abis/GnosisEasyAuction.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: oToken
+          file: ./abis/oToken.json
+      eventHandlers:
+        - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
+          handler: handleAuctionCleared
+        - event: NewAuction(indexed uint256,indexed address,indexed address,uint256,uint256,uint64,uint96,uint96,uint256,uint256,address,bytes)
+          handler: handleNewAuction
+        - event: NewSellOrder(indexed uint256,indexed uint64,uint96,uint96)
+          handler: handleSellOrder
+        - event: CancellationSellOrder(indexed uint256,indexed uint64,uint96,uint96)
+          handler: handleCancellation
+        - event: ClaimedFromOrder(indexed uint256,indexed uint64,uint96,uint96)
+          handler: handleClaim

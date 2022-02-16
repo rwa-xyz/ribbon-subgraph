@@ -1,0 +1,114 @@
+type Auction @entity {
+  "Gnosis Auction ID"
+  id: ID! 
+
+  "Object reference to an Option"
+  option: Option!
+
+  "Object reference to an ERC20 Token"
+  bidding: Token!
+
+  "Minimum amount of bidding token to buy full size"
+  minimum: BigInt!
+
+  "Total number of options to be auctioned"
+  size: BigInt!
+
+  "Auction start timestamp"
+  start: BigInt!
+
+  "Auction end timestamp"
+  end: BigInt!
+
+  "Quantity of options sold"
+  filled: BigInt!
+
+  "Clearing price"
+  clearing: Bytes!
+
+  "Whether auction is live"
+  live: Boolean!
+}
+
+type Account @entity {
+  "Account address"
+  id: ID!
+
+  "User ID assigned by Gnosis Auction contract"
+  userid: String!
+
+  "List of Bid objects"
+  bids: [Bid!] @derivedFrom(field: "account")
+}
+
+type Bid @entity {
+  "Concatenation of Gnosis Auction ID, user ID, bid buy amount and bid sell amount"
+  id: ID! 
+
+  "Bid timestamp"
+  index: BigInt!
+
+  "Gnosis Auction ID"
+  auction: Int!
+
+  "Object reference to Account"
+  account: Account! 
+
+  "Quantity of options"
+  size: BigInt!
+
+  "Total amount of collateral paid by bidder"
+  payable: BigInt!
+
+  "Encoding of user ID, bid buy amount and bid sell amount"
+  bytes: String!
+
+  "Transaction hash of bid creation"
+  createtx: Bytes!
+
+  "Transaction hash of bid cancellation"
+  canceltx: Bytes
+
+  "Transaction hash of bid claim"
+  claimtx: Bytes
+}
+
+type Token @entity {
+  "Token address"
+  id: ID!
+
+  "Token name"
+  name: String!
+
+  "Token symbol"
+  symbol: String!
+
+  "Token decimals"
+  decimals: Int!
+}
+
+type Option @entity {
+  "oToken address"
+  id: ID!
+
+  "oToken name"
+  name: String!
+
+  "oToken symbol"
+  symbol: String!
+
+  "oToken decimals"
+  decimals: Int!
+
+  "Expiry timestamp"
+  expiry: BigInt!
+
+  "Strike price"
+  strike: BigInt!
+
+  "Object reference to the option's underlying ERC20 token"
+  underlying: Token!
+
+  "Whether oToken is a put option"
+  put: Boolean!
+}
