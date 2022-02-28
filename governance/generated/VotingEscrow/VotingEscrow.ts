@@ -46,6 +46,24 @@ export class ApplyOwnership__Params {
   }
 }
 
+export class FundsUnlocked extends ethereum.Event {
+  get params(): FundsUnlocked__Params {
+    return new FundsUnlocked__Params(this);
+  }
+}
+
+export class FundsUnlocked__Params {
+  _event: FundsUnlocked;
+
+  constructor(event: FundsUnlocked) {
+    this._event = event;
+  }
+
+  get funds_unlocked(): boolean {
+    return this._event.parameters[0].value.toBoolean();
+  }
+}
+
 export class Deposit extends ethereum.Event {
   get params(): Deposit__Params {
     return new Deposit__Params(this);
@@ -59,24 +77,28 @@ export class Deposit__Params {
     this._event = event;
   }
 
-  get provider(): Address {
+  get deposit_from(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get value(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+  get provider(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 
-  get locktime(): BigInt {
+  get value(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 
-  get type(): BigInt {
+  get locktime(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 
-  get ts(): BigInt {
+  get type(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get ts(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -128,66 +150,49 @@ export class Supply__Params {
   }
 }
 
-export class VotingEscrow__lockedResult {
-  value0: BigInt;
-  value1: BigInt;
-
-  constructor(value0: BigInt, value1: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
+export class VotingEscrow__lockedResultValue0Struct extends ethereum.Tuple {
+  get amount(): BigInt {
+    return this[0].toBigInt();
   }
 
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromSignedBigInt(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    return map;
+  get end(): BigInt {
+    return this[1].toBigInt();
   }
 }
 
-export class VotingEscrow__point_historyResult {
-  value0: BigInt;
-  value1: BigInt;
-  value2: BigInt;
-  value3: BigInt;
-
-  constructor(value0: BigInt, value1: BigInt, value2: BigInt, value3: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
+export class VotingEscrow__point_historyResultValue0Struct extends ethereum.Tuple {
+  get bias(): BigInt {
+    return this[0].toBigInt();
   }
 
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromSignedBigInt(this.value0));
-    map.set("value1", ethereum.Value.fromSignedBigInt(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
-    return map;
+  get slope(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get ts(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get blk(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
-export class VotingEscrow__user_point_historyResult {
-  value0: BigInt;
-  value1: BigInt;
-  value2: BigInt;
-  value3: BigInt;
-
-  constructor(value0: BigInt, value1: BigInt, value2: BigInt, value3: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
+export class VotingEscrow__user_point_historyResultValue0Struct extends ethereum.Tuple {
+  get bias(): BigInt {
+    return this[0].toBigInt();
   }
 
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromSignedBigInt(this.value0));
-    map.set("value1", ethereum.Value.fromSignedBigInt(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
-    return map;
+  get slope(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get ts(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get blk(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
@@ -435,19 +440,20 @@ export class VotingEscrow extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  locked(arg0: Address): VotingEscrow__lockedResult {
-    let result = super.call("locked", "locked(address):(int128,uint256)", [
+  locked(arg0: Address): VotingEscrow__lockedResultValue0Struct {
+    let result = super.call("locked", "locked(address):((int128,uint256))", [
       ethereum.Value.fromAddress(arg0)
     ]);
 
-    return new VotingEscrow__lockedResult(
-      result[0].toBigInt(),
-      result[1].toBigInt()
+    return changetype<VotingEscrow__lockedResultValue0Struct>(
+      result[0].toTuple()
     );
   }
 
-  try_locked(arg0: Address): ethereum.CallResult<VotingEscrow__lockedResult> {
-    let result = super.tryCall("locked", "locked(address):(int128,uint256)", [
+  try_locked(
+    arg0: Address
+  ): ethereum.CallResult<VotingEscrow__lockedResultValue0Struct> {
+    let result = super.tryCall("locked", "locked(address):((int128,uint256))", [
       ethereum.Value.fromAddress(arg0)
     ]);
     if (result.reverted) {
@@ -455,7 +461,7 @@ export class VotingEscrow extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new VotingEscrow__lockedResult(value[0].toBigInt(), value[1].toBigInt())
+      changetype<VotingEscrow__lockedResultValue0Struct>(value[0].toTuple())
     );
   }
 
@@ -474,27 +480,24 @@ export class VotingEscrow extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  point_history(arg0: BigInt): VotingEscrow__point_historyResult {
+  point_history(arg0: BigInt): VotingEscrow__point_historyResultValue0Struct {
     let result = super.call(
       "point_history",
-      "point_history(uint256):(int128,int128,uint256,uint256)",
+      "point_history(uint256):((int128,int128,uint256,uint256))",
       [ethereum.Value.fromUnsignedBigInt(arg0)]
     );
 
-    return new VotingEscrow__point_historyResult(
-      result[0].toBigInt(),
-      result[1].toBigInt(),
-      result[2].toBigInt(),
-      result[3].toBigInt()
+    return changetype<VotingEscrow__point_historyResultValue0Struct>(
+      result[0].toTuple()
     );
   }
 
   try_point_history(
     arg0: BigInt
-  ): ethereum.CallResult<VotingEscrow__point_historyResult> {
+  ): ethereum.CallResult<VotingEscrow__point_historyResultValue0Struct> {
     let result = super.tryCall(
       "point_history",
-      "point_history(uint256):(int128,int128,uint256,uint256)",
+      "point_history(uint256):((int128,int128,uint256,uint256))",
       [ethereum.Value.fromUnsignedBigInt(arg0)]
     );
     if (result.reverted) {
@@ -502,11 +505,8 @@ export class VotingEscrow extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new VotingEscrow__point_historyResult(
-        value[0].toBigInt(),
-        value[1].toBigInt(),
-        value[2].toBigInt(),
-        value[3].toBigInt()
+      changetype<VotingEscrow__point_historyResultValue0Struct>(
+        value[0].toTuple()
       )
     );
   }
@@ -514,31 +514,28 @@ export class VotingEscrow extends ethereum.SmartContract {
   user_point_history(
     arg0: Address,
     arg1: BigInt
-  ): VotingEscrow__user_point_historyResult {
+  ): VotingEscrow__user_point_historyResultValue0Struct {
     let result = super.call(
       "user_point_history",
-      "user_point_history(address,uint256):(int128,int128,uint256,uint256)",
+      "user_point_history(address,uint256):((int128,int128,uint256,uint256))",
       [
         ethereum.Value.fromAddress(arg0),
         ethereum.Value.fromUnsignedBigInt(arg1)
       ]
     );
 
-    return new VotingEscrow__user_point_historyResult(
-      result[0].toBigInt(),
-      result[1].toBigInt(),
-      result[2].toBigInt(),
-      result[3].toBigInt()
+    return changetype<VotingEscrow__user_point_historyResultValue0Struct>(
+      result[0].toTuple()
     );
   }
 
   try_user_point_history(
     arg0: Address,
     arg1: BigInt
-  ): ethereum.CallResult<VotingEscrow__user_point_historyResult> {
+  ): ethereum.CallResult<VotingEscrow__user_point_historyResultValue0Struct> {
     let result = super.tryCall(
       "user_point_history",
-      "user_point_history(address,uint256):(int128,int128,uint256,uint256)",
+      "user_point_history(address,uint256):((int128,int128,uint256,uint256))",
       [
         ethereum.Value.fromAddress(arg0),
         ethereum.Value.fromUnsignedBigInt(arg1)
@@ -549,11 +546,8 @@ export class VotingEscrow extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new VotingEscrow__user_point_historyResult(
-        value[0].toBigInt(),
-        value[1].toBigInt(),
-        value[2].toBigInt(),
-        value[3].toBigInt()
+      changetype<VotingEscrow__user_point_historyResultValue0Struct>(
+        value[0].toTuple()
       )
     );
   }
@@ -724,6 +718,36 @@ export class VotingEscrow extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
+
+  is_unlocked(): boolean {
+    let result = super.call("is_unlocked", "is_unlocked():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_is_unlocked(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("is_unlocked", "is_unlocked():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  reward_pool(): Address {
+    let result = super.call("reward_pool", "reward_pool():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_reward_pool(): ethereum.CallResult<Address> {
+    let result = super.tryCall("reward_pool", "reward_pool():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
 }
 
 export class ConstructorCall extends ethereum.Call {
@@ -764,6 +788,36 @@ export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class Set_reward_poolCall extends ethereum.Call {
+  get inputs(): Set_reward_poolCall__Inputs {
+    return new Set_reward_poolCall__Inputs(this);
+  }
+
+  get outputs(): Set_reward_poolCall__Outputs {
+    return new Set_reward_poolCall__Outputs(this);
+  }
+}
+
+export class Set_reward_poolCall__Inputs {
+  _call: Set_reward_poolCall;
+
+  constructor(call: Set_reward_poolCall) {
+    this._call = call;
+  }
+
+  get addr(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class Set_reward_poolCall__Outputs {
+  _call: Set_reward_poolCall;
+
+  constructor(call: Set_reward_poolCall) {
     this._call = call;
   }
 }
@@ -876,6 +930,36 @@ export class Apply_smart_wallet_checkerCall__Outputs {
   _call: Apply_smart_wallet_checkerCall;
 
   constructor(call: Apply_smart_wallet_checkerCall) {
+    this._call = call;
+  }
+}
+
+export class Set_funds_unlockedCall extends ethereum.Call {
+  get inputs(): Set_funds_unlockedCall__Inputs {
+    return new Set_funds_unlockedCall__Inputs(this);
+  }
+
+  get outputs(): Set_funds_unlockedCall__Outputs {
+    return new Set_funds_unlockedCall__Outputs(this);
+  }
+}
+
+export class Set_funds_unlockedCall__Inputs {
+  _call: Set_funds_unlockedCall;
+
+  constructor(call: Set_funds_unlockedCall) {
+    this._call = call;
+  }
+
+  get _funds_unlocked(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
+  }
+}
+
+export class Set_funds_unlockedCall__Outputs {
+  _call: Set_funds_unlockedCall;
+
+  constructor(call: Set_funds_unlockedCall) {
     this._call = call;
   }
 }
@@ -1056,6 +1140,32 @@ export class WithdrawCall__Outputs {
   _call: WithdrawCall;
 
   constructor(call: WithdrawCall) {
+    this._call = call;
+  }
+}
+
+export class Force_withdrawCall extends ethereum.Call {
+  get inputs(): Force_withdrawCall__Inputs {
+    return new Force_withdrawCall__Inputs(this);
+  }
+
+  get outputs(): Force_withdrawCall__Outputs {
+    return new Force_withdrawCall__Outputs(this);
+  }
+}
+
+export class Force_withdrawCall__Inputs {
+  _call: Force_withdrawCall;
+
+  constructor(call: Force_withdrawCall) {
+    this._call = call;
+  }
+}
+
+export class Force_withdrawCall__Outputs {
+  _call: Force_withdrawCall;
+
+  constructor(call: Force_withdrawCall) {
     this._call = call;
   }
 }

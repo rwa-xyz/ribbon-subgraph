@@ -27,9 +27,9 @@ dataSources:
     name: VotingEscrow
     network: kovan
     source:
-      address: "0x8E75FCac21074AB6E71d6097741bA23fbbA474a4"
+      address: "0x75F024aa6ca8f7eec23465388a661209f735B0DF"
       abi: VotingEscrow
-      startBlock: 29150601
+      startBlock: 30028176
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -41,7 +41,7 @@ dataSources:
         - name: VotingEscrow
           file: ./abis/VotingEscrow.json
       eventHandlers:
-        - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
+        - event: Deposit(indexed address,indexed address,uint256,indexed uint256,int128,uint256)
           handler: handleDeposit
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw

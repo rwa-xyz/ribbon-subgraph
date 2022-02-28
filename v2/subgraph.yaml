@@ -262,9 +262,9 @@ dataSources:
     name: RibbonYearnETHPutLiquidityGauge
     network: mainnet
     source:
-      address: "0xEef6288057f3F258BFC540D91462653DCA3B2Aac"
+      address: "0xa8A9699161f266f7E79080ca0b65210820BE8732"
       abi: LiquidityGaugeV5
-      startBlock: 14086806
+      startBlock: 14285441
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -290,9 +290,9 @@ dataSources:
     name: RibbonAAVECoveredCallLiquidityGauge
     network: mainnet
     source:
-      address: "0x12Dc10F72a64ce07d2b3D41420f2276f8c560919"
+      address: "0x98c371567b8A196518dcb4A4383387A2C7339382"
       abi: LiquidityGaugeV5
-      startBlock: 14086812
+      startBlock: 14285606
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -318,9 +318,9 @@ dataSources:
     name: RibbonstETHCoveredCallLiquidityGauge
     network: mainnet
     source:
-      address: "0xAF23AdB205169A5DF1dB7321BF1A8D7DeA2F8ABd"
+      address: "0x4e079dCA26A4fE2586928c1319b20b1bf9f9be72"
       abi: LiquidityGaugeV5
-      startBlock: 14086817
+      startBlock: 14285611
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -346,9 +346,9 @@ dataSources:
     name: RibbonETHCoveredCallLiquidityGauge
     network: mainnet
     source:
-      address: "0x78b6dd0cD4697f9a62851323BeA8a3b3Bf213241"
+      address: "0x9038403C3F7C6B5Ca361C82448DAa48780D7C8Bd"
       abi: LiquidityGaugeV5
-      startBlock: 14086822
+      startBlock: 14285617
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -374,9 +374,9 @@ dataSources:
     name: RibbonWBTCCoveredCallLiquidityGauge
     network: mainnet
     source:
-      address: "0xE53851c18E01Ca5F8537246F37Fb7De048619892"
+      address: "0x8913EAb16a302dE3E498BbA39940e7A55c0B9325"
       abi: LiquidityGaugeV5
-      startBlock: 14086829
+      startBlock: 14285622
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

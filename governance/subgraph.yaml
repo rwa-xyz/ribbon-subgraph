@@ -27,9 +27,9 @@ dataSources:
     name: VotingEscrow
     network: mainnet
     source:
-      address: "0x10dAd929A9890B32Db9A5d568B5953FCa5826AC8"
+      address: "0x19854C9A5fFa8116f48f984bDF946fB9CEa9B5f7"
       abi: VotingEscrow
-      startBlock: 14083939
+      startBlock: 14285043
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -41,7 +41,7 @@ dataSources:
         - name: VotingEscrow
           file: ./abis/VotingEscrow.json
       eventHandlers:
-        - event: Deposit(indexed address,uint256,indexed uint256,int128,uint256)
+        - event: Deposit(indexed address,indexed address,uint256,indexed uint256,int128,uint256)
           handler: handleDeposit
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
@@ -50,9 +50,9 @@ dataSources:
     name: TokenMinter
     network: mainnet
     source:
-      address: "0xC8916E90f597D33848c496B62D603b64C7Bbe9bA"
+      address: "0x5B0655F938A72052c46d2e94D206ccB6FF625A3A"
       abi: TokenMinter
-      startBlock: 14086737
+      startBlock: 14285408
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
