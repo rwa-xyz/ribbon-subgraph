@@ -8,4 +8,6 @@ export const vaultList: Array<string> = [
   "0x98d03125c62dae2328d9d3cb32b7b969e6a87787", //RibbonThetaVaultAVAXCall
   "0xc5db388db490f88a81be75c32d60f28579556145", //RibbonThetaVaultAURORACall
   "0x7796d6b1706855303655eb12f54fae294c468a66", //RibbonThetaVaultWNEARCall
-]
+  "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3", //RibbonThetaVaultAVAXPut
+  "0x6BF686d99A4cE17798C45d09C21181fAc29A9fb3", //RibbonThetaVaultSAVAXCall
+];
