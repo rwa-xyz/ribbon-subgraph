@@ -63,3 +63,11 @@ type GovernanceTransaction @entity {
   "Amount of the transaction"
   amount: BigInt 
 }
+
+# Tracks the total amount of RBN distributed to each gauge
+type TokenMinterDistribution @entity {
+  # Liquidity Gauge Address 
+  id: ID!
+  # Amount of RBN distributed
+  amount: BigInt
+}

@@ -46,3 +46,23 @@ dataSources:
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
       file: ./src/votingEscrow.ts
+  - kind: ethereum
+    name: TokenMinter
+    network: mainnet
+    source:
+      address: "0xC8916E90f597D33848c496B62D603b64C7Bbe9bA"
+      abi: TokenMinter
+      startBlock: 14086737
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - TokenMinterDistribution
+      abis:
+        - name: TokenMinter
+          file: ./abis/TokenMinter.json
+      eventHandlers:
+        - event: Minted(indexed address,address,uint256)
+          handler: handleMinted
+      file: ./src/tokenMinter.ts

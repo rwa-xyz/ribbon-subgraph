@@ -46,3 +46,23 @@ dataSources:
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
       file: ./src/votingEscrow.ts
+  - kind: ethereum
+    name: TokenMinter
+    network: kovan
+    source:
+      address: "0xA79d141A1ea7a1962364288075196fbE01C83aCC"
+      abi: TokenMinter
+      startBlock: 29151276
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - TokenMinterDistribution
+      abis:
+        - name: TokenMinter
+          file: ./abis/TokenMinter.json
+      eventHandlers:
+        - event: Minted(indexed address,address,uint256)
+          handler: handleMinted
+      file: ./src/tokenMinter.ts
