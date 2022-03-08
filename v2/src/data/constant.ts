@@ -28,27 +28,27 @@ export function getLiquidityGaugePoolsMap(): TypedMap<string, string> {
   if (dataSource.network() == "mainnet") {
     // Yearn ETH Put
     gaugeMap.set(
-      "0xeef6288057f3f258bfc540d91462653dca3b2aac",
+      "0xa8a9699161f266f7e79080ca0b65210820be8732",
       "0xcc323557c71c0d1d20a1861dc69c06c5f3cc9624"
     );
     // AAVE Call
     gaugeMap.set(
-      "0x12dc10f72a64ce07d2b3d41420f2276f8c560919",
+      "0x98c371567b8a196518dcb4a4383387a2c7339382",
       "0xe63151a0ed4e5fafdc951d877102cf0977abd365"
     );
     // stETH Call
     gaugeMap.set(
-      "0xaf23adb205169a5df1db7321bf1a8d7dea2f8abd",
+      "0x4e079dca26a4fe2586928c1319b20b1bf9f9be72",
       "0x53773e034d9784153471813dacaff53dbbb78e8c"
     );
     // ETH Call
     gaugeMap.set(
-      "0x78b6dd0cd4697f9a62851323bea8a3b3bf213241",
+      "0x9038403c3f7c6b5ca361c82448daa48780d7c8bd",
       "0x25751853eab4d0eb3652b5eb6ecb102a2789644b"
     );
     // WBTC Call
     gaugeMap.set(
-      "0xe53851c18e01ca5f8537246f37fb7de048619892",
+      "0x8913eab16a302de3e498bba39940e7a55c0b9325",
       "0x65a833afdc250d9d38f8cd9bc2b1e3132db13b2f"
     );
   } else if (dataSource.network() == "kovan") {

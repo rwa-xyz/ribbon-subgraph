@@ -25,6 +25,8 @@ dataSources:
           file: ./abis/RibbonThetaVault.json
         - name: Otoken
           file: ./abis/Otoken.json
+        - name: OptionsPremiumPricer
+          file: ./abis/OptionsPremiumPricer.json
       eventHandlers:
         - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
@@ -67,6 +69,8 @@ dataSources:
           file: ./abis/RibbonThetaVault.json
         - name: Otoken
           file: ./abis/Otoken.json
+        - name: OptionsPremiumPricer
+          file: ./abis/OptionsPremiumPricer.json
       eventHandlers:
         - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
@@ -109,6 +113,8 @@ dataSources:
           file: ./abis/RibbonThetaVault.json
         - name: Otoken
           file: ./abis/Otoken.json
+        - name: OptionsPremiumPricer
+          file: ./abis/OptionsPremiumPricer.json
       eventHandlers:
         - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort

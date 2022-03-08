@@ -9,8 +9,8 @@ export function getRBNTokenAddress(): Address {
 
 export function getVotingEscrowAddress(): Address | null {
   return dataSource.network() == "mainnet"
-    ? Address.fromString("0x10dAd929A9890B32Db9A5d568B5953FCa5826AC8")
-    : Address.fromString("0x8E75FCac21074AB6E71d6097741bA23fbbA474a4");
+    ? Address.fromString("0x19854C9A5fFa8116f48f984bDF946fB9CEa9B5f7")
+    : Address.fromString("0x75F024aa6ca8f7eec23465388a661209f735B0DF");
 }
 
 export function ignoreTransfer(transfer: Transfer): boolean {

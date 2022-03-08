@@ -22,7 +22,10 @@ type Vault @entity {
   underlyingDecimals: Int!
   totalPremiumEarned: BigInt!
   totalWithdrawalFee: BigInt!
-  totalNominalVolume: BigInt! # We track this number by adding every deposits from outside of vault
+  # We track this number by adding every deposits from outside of vault
+  totalNominalVolume: BigInt!
+  # We track this number by adding every open short. This value is in USD, with 16 decimals
+  totalNotionalVolume: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!
   vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")

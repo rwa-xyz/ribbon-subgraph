@@ -252,6 +252,15 @@ export class Vault extends Entity {
     this.set("totalNominalVolume", Value.fromBigInt(value));
   }
 
+  get totalNotionalVolume(): BigInt {
+    let value = this.get("totalNotionalVolume");
+    return value.toBigInt();
+  }
+
+  set totalNotionalVolume(value: BigInt) {
+    this.set("totalNotionalVolume", Value.fromBigInt(value));
+  }
+
   get numDepositors(): i32 {
     let value = this.get("numDepositors");
     return value.toI32();

@@ -43,6 +43,8 @@ export function handleOpenShort(event: OpenShort): void {
   let collateralDecimals = collateral.decimals() as u8;
 
   let vaultAddress = event.address.toHexString();
+
+  // Update short position
   shortPosition.vault = vaultAddress;
   shortPosition.option = optionAddress;
   shortPosition.depositAmount = event.params.depositAmount;
@@ -56,8 +58,15 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.openedAt = event.block.timestamp;
   shortPosition.premiumEarned = BigInt.fromI32(0);
   shortPosition.openTxhash = event.transaction.hash;
-
   shortPosition.save();
+
+  // Update total notional volume of vault
+  let vault = Vault.load(vaultAddress);
+  if (vault == null) {
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
+  }
+  vault.totalNotionalVolume += (shortPosition.strikePrice * shortPosition.mintAmount)
+  vault.save()
 }
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
@@ -75,6 +84,7 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.totalPremiumEarned = BigInt.fromI32(0);
   vault.totalWithdrawalFee = BigInt.fromI32(0);
   vault.totalNominalVolume = BigInt.fromI32(0);
+  vault.totalNotionalVolume = BigInt.fromI32(0);
   vault.cap = optionsVaultContract.cap();
   vault.totalBalance = optionsVaultContract.totalBalance();
   vault.lockedAmount = optionsVaultContract.lockedAmount();

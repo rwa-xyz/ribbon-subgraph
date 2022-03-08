@@ -21,6 +21,7 @@ import {
   VaultPerformanceUpdate
 } from "../generated/schema";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { OptionsPremiumPricer } from "../generated/RibbonETHCoveredCall/OptionsPremiumPricer";
 import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
 import { AuctionCleared } from "../generated/GnosisAuction/GnosisAuction";
 
@@ -48,6 +49,7 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.depositors = [];
   vault.totalPremiumEarned = BigInt.fromI32(0);
   vault.totalNominalVolume = BigInt.fromI32(0);
+  vault.totalNotionalVolume = BigInt.fromI32(0);
   vault.cap = vaultContract.cap();
   vault.round = 1;
   vault.totalBalance = vaultContract.totalBalance();
@@ -76,11 +78,6 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
-
-  let vault = Vault.load(event.address.toHexString());
-  vault.round = vault.round + 1;
-  vault.save();
-
   let shortPosition = new VaultShortPosition(optionAddress.toHexString());
 
   let otoken = Otoken.bind(optionAddress);
@@ -105,8 +102,17 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.initiatedBy = event.params.manager;
   shortPosition.openedAt = event.block.timestamp;
   shortPosition.openTxhash = event.transaction.hash;
-
   shortPosition.save();
+
+  // Increment vault round and then update total notional volume of vault
+  let vault = Vault.load(event.address.toHexString());
+  vault.round = vault.round + 1;
+  // We first need to get the underlying price of the asset
+  let vaultContract = RibbonThetaVault.bind(event.address);
+  let pricerAddress = vaultContract.optionsPremiumPricer();
+  let pricerContract = OptionsPremiumPricer.bind(pricerAddress);
+  vault.totalNotionalVolume += (shortPosition.mintAmount * pricerContract.getUnderlyingPrice());
+  vault.save()
 
   /**
    * We finalize last round pricePerShare here
