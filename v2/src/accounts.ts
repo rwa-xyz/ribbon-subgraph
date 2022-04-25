@@ -113,6 +113,9 @@ export function _triggerBalanceUpdate(
 
   let scheduledWithdrawalShares: BigInt;
 
+  // User's account balance (staked balance/pending deposits NOT included)
+  let accountBalance: BigInt;
+
   /**
    * If isRefresh, we proceed with getting new share amount from contract
    * Otherwise, in the case where there is no movement in shares, we will merely get back the sahres from vaultAccount
@@ -122,8 +125,19 @@ export function _triggerBalanceUpdate(
     let withdrawal = vaultContract.withdrawals(accountAddress);
 
     totalPendingDeposit = getTotalPendingDeposit(vaultContract, accountAddress);
+
+    let withdrawalRound = withdrawal.value0;
     scheduledWithdrawalShares = withdrawal.value1;
+
     totalShares = shares + scheduledWithdrawalShares;
+
+    let withdrawalRoundPricePerShare = vaultContract.roundPricePerShare(BigInt.fromI32(withdrawalRound));
+
+    // Account balance here is calculated based on 2 different pricePerShare.
+    // the amount scheduled for withdrawal should be calculated with the round's pricePerShare
+    // the remaining amount will be calculated using the latest pricePerShare
+    accountBalance = sharesToAssets(shares, assetPerShare, decimals)
+      + sharesToAssets(scheduledWithdrawalShares, withdrawalRoundPricePerShare, decimals);
   } else {
     let depositIsProcessed = vault.round > vaultAccount.depositInRound;
 
@@ -139,12 +153,13 @@ export function _triggerBalanceUpdate(
         vaultAccount.totalScheduledWithdrawal
       : vaultAccount.shares;
     scheduledWithdrawalShares = vaultAccount.totalScheduledWithdrawal;
+
+    /**
+     * Calculate new account balance based on shares
+     */
+    accountBalance = sharesToAssets(totalShares, assetPerShare, decimals);
   }
 
-  /**
-   * Calculate new account balance based on shares
-   */
-  let accountBalance = sharesToAssets(totalShares, assetPerShare, decimals);
   let stakeBalance = sharesToAssets(
     vaultAccount.totalStakedShares,
     assetPerShare,
