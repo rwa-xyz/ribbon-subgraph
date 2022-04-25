@@ -5,6 +5,7 @@ import {
   NewSellOrder,
   CancellationSellOrder,
   ClaimedFromOrder,
+  NewUser,
 } from "../generated/GnosisAuction/GnosisAuction";
 import {
   Auction,
@@ -25,18 +26,12 @@ export function handleSellOrder(event: NewSellOrder): void {
     + "-" + event.params.sellAmount.toString()
   )
 
-  let account = Account.load(event.transaction.from.toHexString())
-  if (!account) {
-    account = new Account(event.transaction.from.toHexString())
-    account.userid = event.params.userId.toString()
-
-    account.save()
-  }
+  let account = Account.load(event.params.userId.toString())
   
   if (auction) {
     bid.index = event.block.timestamp
     bid.auction = event.params.auctionId.toI32()
-    bid.account = account.id.toString()
+    bid.account = account.id
     bid.size = event.params.buyAmount
     bid.payable = event.params.sellAmount
     bid.createtx = event.transaction.hash
@@ -111,4 +106,12 @@ export function handleNewAuction(event: NewAuction): void {
 
     auction.save()
   }
+}
+
+export function handleNewUser(event: NewUser): void {
+  let userId = event.params.userId
+  let user = new Account(userId.toString())
+  user.address = event.params.userAddress
+
+  user.save()
 }

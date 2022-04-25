@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0xa5cd8D8effACB7Ad861e3797404924199D1463a5"
       abi: GnosisAuction
-      startBlock: 4992175
+      startBlock: 2797400
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -35,3 +35,5 @@ dataSources:
           handler: handleCancellation
         - event: ClaimedFromOrder(indexed uint256,indexed uint64,uint96,uint96)
           handler: handleClaim
+        - event: NewUser(indexed uint64,indexed address)
+          handler: handleNewUser

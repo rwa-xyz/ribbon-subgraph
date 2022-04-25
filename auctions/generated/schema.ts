@@ -154,13 +154,13 @@ export class Account extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get userid(): string {
-    let value = this.get("userid");
-    return value.toString();
+  get address(): Bytes {
+    let value = this.get("address");
+    return value.toBytes();
   }
 
-  set userid(value: string) {
-    this.set("userid", Value.fromString(value));
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
   }
 
   get bids(): Array<string> | null {

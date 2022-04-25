@@ -31,11 +31,11 @@ type Auction @entity {
 }
 
 type Account @entity {
-  "Account address"
+  "User ID assigned by Gnosis Auction contract"
   id: ID!
 
-  "User ID assigned by Gnosis Auction contract"
-  userid: String!
+  "Account address"
+  address: Bytes!
 
   "List of Bid objects"
   bids: [Bid!] @derivedFrom(field: "account")
