@@ -732,6 +732,15 @@ export class VaultAccount extends Entity {
     this.set("totalScheduledWithdrawal", Value.fromBigInt(value));
   }
 
+  get scheduledWithdrawalRoundPricePerShare(): BigInt {
+    let value = this.get("scheduledWithdrawalRoundPricePerShare");
+    return value.toBigInt();
+  }
+
+  set scheduledWithdrawalRoundPricePerShare(value: BigInt) {
+    this.set("scheduledWithdrawalRoundPricePerShare", Value.fromBigInt(value));
+  }
+
   get shares(): BigInt {
     let value = this.get("shares");
     return value.toBigInt();

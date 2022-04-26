@@ -112,6 +112,7 @@ export function _triggerBalanceUpdate(
   let totalPendingDeposit: BigInt;
 
   let scheduledWithdrawalShares: BigInt;
+  let scheduledWithdrawalRoundPricePerShare: BigInt;
 
   // User's account balance (staked balance/pending deposits NOT included)
   let accountBalance: BigInt;
@@ -126,18 +127,17 @@ export function _triggerBalanceUpdate(
 
     totalPendingDeposit = getTotalPendingDeposit(vaultContract, accountAddress);
 
-    let withdrawalRound = withdrawal.value0;
     scheduledWithdrawalShares = withdrawal.value1;
+    let withdrawalRound = withdrawal.value0;
+    scheduledWithdrawalRoundPricePerShare = vaultContract.roundPricePerShare(BigInt.fromI32(withdrawalRound));
 
     totalShares = shares + scheduledWithdrawalShares;
-
-    let withdrawalRoundPricePerShare = vaultContract.roundPricePerShare(BigInt.fromI32(withdrawalRound));
 
     // Account balance here is calculated based on 2 different pricePerShare.
     // the amount scheduled for withdrawal should be calculated with the round's pricePerShare
     // the remaining amount will be calculated using the latest pricePerShare
     accountBalance = sharesToAssets(shares, assetPerShare, decimals)
-      + sharesToAssets(scheduledWithdrawalShares, withdrawalRoundPricePerShare, decimals);
+      + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
   } else {
     let depositIsProcessed = vault.round > vaultAccount.depositInRound;
 
@@ -148,16 +148,21 @@ export function _triggerBalanceUpdate(
     // We are doing a contract call here when there is a processed deposit
     // This would only be called for deposits that are processed for a single week
     // It short circuits for performance reasons bc contract calls are expensive
-    totalShares = depositIsProcessed
-      ? vaultContract.shares(accountAddress) +
-        vaultAccount.totalScheduledWithdrawal
-      : vaultAccount.shares;
     scheduledWithdrawalShares = vaultAccount.totalScheduledWithdrawal;
+    scheduledWithdrawalRoundPricePerShare = vaultAccount.scheduledWithdrawalRoundPricePerShare;
+    if (depositIsProcessed) {
+      let shares = vaultContract.shares(accountAddress);
+      totalShares = shares + vaultAccount.totalScheduledWithdrawal;
+      accountBalance = sharesToAssets(shares, assetPerShare, decimals)
+        + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
+    } else {
+      totalShares = vaultAccount.shares;
 
-    /**
-     * Calculate new account balance based on shares
-     */
-    accountBalance = sharesToAssets(totalShares, assetPerShare, decimals);
+      // Split out shares scheduled for withdrawal and shares that are not
+      let nonWithdrawnShares = totalShares - scheduledWithdrawalShares;
+      accountBalance = sharesToAssets(nonWithdrawnShares, assetPerShare, decimals)
+        + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
+    }
   }
 
   let stakeBalance = sharesToAssets(
@@ -205,6 +210,7 @@ export function _triggerBalanceUpdate(
   vaultAccount.shares = totalShares;
   vaultAccount.totalPendingDeposit = totalPendingDeposit;
   vaultAccount.totalScheduledWithdrawal = scheduledWithdrawalShares;
+  vaultAccount.scheduledWithdrawalRoundPricePerShare = scheduledWithdrawalRoundPricePerShare;
   vaultAccount.save();
 }
 
@@ -231,6 +237,7 @@ export function createVaultAccount(
     vaultAccount.shares = BigInt.fromI32(0);
     vaultAccount.totalPendingDeposit = BigInt.fromI32(0);
     vaultAccount.totalScheduledWithdrawal = BigInt.fromI32(0);
+    vaultAccount.scheduledWithdrawalRoundPricePerShare = BigInt.fromI32(0);
     vaultAccount.depositInRound = 0;
     vaultAccount.totalDeposits = BigInt.fromI32(0);
     vaultAccount.totalBalance = BigInt.fromI32(0);

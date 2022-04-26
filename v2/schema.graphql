@@ -87,6 +87,8 @@ type VaultAccount @entity {
 
   "To track scheduled withdrawal amount (in shares)"
   totalScheduledWithdrawal: BigInt!
+  "Track the price per share of the round that a withdrawal was scheduled"
+  scheduledWithdrawalRoundPricePerShare: BigInt!
 
   "To track the total number of shares the user has, including scheduled withdrawal"
   shares: BigInt!
