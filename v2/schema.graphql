@@ -46,6 +46,13 @@ type GnosisAuction @entity {
   optionToken: Bytes!
 }
 
+type SwapOffer @entity {
+  id: ID! # swap ID
+  optionToken: Bytes!
+  oTokensSold: BigInt!
+  totalPremium: BigInt!
+}
+
 type VaultOptionTrade @entity {
   id: ID! # optionToken-txhash-logindex
   vault: Vault!

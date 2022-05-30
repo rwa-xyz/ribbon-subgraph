@@ -18,12 +18,14 @@ import {
   VaultOptionTrade,
   VaultTransaction,
   VaultAccount,
-  VaultPerformanceUpdate
+  VaultPerformanceUpdate,
+  SwapOffer
 } from "../generated/schema";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
 import { OptionsPremiumPricer } from "../generated/RibbonETHCoveredCall/OptionsPremiumPricer";
 import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
 import { AuctionCleared } from "../generated/GnosisAuction/GnosisAuction";
+import { NewOffer, SettleOffer, Swap } from "../generated/Swap/Swap";
 
 import {
   createVaultAccount,
@@ -111,8 +113,9 @@ export function handleOpenShort(event: OpenShort): void {
   let vaultContract = RibbonThetaVault.bind(event.address);
   let pricerAddress = vaultContract.optionsPremiumPricer();
   let pricerContract = OptionsPremiumPricer.bind(pricerAddress);
-  vault.totalNotionalVolume += (shortPosition.mintAmount * pricerContract.getUnderlyingPrice());
-  vault.save()
+  vault.totalNotionalVolume +=
+    shortPosition.mintAmount * pricerContract.getUnderlyingPrice();
+  vault.save();
 
   /**
    * We finalize last round pricePerShare here
@@ -200,6 +203,85 @@ export function handleAuctionCleared(event: AuctionCleared): void {
 
   let optionsSold = event.params.soldAuctioningTokens;
   let totalPremium = event.params.soldBiddingTokens;
+
+  // If there are no premiums exchanging hands,
+  // This means that the auction is settled without any bids
+  // This is rare, but has happened before.
+  if (totalPremium == BigInt.fromI32(0)) {
+    return;
+  }
+
+  updateVaultPerformance(shortPosition.vault, event.block.timestamp.toI32());
+
+  let optionTrade = new VaultOptionTrade(tradeID);
+  optionTrade.vault = shortPosition.vault;
+
+  optionTrade.sellAmount = optionsSold;
+  optionTrade.premium = totalPremium;
+
+  optionTrade.vaultShortPosition = optionToken.toHexString();
+  optionTrade.timestamp = event.block.timestamp;
+  optionTrade.txhash = event.transaction.hash;
+  optionTrade.save();
+
+  shortPosition.premiumEarned = shortPosition.premiumEarned.plus(totalPremium);
+  shortPosition.save();
+
+  vault.totalPremiumEarned = vault.totalPremiumEarned.plus(totalPremium);
+  vault.save();
+
+  refreshAllAccountBalances(
+    Address.fromString(shortPosition.vault),
+    event.block.timestamp.toI32()
+  );
+}
+
+export function handleCreateOffer(event: NewOffer): void {
+  let auctionID = event.params.swapId;
+  let optionToken = event.params.oToken;
+
+  let auction = new SwapOffer(auctionID.toHexString());
+  auction.optionToken = optionToken;
+  auction.oTokensSold = BigInt.fromI32(0);
+  auction.totalPremium = BigInt.fromI32(0);
+  auction.save();
+}
+
+export function handleSwap(event: Swap): void {
+  let swap = SwapOffer.load(event.params.swapId.toHexString());
+
+  swap.oTokensSold = swap.oTokensSold + event.params.sellerAmount;
+  swap.totalPremium = swap.totalPremium + event.params.signerAmount;
+  swap.save();
+}
+
+export function handleSettleOffer(event: SettleOffer): void {
+  let auctionID = event.params.swapId;
+  let auction = SwapOffer.load(auctionID.toHexString());
+  if (auction == null) {
+    return;
+  }
+
+  let optionToken = auction.optionToken;
+  let shortPosition = VaultShortPosition.load(optionToken.toHexString());
+  if (shortPosition == null) {
+    return;
+  }
+
+  let vault = Vault.load(shortPosition.vault);
+  if (vault == null) {
+    return;
+  }
+
+  let tradeID =
+    optionToken.toHexString() +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  let optionsSold = auction.oTokensSold;
+  let totalPremium = auction.totalPremium;
 
   // If there are no premiums exchanging hands,
   // This means that the auction is settled without any bids

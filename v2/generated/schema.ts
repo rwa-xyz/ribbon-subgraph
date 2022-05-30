@@ -460,6 +460,64 @@ export class GnosisAuction extends Entity {
   }
 }
 
+export class SwapOffer extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save SwapOffer entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save SwapOffer entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("SwapOffer", id.toString(), this);
+  }
+
+  static load(id: string): SwapOffer | null {
+    return store.get("SwapOffer", id) as SwapOffer | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get optionToken(): Bytes {
+    let value = this.get("optionToken");
+    return value.toBytes();
+  }
+
+  set optionToken(value: Bytes) {
+    this.set("optionToken", Value.fromBytes(value));
+  }
+
+  get oTokensSold(): BigInt {
+    let value = this.get("oTokensSold");
+    return value.toBigInt();
+  }
+
+  set oTokensSold(value: BigInt) {
+    this.set("oTokensSold", Value.fromBigInt(value));
+  }
+
+  get totalPremium(): BigInt {
+    let value = this.get("totalPremium");
+    return value.toBigInt();
+  }
+
+  set totalPremium(value: BigInt) {
+    this.set("totalPremium", Value.fromBigInt(value));
+  }
+}
+
 export class VaultOptionTrade extends Entity {
   constructor(id: string) {
     super();
