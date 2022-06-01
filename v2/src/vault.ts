@@ -25,7 +25,11 @@ import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaV
 import { OptionsPremiumPricer } from "../generated/RibbonETHCoveredCall/OptionsPremiumPricer";
 import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
 import { AuctionCleared } from "../generated/GnosisAuction/GnosisAuction";
-import { NewOffer, SettleOffer, Swap } from "../generated/Swap/Swap";
+import {
+  NewOffer,
+  SettleOffer,
+  Swap
+} from "../generated/RibbonSwap/SwapContract";
 
 import {
   createVaultAccount,
@@ -113,8 +117,7 @@ export function handleOpenShort(event: OpenShort): void {
   let vaultContract = RibbonThetaVault.bind(event.address);
   let pricerAddress = vaultContract.optionsPremiumPricer();
   let pricerContract = OptionsPremiumPricer.bind(pricerAddress);
-  vault.totalNotionalVolume +=
-    shortPosition.mintAmount * pricerContract.getUnderlyingPrice();
+  vault.totalNotionalVolume += shortPosition.mintAmount * pricerContract.getUnderlyingPrice();
   vault.save();
 
   /**
@@ -236,22 +239,28 @@ export function handleAuctionCleared(event: AuctionCleared): void {
   );
 }
 
-export function handleCreateOffer(event: NewOffer): void {
+export function handleNewOffer(event: NewOffer): void {
   let auctionID = event.params.swapId;
   let optionToken = event.params.oToken;
 
   let auction = new SwapOffer(auctionID.toHexString());
+  
   auction.optionToken = optionToken;
   auction.oTokensSold = BigInt.fromI32(0);
   auction.totalPremium = BigInt.fromI32(0);
+
   auction.save();
 }
 
 export function handleSwap(event: Swap): void {
   let swap = SwapOffer.load(event.params.swapId.toHexString());
 
-  swap.oTokensSold = swap.oTokensSold + event.params.sellerAmount;
-  swap.totalPremium = swap.totalPremium + event.params.signerAmount;
+  if (swap == null) {
+    return
+  }
+
+  swap.oTokensSold += event.params.sellerAmount;
+  swap.totalPremium += event.params.signerAmount;
   swap.save();
 }
 

@@ -62,16 +62,17 @@ dataSources:
         - VaultShortPosition
         - VaultAccount
         - BalanceUpdate
-        - SwapOffer
       abis:
         - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
           file: ./abis/OptionsPremiumPricer.json
-        - name: Swap
-          file: ./abis/Swap.json
+        - name: SwapContract
+          file: ./abis/SwapContract.json
       eventHandlers:
         - event: OpenShort(indexed address,uint256,indexed address)
           handler: handleOpenShort
@@ -87,8 +88,8 @@ dataSources:
           handler: handleInstantWithdraw
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-        - event: NewOffer(uint256,address,address,address,uint256,uint256,uint256)
-          handler: handleNewOffer
+        - event: InitiateGnosisAuction(indexed address,indexed address,uint256,indexed address)
+          handler: handleInitiateGnosisAuction
         - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
           handler: handleCollectVaultFees
   - kind: ethereum/contract
@@ -248,11 +249,11 @@ dataSources:
         - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
           handler: handleAuctionCleared
   - kind: ethereum/contract
-    name: Swap
+    name: RibbonSwap
     network: mainnet
     source:
       address: "0xF0E5c92cEdd66C7985C354C35e2bC37E685b99Da"
-      abi: Swap
+      abi: SwapContract
       startBlock: 14740669
     mapping:
       kind: ethereum/events
@@ -270,13 +271,17 @@ dataSources:
       abis:
         - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
-        - name: Swap
-          file: ./abis/Swap.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+        - name: SwapContract
+          file: ./abis/SwapContract.json
       eventHandlers:
         - event: SettleOffer(uint256)
           handler: handleSettleOffer
         - event: Swap(indexed uint256,uint256,indexed address,uint256,uint256,address,uint256)
           handler: handleSwap
+        - event: NewOffer(uint256,address,address,address,uint256,uint256,uint256)
+          handler: handleNewOffer
   - kind: ethereum/contract
     name: RibbonYearnUSDCPUT
     network: mainnet
