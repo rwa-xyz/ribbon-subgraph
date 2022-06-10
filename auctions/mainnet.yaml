@@ -37,3 +37,32 @@ dataSources:
           handler: handleClaim
         - event: NewUser(indexed uint64,indexed address)
           handler: handleNewUser
+  - kind: ethereum/contract
+    name: SwapContract
+    network: mainnet
+    source:
+      address: "0xF0E5c92cEdd66C7985C354C35e2bC37E685b99Da"
+      abi: SwapContract
+      startBlock: 14740669
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/handlers.ts
+      entities:
+        - Auction
+        - Account
+      abis:
+        - name: SwapContract
+          file: ./abis/Swap.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: oToken
+          file: ./abis/oToken.json
+      eventHandlers:
+        - event: SettleOffer(uint256)
+          handler: handleSettleOffer
+        - event: Swap(indexed uint256,uint256,indexed address,uint256,uint256,address,uint256)
+          handler: handleSwap
+        - event: NewOffer(uint256,address,address,address,uint256,uint256,uint256)
+          handler: handleNewOffer
