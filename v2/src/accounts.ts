@@ -1,5 +1,6 @@
 import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { RibbonVaultPauser } from "../generated/RibbonVaultPauser/RibbonVaultPauser";
 import {
   BalanceUpdate,
   ERC20Token,
@@ -124,20 +125,46 @@ export function _triggerBalanceUpdate(
   if (isRefresh) {
     let shares = vaultContract.shares(accountAddress);
     let withdrawal = vaultContract.withdrawals(accountAddress);
+    let pauserContract = RibbonVaultPauser.bind(vaultContract.pauser());
+
+    let pausePosition = pauserContract.getPausePosition(
+      vaultAddress,
+      accountAddress
+    );
+    let pausePositionWithdrawn = vault.round > pausePosition.round;
+    let pausedShares = BigInt.fromI32(0);
+    let pausedAssets = BigInt.fromI32(0);
 
     totalPendingDeposit = getTotalPendingDeposit(vaultContract, accountAddress);
 
     scheduledWithdrawalShares = withdrawal.value1;
     let withdrawalRound = withdrawal.value0;
-    scheduledWithdrawalRoundPricePerShare = vaultContract.roundPricePerShare(BigInt.fromI32(withdrawalRound));
+    scheduledWithdrawalRoundPricePerShare = vaultContract.roundPricePerShare(
+      BigInt.fromI32(withdrawalRound)
+    );
+    let pausePricePerShare = vaultContract.roundPricePerShare(
+      BigInt.fromI32(pausePosition.round)
+    );
 
-    totalShares = shares + scheduledWithdrawalShares;
+    if (pausePositionWithdrawn) {
+      pausedAssets = sharesToAssets(pausedShares, pausePricePerShare, decimals);
+    } else {
+      pausedShares = pausePosition.shares;
+    }
+
+    totalShares = shares + scheduledWithdrawalShares + pausedShares;
 
     // Account balance here is calculated based on 2 different pricePerShare.
     // the amount scheduled for withdrawal should be calculated with the round's pricePerShare
     // the remaining amount will be calculated using the latest pricePerShare
-    accountBalance = sharesToAssets(shares, assetPerShare, decimals)
-      + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
+    accountBalance =
+      sharesToAssets(shares, assetPerShare, decimals) +
+      sharesToAssets(
+        scheduledWithdrawalShares,
+        scheduledWithdrawalRoundPricePerShare,
+        decimals
+      ) +
+      pausedAssets;
   } else {
     let depositIsProcessed = vault.round > vaultAccount.depositInRound;
 
@@ -149,19 +176,30 @@ export function _triggerBalanceUpdate(
     // This would only be called for deposits that are processed for a single week
     // It short circuits for performance reasons bc contract calls are expensive
     scheduledWithdrawalShares = vaultAccount.totalScheduledWithdrawal;
-    scheduledWithdrawalRoundPricePerShare = vaultAccount.scheduledWithdrawalRoundPricePerShare;
+    scheduledWithdrawalRoundPricePerShare =
+      vaultAccount.scheduledWithdrawalRoundPricePerShare;
     if (depositIsProcessed) {
       let shares = vaultContract.shares(accountAddress);
       totalShares = shares + vaultAccount.totalScheduledWithdrawal;
-      accountBalance = sharesToAssets(shares, assetPerShare, decimals)
-        + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
+      accountBalance =
+        sharesToAssets(shares, assetPerShare, decimals) +
+        sharesToAssets(
+          scheduledWithdrawalShares,
+          scheduledWithdrawalRoundPricePerShare,
+          decimals
+        );
     } else {
       totalShares = vaultAccount.shares;
 
       // Split out shares scheduled for withdrawal and shares that are not
       let nonWithdrawnShares = totalShares - scheduledWithdrawalShares;
-      accountBalance = sharesToAssets(nonWithdrawnShares, assetPerShare, decimals)
-        + sharesToAssets(scheduledWithdrawalShares, scheduledWithdrawalRoundPricePerShare, decimals);
+      accountBalance =
+        sharesToAssets(nonWithdrawnShares, assetPerShare, decimals) +
+        sharesToAssets(
+          scheduledWithdrawalShares,
+          scheduledWithdrawalRoundPricePerShare,
+          decimals
+        );
     }
   }
 

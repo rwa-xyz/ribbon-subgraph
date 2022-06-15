@@ -10,6 +10,10 @@ import {
   InstantWithdraw,
   CollectVaultFees
 } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import {
+  Pause,
+  Resume
+} from "../generated/RibbonVaultPauser/RibbonVaultPauser";
 import { DistributePremium } from "../generated/RibbonTreasuryVaultPERP/RibbonTreasuryVault";
 import {
   Vault,
@@ -117,7 +121,8 @@ export function handleOpenShort(event: OpenShort): void {
   let vaultContract = RibbonThetaVault.bind(event.address);
   let pricerAddress = vaultContract.optionsPremiumPricer();
   let pricerContract = OptionsPremiumPricer.bind(pricerAddress);
-  vault.totalNotionalVolume += shortPosition.mintAmount * pricerContract.getUnderlyingPrice();
+  vault.totalNotionalVolume +=
+    shortPosition.mintAmount * pricerContract.getUnderlyingPrice();
   vault.save();
 
   /**
@@ -244,7 +249,7 @@ export function handleNewOffer(event: NewOffer): void {
   let optionToken = event.params.oToken;
 
   let auction = new SwapOffer(auctionID.toHexString());
-  
+
   auction.optionToken = optionToken;
   auction.oTokensSold = BigInt.fromI32(0);
   auction.totalPremium = BigInt.fromI32(0);
@@ -256,7 +261,7 @@ export function handleSwap(event: Swap): void {
   let swap = SwapOffer.load(event.params.swapId.toHexString());
 
   if (swap == null) {
-    return
+    return;
   }
 
   swap.oTokensSold += event.params.sellerAmount;
@@ -579,6 +584,76 @@ export function handleTransfer(event: Transfer): void {
   triggerBalanceUpdate(
     event.address,
     event.params.to,
+    event.block.timestamp.toI32(),
+    false,
+    false
+  );
+}
+
+export function handlePause(event: Pause): void {
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  let vaultContract = RibbonThetaVault.bind(event.address);
+
+  let decimals = vault.underlyingDecimals;
+  let underlyingAmount = sharesToAssets(
+    event.params.share,
+    getPricePerShare(vaultContract, decimals),
+    decimals
+  );
+
+  newTransaction(
+    txid,
+    "pause",
+    event.params.vaultAddress.toHexString(),
+    event.params.account,
+    event.transaction.hash,
+    event.block.timestamp,
+    underlyingAmount,
+    underlyingAmount
+  );
+
+  triggerBalanceUpdate(
+    event.params.vaultAddress,
+    event.params.account,
+    event.block.timestamp.toI32(),
+    false,
+    false
+  );
+}
+
+export function handleResume(event: Resume): void {
+  let vaultAddress = event.address.toHexString();
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  let underlyingAmount = event.params.withdrawAmount;
+
+  newTransaction(
+    txid,
+    "pause",
+    event.params.vaultAddress.toHexString(),
+    event.params.account,
+    event.transaction.hash,
+    event.block.timestamp,
+    underlyingAmount,
+    underlyingAmount
+  );
+
+  triggerBalanceUpdate(
+    event.params.vaultAddress,
+    event.params.account,
     event.block.timestamp.toI32(),
     false,
     false

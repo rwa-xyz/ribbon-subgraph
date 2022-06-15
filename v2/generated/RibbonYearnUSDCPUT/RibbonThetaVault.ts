@@ -1283,6 +1283,21 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  pauser(): Address {
+    let result = super.call("pauser", "pauser():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_pauser(): ethereum.CallResult<Address> {
+    let result = super.tryCall("pauser", "pauser():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   performanceFee(): BigInt {
     let result = super.call("performanceFee", "performanceFee():(uint256)", []);
 

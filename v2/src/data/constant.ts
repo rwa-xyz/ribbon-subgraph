@@ -101,6 +101,25 @@ export function ignoreTransfer(transfer: Transfer): boolean {
     return true;
   }
 
+  // Ethereum Pauser
+  if (
+    transfer.params.from.toHexString() ==
+      "0xE04e8Ae290965AD4F7E40c68041c493d2e89cDC3" ||
+    transfer.params.to.toHexString() ==
+      "0xE04e8Ae290965AD4F7E40c68041c493d2e89cDC3"
+  ) {
+    return true;
+  }
+  // Avalanche Pauser
+  if (
+    transfer.params.from.toHexString() ==
+      "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa" ||
+    transfer.params.to.toHexString() ==
+      "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa"
+  ) {
+    return true;
+  }
+
   // Graph-ts array type appear not to be iterable, so uses for loop instead
   for (let i = 0; i < liquidityGaugePools.length; i++) {
     let gaugeAddress = Address.fromString(liquidityGaugePools[i]);

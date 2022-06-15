@@ -489,3 +489,27 @@ dataSources:
           handler: handleUnstake
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+  - kind: ethereum/contract
+    name: RibbonVaultPauser
+    network: mainnet
+    source:
+      address: "0xE04e8Ae290965AD4F7E40c68041c493d2e89cDC3"
+      abi: RibbonVaultPauser
+      startBlock: 14920856
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultTransaction
+        - VaultAccount
+      abis:
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
+      eventHandlers:
+        - event: Pause(indexed address,indexed address,uint256,uint256)
+          handler: handlePause
+        - event: Resume(indexed address,indexed address,uint256)
+          handler: handleResume
