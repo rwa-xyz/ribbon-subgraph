@@ -125,13 +125,9 @@ export function _triggerBalanceUpdate(
   if (isRefresh) {
     let shares = vaultContract.shares(accountAddress);
     let withdrawal = vaultContract.withdrawals(accountAddress);
-    let pauserContract = RibbonVaultPauser.bind(vaultContract.pauser());
 
-    let pausePosition = pauserContract.getPausePosition(
-      vaultAddress,
-      accountAddress
-    );
-    let pausePositionWithdrawn = vault.round > pausePosition.round;
+    let pauserRes = vaultContract.try_pauser();
+
     let pausedShares = BigInt.fromI32(0);
     let pausedAssets = BigInt.fromI32(0);
 
@@ -142,14 +138,31 @@ export function _triggerBalanceUpdate(
     scheduledWithdrawalRoundPricePerShare = vaultContract.roundPricePerShare(
       BigInt.fromI32(withdrawalRound)
     );
-    let pausePricePerShare = vaultContract.roundPricePerShare(
-      BigInt.fromI32(pausePosition.round)
-    );
 
-    if (pausePositionWithdrawn) {
-      pausedAssets = sharesToAssets(pausedShares, pausePricePerShare, decimals);
-    } else {
-      pausedShares = pausePosition.shares;
+    if (!pauserRes.reverted) {
+      let pauserContract = RibbonVaultPauser.bind(pauserRes.value);
+
+      let pausePosition = pauserContract.getPausePosition(
+        vaultAddress,
+        accountAddress
+      );
+      if (pausePosition.shares > BigInt.fromI32(0) && pausePosition.round > 0) {
+        let pausePricePerShare = vaultContract.roundPricePerShare(
+          BigInt.fromI32(pausePosition.round)
+        );
+
+        let pausePositionWithdrawn = vault.round > pausePosition.round;
+
+        if (pausePositionWithdrawn) {
+          pausedAssets = sharesToAssets(
+            pausedShares,
+            pausePricePerShare,
+            decimals
+          );
+        } else {
+          pausedShares = pausePosition.shares;
+        }
+      }
     }
 
     totalShares = shares + scheduledWithdrawalShares + pausedShares;

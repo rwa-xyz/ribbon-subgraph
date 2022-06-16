@@ -158,27 +158,27 @@ dataSources:
       eventHandlers:
         - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
           handler: handleAuctionCleared
-    - kind: ethereum/contract
-      name: RibbonVaultPauser
-      network: avalanche
-      source:
-        address: "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa"
-        abi: RibbonVaultPauser
-        startBlock: 15716325
-      mapping:
-        kind: ethereum/events
-        apiVersion: 0.0.4
-        language: wasm/assemblyscript
-        file: ./src/vault.ts
-        entities:
-          - Vault
-          - VaultTransaction
-          - VaultAccount
-        abis:
-          - name: RibbonVaultPauser
-            file: ./abis/RibbonVaultPauser.json
-        eventHandlers:
-          - event: Pause(indexed address,indexed address,uint256,uint256)
-            handler: handlePause
-          - event: Resume(indexed address,indexed address,uint256)
-            handler: handleResume
+  - kind: ethereum/contract
+    name: RibbonVaultPauser
+    network: avalanche
+    source:
+      address: "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa"
+      abi: RibbonVaultPauser
+      startBlock: 15716325
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultTransaction
+        - VaultAccount
+      abis:
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
+      eventHandlers:
+        - event: Pause(indexed address,indexed address,uint256,uint256)
+          handler: handlePause
+        - event: Resume(indexed address,indexed address,uint256)
+          handler: handleResume
