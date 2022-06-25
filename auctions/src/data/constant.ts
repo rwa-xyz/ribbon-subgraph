@@ -10,5 +10,6 @@ export const vaultList: Array<string> = [
   "0x7796d6b1706855303655eb12f54fae294c468a66", //RibbonThetaVaultWNEARCall
   "0x9dd6be071b4292cc88b8190ab718329adea3e3a3", //RibbonThetaVaultAVAXPut
   "0x6bf686d99a4ce17798c45d09c21181fac29a9fb3", //RibbonThetaVaultSAVAXCall
+  "0xa1da0580fa96129e753d736a5901c31df5ec5edf", //RibbonThetaVaultRETHCall
   "0x3d1d40101e185e1fe3aedcf05fe2f5ba0af1f25d" //Kovan Gnosis
 ];
