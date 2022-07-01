@@ -6,8 +6,6 @@ export const vaultList: Array<string> = [
   "0xcc323557c71c0d1d20a1861dc69c06c5f3cc9624", //RibbonThetaYearnVaultETHPut
   "0xe44edf7ad1d434afe3397687dd0a914674f2e405", //RibbonTreasuryVaultPERP
   "0x98d03125c62dae2328d9d3cb32b7b969e6a87787", //RibbonThetaVaultAVAXCall
-  "0xc5db388db490f88a81be75c32d60f28579556145", //RibbonThetaVaultAURORACall
-  "0x7796d6b1706855303655eb12f54fae294c468a66", //RibbonThetaVaultWNEARCall
   "0x9dd6be071b4292cc88b8190ab718329adea3e3a3", //RibbonThetaVaultAVAXPut
   "0x6bf686d99a4ce17798c45d09c21181fac29a9fb3", //RibbonThetaVaultSAVAXCall
   "0xa1da0580fa96129e753d736a5901c31df5ec5edf", //RibbonThetaVaultRETHCall
