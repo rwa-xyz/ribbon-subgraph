@@ -5,7 +5,9 @@
   "scripts": {
     "create-local": "graph create ribbon-finance/ribbon-v2 --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
+    "codegen-treasury": "graph codegen treasury.subgraph.yaml",
     "build": "graph build",
+    "build-treasury": "graph build treasury.subgraph.yaml",
     "deploy": "graph deploy ribbon-finance/ribbon-v2 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "codegen-testnet": "graph codegen testnet.subgraph.yaml",
     "build-testnet": "graph build testnet.subgraph.yaml",
