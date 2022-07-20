@@ -78,10 +78,6 @@ export class CapSet__Params {
   get newCap(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
-
-  get manager(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
 }
 
 export class CloseShort extends ethereum.Event {
@@ -166,36 +162,6 @@ export class Deposit__Params {
   }
 }
 
-export class InitiateGnosisAuction extends ethereum.Event {
-  get params(): InitiateGnosisAuction__Params {
-    return new InitiateGnosisAuction__Params(this);
-  }
-}
-
-export class InitiateGnosisAuction__Params {
-  _event: InitiateGnosisAuction;
-
-  constructor(event: InitiateGnosisAuction) {
-    this._event = event;
-  }
-
-  get auctioningToken(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get biddingToken(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get auctionCounter(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get manager(): Address {
-    return this._event.parameters[3].value.toAddress();
-  }
-}
-
 export class InitiateWithdraw extends ethereum.Event {
   get params(): InitiateWithdraw__Params {
     return new InitiateWithdraw__Params(this);
@@ -267,6 +233,78 @@ export class ManagementFeeSet__Params {
 
   get newManagementFee(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class InitiateGnosisAuction extends ethereum.Event {
+  get params(): InitiateGnosisAuction__Params {
+    return new InitiateGnosisAuction__Params(this);
+  }
+}
+
+export class InitiateGnosisAuction__Params {
+  _event: InitiateGnosisAuction;
+
+  constructor(event: InitiateGnosisAuction) {
+    this._event = event;
+  }
+
+  get auctioningToken(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get biddingToken(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get auctionCounter(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get manager(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+}
+
+export class NewOffer extends ethereum.Event {
+  get params(): NewOffer__Params {
+    return new NewOffer__Params(this);
+  }
+}
+
+export class NewOffer__Params {
+  _event: NewOffer;
+
+  constructor(event: NewOffer) {
+    this._event = event;
+  }
+
+  get swapId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get seller(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get oToken(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get biddingToken(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+
+  get minPrice(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get minBidSize(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get totalSize(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
   }
 }
 
@@ -462,7 +500,7 @@ export class Withdraw__Params {
   }
 }
 
-export class RibbonThetaVault__depositReceiptsResult {
+export class RibbonThetaVaultWithSwap__depositReceiptsResult {
   value0: i32;
   value1: BigInt;
   value2: BigInt;
@@ -485,7 +523,7 @@ export class RibbonThetaVault__depositReceiptsResult {
   }
 }
 
-export class RibbonThetaVault__optionStateResult {
+export class RibbonThetaVaultWithSwap__optionStateResult {
   value0: Address;
   value1: Address;
   value2: BigInt;
@@ -505,7 +543,7 @@ export class RibbonThetaVault__optionStateResult {
   }
 }
 
-export class RibbonThetaVault__shareBalancesResult {
+export class RibbonThetaVaultWithSwap__shareBalancesResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -522,7 +560,7 @@ export class RibbonThetaVault__shareBalancesResult {
   }
 }
 
-export class RibbonThetaVault__vaultParamsResult {
+export class RibbonThetaVaultWithSwap__vaultParamsResult {
   value0: boolean;
   value1: i32;
   value2: Address;
@@ -561,7 +599,7 @@ export class RibbonThetaVault__vaultParamsResult {
   }
 }
 
-export class RibbonThetaVault__vaultStateResult {
+export class RibbonThetaVaultWithSwap__vaultStateResult {
   value0: i32;
   value1: BigInt;
   value2: BigInt;
@@ -596,7 +634,7 @@ export class RibbonThetaVault__vaultStateResult {
   }
 }
 
-export class RibbonThetaVault__withdrawalsResult {
+export class RibbonThetaVaultWithSwap__withdrawalsResult {
   value0: i32;
   value1: BigInt;
 
@@ -616,9 +654,9 @@ export class RibbonThetaVault__withdrawalsResult {
   }
 }
 
-export class RibbonThetaVault extends ethereum.SmartContract {
-  static bind(address: Address): RibbonThetaVault {
-    return new RibbonThetaVault("RibbonThetaVault", address);
+export class RibbonThetaVaultWithSwap extends ethereum.SmartContract {
+  static bind(address: Address): RibbonThetaVaultWithSwap {
+    return new RibbonThetaVaultWithSwap("RibbonThetaVaultWithSwap", address);
   }
 
   DELAY(): BigInt {
@@ -650,29 +688,6 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     let result = super.tryCall(
       "GAMMA_CONTROLLER",
       "GAMMA_CONTROLLER():(address)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  GNOSIS_EASY_AUCTION(): Address {
-    let result = super.call(
-      "GNOSIS_EASY_AUCTION",
-      "GNOSIS_EASY_AUCTION():(address)",
-      []
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_GNOSIS_EASY_AUCTION(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "GNOSIS_EASY_AUCTION",
-      "GNOSIS_EASY_AUCTION():(address)",
       []
     );
     if (result.reverted) {
@@ -729,6 +744,25 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  SWAP_CONTRACT(): Address {
+    let result = super.call("SWAP_CONTRACT", "SWAP_CONTRACT():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_SWAP_CONTRACT(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "SWAP_CONTRACT",
+      "SWAP_CONTRACT():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   USDC(): Address {
@@ -927,6 +961,29 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  currentQueuedWithdrawShares(): BigInt {
+    let result = super.call(
+      "currentQueuedWithdrawShares",
+      "currentQueuedWithdrawShares():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_currentQueuedWithdrawShares(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "currentQueuedWithdrawShares",
+      "currentQueuedWithdrawShares():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   decimals(): i32 {
     let result = super.call("decimals", "decimals():(uint8)", []);
 
@@ -974,14 +1031,16 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  depositReceipts(param0: Address): RibbonThetaVault__depositReceiptsResult {
+  depositReceipts(
+    param0: Address
+  ): RibbonThetaVaultWithSwap__depositReceiptsResult {
     let result = super.call(
       "depositReceipts",
       "depositReceipts(address):(uint16,uint104,uint128)",
       [ethereum.Value.fromAddress(param0)]
     );
 
-    return new RibbonThetaVault__depositReceiptsResult(
+    return new RibbonThetaVaultWithSwap__depositReceiptsResult(
       result[0].toI32(),
       result[1].toBigInt(),
       result[2].toBigInt()
@@ -990,7 +1049,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
 
   try_depositReceipts(
     param0: Address
-  ): ethereum.CallResult<RibbonThetaVault__depositReceiptsResult> {
+  ): ethereum.CallResult<RibbonThetaVaultWithSwap__depositReceiptsResult> {
     let result = super.tryCall(
       "depositReceipts",
       "depositReceipts(address):(uint16,uint104,uint128)",
@@ -1001,7 +1060,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__depositReceiptsResult(
+      new RibbonThetaVaultWithSwap__depositReceiptsResult(
         value[0].toI32(),
         value[1].toBigInt(),
         value[2].toBigInt()
@@ -1071,6 +1130,29 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  lastQueuedWithdrawAmount(): BigInt {
+    let result = super.call(
+      "lastQueuedWithdrawAmount",
+      "lastQueuedWithdrawAmount():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_lastQueuedWithdrawAmount(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "lastQueuedWithdrawAmount",
+      "lastQueuedWithdrawAmount():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   lastStrikeOverrideRound(): i32 {
     let result = super.call(
       "lastStrikeOverrideRound",
@@ -1092,6 +1174,25 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  liquidityGauge(): Address {
+    let result = super.call("liquidityGauge", "liquidityGauge():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_liquidityGauge(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "liquidityGauge",
+      "liquidityGauge():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   managementFee(): BigInt {
@@ -1189,21 +1290,23 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  optionState(): RibbonThetaVault__optionStateResult {
+  optionState(): RibbonThetaVaultWithSwap__optionStateResult {
     let result = super.call(
       "optionState",
       "optionState():(address,address,uint32)",
       []
     );
 
-    return new RibbonThetaVault__optionStateResult(
+    return new RibbonThetaVaultWithSwap__optionStateResult(
       result[0].toAddress(),
       result[1].toAddress(),
       result[2].toBigInt()
     );
   }
 
-  try_optionState(): ethereum.CallResult<RibbonThetaVault__optionStateResult> {
+  try_optionState(): ethereum.CallResult<
+    RibbonThetaVaultWithSwap__optionStateResult
+  > {
     let result = super.tryCall(
       "optionState",
       "optionState():(address,address,uint32)",
@@ -1214,7 +1317,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__optionStateResult(
+      new RibbonThetaVaultWithSwap__optionStateResult(
         value[0].toAddress(),
         value[1].toAddress(),
         value[2].toBigInt()
@@ -1236,6 +1339,29 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     let result = super.tryCall(
       "optionsPremiumPricer",
       "optionsPremiumPricer():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  optionsPurchaseQueue(): Address {
+    let result = super.call(
+      "optionsPurchaseQueue",
+      "optionsPurchaseQueue():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_optionsPurchaseQueue(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "optionsPurchaseQueue",
+      "optionsPurchaseQueue():(address)",
       []
     );
     if (result.reverted) {
@@ -1276,21 +1402,6 @@ export class RibbonThetaVault extends ethereum.SmartContract {
 
   try_owner(): ethereum.CallResult<Address> {
     let result = super.tryCall("owner", "owner():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  pauser(): Address {
-    let result = super.call("pauser", "pauser():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_pauser(): ethereum.CallResult<Address> {
-    let result = super.tryCall("pauser", "pauser():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1382,14 +1493,16 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  shareBalances(account: Address): RibbonThetaVault__shareBalancesResult {
+  shareBalances(
+    account: Address
+  ): RibbonThetaVaultWithSwap__shareBalancesResult {
     let result = super.call(
       "shareBalances",
       "shareBalances(address):(uint256,uint256)",
       [ethereum.Value.fromAddress(account)]
     );
 
-    return new RibbonThetaVault__shareBalancesResult(
+    return new RibbonThetaVaultWithSwap__shareBalancesResult(
       result[0].toBigInt(),
       result[1].toBigInt()
     );
@@ -1397,7 +1510,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
 
   try_shareBalances(
     account: Address
-  ): ethereum.CallResult<RibbonThetaVault__shareBalancesResult> {
+  ): ethereum.CallResult<RibbonThetaVaultWithSwap__shareBalancesResult> {
     let result = super.tryCall(
       "shareBalances",
       "shareBalances(address):(uint256,uint256)",
@@ -1408,7 +1521,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__shareBalancesResult(
+      new RibbonThetaVaultWithSwap__shareBalancesResult(
         value[0].toBigInt(),
         value[1].toBigInt()
       )
@@ -1576,14 +1689,14 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  vaultParams(): RibbonThetaVault__vaultParamsResult {
+  vaultParams(): RibbonThetaVaultWithSwap__vaultParamsResult {
     let result = super.call(
       "vaultParams",
       "vaultParams():(bool,uint8,address,address,uint56,uint104)",
       []
     );
 
-    return new RibbonThetaVault__vaultParamsResult(
+    return new RibbonThetaVaultWithSwap__vaultParamsResult(
       result[0].toBoolean(),
       result[1].toI32(),
       result[2].toAddress(),
@@ -1593,7 +1706,9 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     );
   }
 
-  try_vaultParams(): ethereum.CallResult<RibbonThetaVault__vaultParamsResult> {
+  try_vaultParams(): ethereum.CallResult<
+    RibbonThetaVaultWithSwap__vaultParamsResult
+  > {
     let result = super.tryCall(
       "vaultParams",
       "vaultParams():(bool,uint8,address,address,uint56,uint104)",
@@ -1604,7 +1719,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__vaultParamsResult(
+      new RibbonThetaVaultWithSwap__vaultParamsResult(
         value[0].toBoolean(),
         value[1].toI32(),
         value[2].toAddress(),
@@ -1615,14 +1730,14 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     );
   }
 
-  vaultState(): RibbonThetaVault__vaultStateResult {
+  vaultState(): RibbonThetaVaultWithSwap__vaultStateResult {
     let result = super.call(
       "vaultState",
       "vaultState():(uint16,uint104,uint104,uint128,uint128)",
       []
     );
 
-    return new RibbonThetaVault__vaultStateResult(
+    return new RibbonThetaVaultWithSwap__vaultStateResult(
       result[0].toI32(),
       result[1].toBigInt(),
       result[2].toBigInt(),
@@ -1631,7 +1746,9 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     );
   }
 
-  try_vaultState(): ethereum.CallResult<RibbonThetaVault__vaultStateResult> {
+  try_vaultState(): ethereum.CallResult<
+    RibbonThetaVaultWithSwap__vaultStateResult
+  > {
     let result = super.tryCall(
       "vaultState",
       "vaultState():(uint16,uint104,uint104,uint128,uint128)",
@@ -1642,7 +1759,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__vaultStateResult(
+      new RibbonThetaVaultWithSwap__vaultStateResult(
         value[0].toI32(),
         value[1].toBigInt(),
         value[2].toBigInt(),
@@ -1652,14 +1769,14 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     );
   }
 
-  withdrawals(param0: Address): RibbonThetaVault__withdrawalsResult {
+  withdrawals(param0: Address): RibbonThetaVaultWithSwap__withdrawalsResult {
     let result = super.call(
       "withdrawals",
       "withdrawals(address):(uint16,uint128)",
       [ethereum.Value.fromAddress(param0)]
     );
 
-    return new RibbonThetaVault__withdrawalsResult(
+    return new RibbonThetaVaultWithSwap__withdrawalsResult(
       result[0].toI32(),
       result[1].toBigInt()
     );
@@ -1667,7 +1784,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
 
   try_withdrawals(
     param0: Address
-  ): ethereum.CallResult<RibbonThetaVault__withdrawalsResult> {
+  ): ethereum.CallResult<RibbonThetaVaultWithSwap__withdrawalsResult> {
     let result = super.tryCall(
       "withdrawals",
       "withdrawals(address):(uint16,uint128)",
@@ -1678,7 +1795,7 @@ export class RibbonThetaVault extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new RibbonThetaVault__withdrawalsResult(
+      new RibbonThetaVaultWithSwap__withdrawalsResult(
         value[0].toI32(),
         value[1].toBigInt()
       )
@@ -1723,7 +1840,7 @@ export class ConstructorCall__Inputs {
     return this._call.inputValues[4].value.toAddress();
   }
 
-  get _gnosisEasyAuction(): Address {
+  get _swapContract(): Address {
     return this._call.inputValues[5].value.toAddress();
   }
 }
@@ -1800,28 +1917,54 @@ export class BurnRemainingOTokensCall__Outputs {
   }
 }
 
-export class CommitAndCloseCall extends ethereum.Call {
-  get inputs(): CommitAndCloseCall__Inputs {
-    return new CommitAndCloseCall__Inputs(this);
+export class CloseRoundCall extends ethereum.Call {
+  get inputs(): CloseRoundCall__Inputs {
+    return new CloseRoundCall__Inputs(this);
   }
 
-  get outputs(): CommitAndCloseCall__Outputs {
-    return new CommitAndCloseCall__Outputs(this);
+  get outputs(): CloseRoundCall__Outputs {
+    return new CloseRoundCall__Outputs(this);
   }
 }
 
-export class CommitAndCloseCall__Inputs {
-  _call: CommitAndCloseCall;
+export class CloseRoundCall__Inputs {
+  _call: CloseRoundCall;
 
-  constructor(call: CommitAndCloseCall) {
+  constructor(call: CloseRoundCall) {
     this._call = call;
   }
 }
 
-export class CommitAndCloseCall__Outputs {
-  _call: CommitAndCloseCall;
+export class CloseRoundCall__Outputs {
+  _call: CloseRoundCall;
 
-  constructor(call: CommitAndCloseCall) {
+  constructor(call: CloseRoundCall) {
+    this._call = call;
+  }
+}
+
+export class CommitNextOptionCall extends ethereum.Call {
+  get inputs(): CommitNextOptionCall__Inputs {
+    return new CommitNextOptionCall__Inputs(this);
+  }
+
+  get outputs(): CommitNextOptionCall__Outputs {
+    return new CommitNextOptionCall__Outputs(this);
+  }
+}
+
+export class CommitNextOptionCall__Inputs {
+  _call: CommitNextOptionCall;
+
+  constructor(call: CommitNextOptionCall) {
+    this._call = call;
+  }
+}
+
+export class CommitNextOptionCall__Outputs {
+  _call: CommitNextOptionCall;
+
+  constructor(call: CommitNextOptionCall) {
     this._call = call;
   }
 }
@@ -1848,6 +1991,32 @@ export class CompleteWithdrawCall__Outputs {
   _call: CompleteWithdrawCall;
 
   constructor(call: CompleteWithdrawCall) {
+    this._call = call;
+  }
+}
+
+export class CreateOfferCall extends ethereum.Call {
+  get inputs(): CreateOfferCall__Inputs {
+    return new CreateOfferCall__Inputs(this);
+  }
+
+  get outputs(): CreateOfferCall__Outputs {
+    return new CreateOfferCall__Outputs(this);
+  }
+}
+
+export class CreateOfferCall__Inputs {
+  _call: CreateOfferCall;
+
+  constructor(call: CreateOfferCall) {
+    this._call = call;
+  }
+}
+
+export class CreateOfferCall__Outputs {
+  _call: CreateOfferCall;
+
+  constructor(call: CreateOfferCall) {
     this._call = call;
   }
 }
@@ -2065,52 +2234,12 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get _owner(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _keeper(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _feeRecipient(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
-  get _managementFee(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
-  }
-
-  get _performanceFee(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
-  }
-
-  get _tokenName(): string {
-    return this._call.inputValues[5].value.toString();
-  }
-
-  get _tokenSymbol(): string {
-    return this._call.inputValues[6].value.toString();
-  }
-
-  get _optionsPremiumPricer(): Address {
-    return this._call.inputValues[7].value.toAddress();
-  }
-
-  get _strikeSelection(): Address {
-    return this._call.inputValues[8].value.toAddress();
-  }
-
-  get _premiumDiscount(): BigInt {
-    return this._call.inputValues[9].value.toBigInt();
-  }
-
-  get _auctionDuration(): BigInt {
-    return this._call.inputValues[10].value.toBigInt();
+  get _initParams(): InitializeCall_initParamsStruct {
+    return this._call.inputValues[0].value.toTuple() as InitializeCall_initParamsStruct;
   }
 
   get _vaultParams(): InitializeCall_vaultParamsStruct {
-    return this._call.inputValues[11].value.toTuple() as InitializeCall_vaultParamsStruct;
+    return this._call.inputValues[1].value.toTuple() as InitializeCall_vaultParamsStruct;
   }
 }
 
@@ -2119,6 +2248,48 @@ export class InitializeCall__Outputs {
 
   constructor(call: InitializeCall) {
     this._call = call;
+  }
+}
+
+export class InitializeCall_initParamsStruct extends ethereum.Tuple {
+  get _owner(): Address {
+    return this[0].toAddress();
+  }
+
+  get _keeper(): Address {
+    return this[1].toAddress();
+  }
+
+  get _feeRecipient(): Address {
+    return this[2].toAddress();
+  }
+
+  get _managementFee(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get _performanceFee(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get _tokenName(): string {
+    return this[5].toString();
+  }
+
+  get _tokenSymbol(): string {
+    return this[6].toString();
+  }
+
+  get _optionsPremiumPricer(): Address {
+    return this[7].toAddress();
+  }
+
+  get _strikeSelection(): Address {
+    return this[8].toAddress();
+  }
+
+  get _premiumDiscount(): BigInt {
+    return this[9].toBigInt();
   }
 }
 
@@ -2376,6 +2547,36 @@ export class SetFeeRecipientCall__Outputs {
   }
 }
 
+export class SetLiquidityGaugeCall extends ethereum.Call {
+  get inputs(): SetLiquidityGaugeCall__Inputs {
+    return new SetLiquidityGaugeCall__Inputs(this);
+  }
+
+  get outputs(): SetLiquidityGaugeCall__Outputs {
+    return new SetLiquidityGaugeCall__Outputs(this);
+  }
+}
+
+export class SetLiquidityGaugeCall__Inputs {
+  _call: SetLiquidityGaugeCall;
+
+  constructor(call: SetLiquidityGaugeCall) {
+    this._call = call;
+  }
+
+  get newLiquidityGauge(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetLiquidityGaugeCall__Outputs {
+  _call: SetLiquidityGaugeCall;
+
+  constructor(call: SetLiquidityGaugeCall) {
+    this._call = call;
+  }
+}
+
 export class SetManagementFeeCall extends ethereum.Call {
   get inputs(): SetManagementFeeCall__Inputs {
     return new SetManagementFeeCall__Inputs(this);
@@ -2402,6 +2603,36 @@ export class SetManagementFeeCall__Outputs {
   _call: SetManagementFeeCall;
 
   constructor(call: SetManagementFeeCall) {
+    this._call = call;
+  }
+}
+
+export class SetMinPriceCall extends ethereum.Call {
+  get inputs(): SetMinPriceCall__Inputs {
+    return new SetMinPriceCall__Inputs(this);
+  }
+
+  get outputs(): SetMinPriceCall__Outputs {
+    return new SetMinPriceCall__Outputs(this);
+  }
+}
+
+export class SetMinPriceCall__Inputs {
+  _call: SetMinPriceCall;
+
+  constructor(call: SetMinPriceCall) {
+    this._call = call;
+  }
+
+  get minPrice(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class SetMinPriceCall__Outputs {
+  _call: SetMinPriceCall;
+
+  constructor(call: SetMinPriceCall) {
     this._call = call;
   }
 }
@@ -2586,28 +2817,102 @@ export class SetStrikeSelectionCall__Outputs {
   }
 }
 
-export class StartAuctionCall extends ethereum.Call {
-  get inputs(): StartAuctionCall__Inputs {
-    return new StartAuctionCall__Inputs(this);
+export class SettleOfferCall extends ethereum.Call {
+  get inputs(): SettleOfferCall__Inputs {
+    return new SettleOfferCall__Inputs(this);
   }
 
-  get outputs(): StartAuctionCall__Outputs {
-    return new StartAuctionCall__Outputs(this);
+  get outputs(): SettleOfferCall__Outputs {
+    return new SettleOfferCall__Outputs(this);
   }
 }
 
-export class StartAuctionCall__Inputs {
-  _call: StartAuctionCall;
+export class SettleOfferCall__Inputs {
+  _call: SettleOfferCall;
 
-  constructor(call: StartAuctionCall) {
+  constructor(call: SettleOfferCall) {
+    this._call = call;
+  }
+
+  get bids(): Array<SettleOfferCallBidsStruct> {
+    return this._call.inputValues[0].value.toTupleArray<
+      SettleOfferCallBidsStruct
+    >();
+  }
+}
+
+export class SettleOfferCall__Outputs {
+  _call: SettleOfferCall;
+
+  constructor(call: SettleOfferCall) {
     this._call = call;
   }
 }
 
-export class StartAuctionCall__Outputs {
-  _call: StartAuctionCall;
+export class SettleOfferCallBidsStruct extends ethereum.Tuple {
+  get swapId(): BigInt {
+    return this[0].toBigInt();
+  }
 
-  constructor(call: StartAuctionCall) {
+  get nonce(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get signerWallet(): Address {
+    return this[2].toAddress();
+  }
+
+  get sellAmount(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get buyAmount(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get referrer(): Address {
+    return this[5].toAddress();
+  }
+
+  get v(): i32 {
+    return this[6].toI32();
+  }
+
+  get r(): Bytes {
+    return this[7].toBytes();
+  }
+
+  get s(): Bytes {
+    return this[8].toBytes();
+  }
+}
+
+export class StakeCall extends ethereum.Call {
+  get inputs(): StakeCall__Inputs {
+    return new StakeCall__Inputs(this);
+  }
+
+  get outputs(): StakeCall__Outputs {
+    return new StakeCall__Outputs(this);
+  }
+}
+
+export class StakeCall__Inputs {
+  _call: StakeCall;
+
+  constructor(call: StakeCall) {
+    this._call = call;
+  }
+
+  get numShares(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class StakeCall__Outputs {
+  _call: StakeCall;
+
+  constructor(call: StakeCall) {
     this._call = call;
   }
 }

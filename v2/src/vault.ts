@@ -591,7 +591,7 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handlePause(event: Pause): void {
-  let vaultAddress = event.address.toHexString();
+  let vaultAddress = event.params.vaultAddress.toHexString();
   let vault = Vault.load(vaultAddress);
   let txid =
     vaultAddress +
@@ -600,7 +600,7 @@ export function handlePause(event: Pause): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  let vaultContract = RibbonThetaVault.bind(event.address);
+  let vaultContract = RibbonThetaVault.bind(event.params.vaultAddress);
 
   let decimals = vault.underlyingDecimals;
   let underlyingAmount = sharesToAssets(

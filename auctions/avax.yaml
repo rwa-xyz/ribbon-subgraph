@@ -41,9 +41,9 @@ dataSources:
     name: SwapContract
     network: avalanche
     source:
-      address: "0x907a3535EE5275e4af7E6c8A642c0F9443da1Dc2"
+      address: "0x15988ceA1F11D62e63bAa02B0e8B3046942983c0"
       abi: SwapContract
-      startBlock: 16406297
+      startBlock: 17220043
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

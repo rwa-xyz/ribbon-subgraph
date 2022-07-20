@@ -292,12 +292,46 @@ dataSources:
         - event: AuctionCleared(indexed uint256,uint96,uint96,bytes32)
           handler: handleAuctionCleared
   - kind: ethereum/contract
-    name: RibbonSwap
+    name: RibbonSwapOld
     network: mainnet
     source:
       address: "0xF0E5c92cEdd66C7985C354C35e2bC37E685b99Da"
       abi: SwapContract
       startBlock: 14740669
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/vault.ts
+      entities:
+        - Vault
+        - VaultShortPosition
+        - VaultOptionTrade
+        - VaultTransaction
+        - VaultAccount
+        - BalanceUpdate
+        - SwapOffer
+      abis:
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
+        - name: SwapContract
+          file: ./abis/SwapContract.json
+      eventHandlers:
+        - event: SettleOffer(uint256)
+          handler: handleSettleOffer
+        - event: Swap(indexed uint256,uint256,indexed address,uint256,uint256,address,uint256)
+          handler: handleSwap
+        - event: NewOffer(uint256,address,address,address,uint256,uint256,uint256)
+          handler: handleNewOffer
+  - kind: ethereum/contract
+    name: RibbonSwap
+    network: mainnet
+    source:
+      address: "0xEb8CAB2F4663247db8eAfb556F498c861bB4e161"
+      abi: SwapContract
+      startBlock: 15126067
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -551,6 +585,8 @@ dataSources:
       abis:
         - name: RibbonVaultPauser
           file: ./abis/RibbonVaultPauser.json
+        - name: RibbonThetaVault
+          file: ./abis/RibbonThetaVault.json
       eventHandlers:
         - event: Pause(indexed address,indexed address,uint256,uint256)
           handler: handlePause
