@@ -51,6 +51,11 @@ export function getLiquidityGaugePoolsMap(): TypedMap<string, string> {
       "0x8913eab16a302de3e498bba39940e7a55c0b9325",
       "0x65a833afdc250d9d38f8cd9bc2b1e3132db13b2f"
     );
+    // RETH Call
+    gaugeMap.set(
+      "0x4ba4afa8071b0a9fe3097700cdade02dd0e16fd0",
+      "0xa1da0580fa96129e753d736a5901c31df5ec5edf"
+    );
   } else if (dataSource.network() == "kovan") {
     // ETH Put
     gaugeMap.set(
