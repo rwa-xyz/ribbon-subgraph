@@ -9,7 +9,7 @@ import {
   InitiateWithdraw,
   InstantWithdraw,
   CollectVaultFees
-} from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+} from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import {
   Pause,
   Resume
@@ -21,11 +21,9 @@ import {
   GnosisAuction,
   VaultOptionTrade,
   VaultTransaction,
-  VaultAccount,
-  VaultPerformanceUpdate,
   SwapOffer
 } from "../generated/schema";
-import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import { OptionsPremiumPricer } from "../generated/RibbonETHCoveredCall/OptionsPremiumPricer";
 import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
 import { AuctionCleared } from "../generated/GnosisAuction/GnosisAuction";
@@ -40,51 +38,18 @@ import {
   refreshAllAccountBalances,
   triggerBalanceUpdate
 } from "./accounts";
-import { getOtokenMintAmount, getPricePerShare, sharesToAssets } from "./utils";
+import {
+  getOrCreateVault,
+  newVault,
+  getOtokenMintAmount,
+  getPricePerShare,
+  sharesToAssets
+} from "./utils";
 import {
   finalizePrevRoundVaultPerformance,
   updateVaultPerformance
 } from "./vaultPerformance";
-import { getVaultStartRound, ignoreTransfer } from "./data/constant";
-
-function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
-  let vault = new Vault(vaultAddress);
-  let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
-  let assetAddress = vaultContract.vaultParams().value2;
-  let asset = Otoken.bind(assetAddress);
-
-  vault.name = vaultContract.name();
-  vault.symbol = vaultContract.symbol();
-  vault.numDepositors = 0;
-  vault.depositors = [];
-  vault.totalPremiumEarned = BigInt.fromI32(0);
-  vault.totalNominalVolume = BigInt.fromI32(0);
-  vault.totalNotionalVolume = BigInt.fromI32(0);
-  vault.cap = vaultContract.cap();
-  vault.round = 1;
-  vault.totalBalance = vaultContract.totalBalance();
-  vault.underlyingAsset = assetAddress;
-  vault.underlyingName = asset.name();
-  vault.underlyingSymbol = asset.symbol();
-  vault.underlyingDecimals = asset.decimals();
-  vault.performanceFeeCollected = BigInt.fromI32(0);
-  vault.managementFeeCollected = BigInt.fromI32(0);
-  vault.totalFeeCollected = BigInt.fromI32(0);
-
-  if (getVaultStartRound(vault.symbol) == 0) {
-    // We create an initial VaultPerformanceUpdate with the default pricePerShare
-    let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
-    performanceUpdate.vault = vault.id;
-    performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
-      u8(vault.underlyingDecimals)
-    );
-    performanceUpdate.timestamp = creationTimestamp;
-    performanceUpdate.round = 0;
-    performanceUpdate.save();
-  }
-
-  return vault;
-}
+import { ignoreTransfer } from "./data/constant";
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
@@ -115,7 +80,8 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.save();
 
   // Increment vault round and then update total notional volume of vault
-  let vault = Vault.load(event.address.toHexString());
+  let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
+
   vault.round = vault.round + 1;
   // We first need to get the underlying price of the asset
   let vaultContract = RibbonThetaVault.bind(event.address);
@@ -148,14 +114,11 @@ export function handleCloseShort(event: CloseShort): void {
   let shortPosition = VaultShortPosition.load(
     event.params.options.toHexString()
   );
+  let timestamp = event.block.timestamp.toI32();
   if (shortPosition != null) {
-    let vault = Vault.load(vaultAddress);
-    if (vault == null) {
-      vault = newVault(vaultAddress, event.block.timestamp.toI32());
-    }
-    vault.save();
+    getOrCreateVault(vaultAddress, timestamp);
 
-    updateVaultPerformance(vaultAddress, event.block.timestamp.toI32());
+    updateVaultPerformance(vaultAddress, timestamp);
 
     let loss = shortPosition.depositAmount - event.params.withdrawAmount;
     shortPosition.loss = loss;
@@ -232,7 +195,11 @@ export function handleAuctionCleared(event: AuctionCleared): void {
   optionTrade.txhash = event.transaction.hash;
   optionTrade.save();
 
-  shortPosition.premiumEarned = shortPosition.premiumEarned.plus(totalPremium);
+  if (shortPosition.premiumEarned === null) {
+    shortPosition.premiumEarned = totalPremium;
+  } else {
+    shortPosition.premiumEarned += totalPremium;
+  }
   shortPosition.save();
 
   vault.totalPremiumEarned = vault.totalPremiumEarned.plus(totalPremium);
@@ -317,7 +284,12 @@ export function handleSettleOffer(event: SettleOffer): void {
   optionTrade.txhash = event.transaction.hash;
   optionTrade.save();
 
-  shortPosition.premiumEarned = shortPosition.premiumEarned.plus(totalPremium);
+  if (shortPosition.premiumEarned === null) {
+    shortPosition.premiumEarned = totalPremium;
+  } else {
+    shortPosition.premiumEarned += totalPremium;
+  }
+
   shortPosition.save();
 
   vault.totalPremiumEarned = vault.totalPremiumEarned.plus(totalPremium);
@@ -331,6 +303,16 @@ export function handleSettleOffer(event: SettleOffer): void {
 
 export function handleDeposit(event: Deposit): void {
   let vaultAddress = event.address.toHexString();
+
+  // Dont handle any deposit into AVAX vaults if less than 0.001 AVAX
+  if (
+    vaultAddress == "0x98d03125c62dae2328d9d3cb32b7b969e6a87787" &&
+    event.params.amount < BigInt.fromString("1000000000000000")
+  ) {
+    log.error("Ignoring deposit {}", [event.transaction.hash.toHexString()])
+    return;
+  }
+
   let vault = Vault.load(vaultAddress);
 
   if (vault == null) {
@@ -375,7 +357,7 @@ export function handleDeposit(event: Deposit): void {
 
 export function handleInitiateWithdraw(event: InitiateWithdraw): void {
   let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
   let vaultAccount = createVaultAccount(event.address, event.params.account);
   vaultAccount.save();
 
@@ -467,8 +449,8 @@ export function handleInstantWithdraw(event: InstantWithdraw): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  let vaultAccountID = vaultAddress + "-" + event.params.account.toHexString();
-  let vaultAccount = VaultAccount.load(vaultAccountID);
+  let vaultAccount = createVaultAccount(event.address, event.params.account);
+
   vaultAccount.totalDeposits = vaultAccount.totalDeposits - event.params.amount;
   vaultAccount.save();
 
@@ -514,7 +496,7 @@ export function handleTransfer(event: Transfer): void {
   }
 
   let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
   let txid =
     vaultAddress +
     "-" +
@@ -592,7 +574,7 @@ export function handleTransfer(event: Transfer): void {
 
 export function handlePause(event: Pause): void {
   let vaultAddress = event.params.vaultAddress.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
   let txid =
     vaultAddress +
     "-" +
@@ -683,7 +665,7 @@ export function newTransaction(
 
 export function handleCollectVaultFees(event: CollectVaultFees): void {
   let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
 
   let performanceFee = event.params.performanceFee;
   let totalFee = event.params.vaultFee;

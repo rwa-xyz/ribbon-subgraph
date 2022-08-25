@@ -138,6 +138,14 @@ export class RibbonVaultPauser__pausedPositionsResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
   }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getShares(): BigInt {
+    return this.value1;
+  }
 }
 
 export class RibbonVaultPauser extends ethereum.SmartContract {
@@ -203,7 +211,9 @@ export class RibbonVaultPauser extends ethereum.SmartContract {
       ]
     );
 
-    return result[0].toTuple() as RibbonVaultPauser__getPausePositionResultValue0Struct;
+    return changetype<RibbonVaultPauser__getPausePositionResultValue0Struct>(
+      result[0].toTuple()
+    );
   }
 
   try_getPausePosition(
@@ -225,7 +235,9 @@ export class RibbonVaultPauser extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTuple() as RibbonVaultPauser__getPausePositionResultValue0Struct
+      changetype<RibbonVaultPauser__getPausePositionResultValue0Struct>(
+        value[0].toTuple()
+      )
     );
   }
 

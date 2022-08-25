@@ -20,8 +20,8 @@
     "deploy-treasury": "graph deploy ribbon-finance/ribbon-treasury --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ treasury.subgraph.yaml"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.20.1",
-    "@graphprotocol/graph-ts": "^0.20.0"
+    "@graphprotocol/graph-cli": "0.33.0",
+    "@graphprotocol/graph-ts": "0.27.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

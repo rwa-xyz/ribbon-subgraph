@@ -236,36 +236,6 @@ export class ManagementFeeSet__Params {
   }
 }
 
-export class InitiateGnosisAuction extends ethereum.Event {
-  get params(): InitiateGnosisAuction__Params {
-    return new InitiateGnosisAuction__Params(this);
-  }
-}
-
-export class InitiateGnosisAuction__Params {
-  _event: InitiateGnosisAuction;
-
-  constructor(event: InitiateGnosisAuction) {
-    this._event = event;
-  }
-
-  get auctioningToken(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get biddingToken(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get auctionCounter(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get manager(): Address {
-    return this._event.parameters[3].value.toAddress();
-  }
-}
-
 export class NewOffer extends ethereum.Event {
   get params(): NewOffer__Params {
     return new NewOffer__Params(this);
@@ -400,28 +370,6 @@ export class PerformanceFeeSet__Params {
   }
 }
 
-export class PremiumDiscountSet extends ethereum.Event {
-  get params(): PremiumDiscountSet__Params {
-    return new PremiumDiscountSet__Params(this);
-  }
-}
-
-export class PremiumDiscountSet__Params {
-  _event: PremiumDiscountSet;
-
-  constructor(event: PremiumDiscountSet) {
-    this._event = event;
-  }
-
-  get premiumDiscount(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get newPremiumDiscount(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
 export class Redeem extends ethereum.Event {
   get params(): Redeem__Params {
     return new Redeem__Params(this);
@@ -500,6 +448,62 @@ export class Withdraw__Params {
   }
 }
 
+export class Deposit1 extends ethereum.Event {
+  get params(): Deposit1__Params {
+    return new Deposit1__Params(this);
+  }
+}
+
+export class Deposit1__Params {
+  _event: Deposit1;
+
+  constructor(event: Deposit1) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get round(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class InitiateGnosisAuction extends ethereum.Event {
+  get params(): InitiateGnosisAuction__Params {
+    return new InitiateGnosisAuction__Params(this);
+  }
+}
+
+export class InitiateGnosisAuction__Params {
+  _event: InitiateGnosisAuction;
+
+  constructor(event: InitiateGnosisAuction) {
+    this._event = event;
+  }
+
+  get auctioningToken(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get biddingToken(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get auctionCounter(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get manager(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
+}
+
 export class RibbonThetaVaultWithSwap__depositReceiptsResult {
   value0: i32;
   value1: BigInt;
@@ -521,6 +525,18 @@ export class RibbonThetaVaultWithSwap__depositReceiptsResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getAmount(): BigInt {
+    return this.value1;
+  }
+
+  getUnredeemedShares(): BigInt {
+    return this.value2;
+  }
 }
 
 export class RibbonThetaVaultWithSwap__optionStateResult {
@@ -541,6 +557,18 @@ export class RibbonThetaVaultWithSwap__optionStateResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
+
+  getNextOption(): Address {
+    return this.value0;
+  }
+
+  getCurrentOption(): Address {
+    return this.value1;
+  }
+
+  getNextOptionReadyAt(): BigInt {
+    return this.value2;
+  }
 }
 
 export class RibbonThetaVaultWithSwap__shareBalancesResult {
@@ -557,6 +585,14 @@ export class RibbonThetaVaultWithSwap__shareBalancesResult {
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
+  }
+
+  getHeldByAccount(): BigInt {
+    return this.value0;
+  }
+
+  getHeldByVault(): BigInt {
+    return this.value1;
   }
 }
 
@@ -597,6 +633,30 @@ export class RibbonThetaVaultWithSwap__vaultParamsResult {
     map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
     return map;
   }
+
+  getIsPut(): boolean {
+    return this.value0;
+  }
+
+  getDecimals(): i32 {
+    return this.value1;
+  }
+
+  getAsset(): Address {
+    return this.value2;
+  }
+
+  getUnderlying(): Address {
+    return this.value3;
+  }
+
+  getMinimumSupply(): BigInt {
+    return this.value4;
+  }
+
+  getCap(): BigInt {
+    return this.value5;
+  }
 }
 
 export class RibbonThetaVaultWithSwap__vaultStateResult {
@@ -632,6 +692,26 @@ export class RibbonThetaVaultWithSwap__vaultStateResult {
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     return map;
   }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getLockedAmount(): BigInt {
+    return this.value1;
+  }
+
+  getLastLockedAmount(): BigInt {
+    return this.value2;
+  }
+
+  getTotalPending(): BigInt {
+    return this.value3;
+  }
+
+  getQueuedWithdrawShares(): BigInt {
+    return this.value4;
+  }
 }
 
 export class RibbonThetaVaultWithSwap__withdrawalsResult {
@@ -651,6 +731,14 @@ export class RibbonThetaVaultWithSwap__withdrawalsResult {
     );
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
+  }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getShares(): BigInt {
+    return this.value1;
   }
 }
 
@@ -1730,6 +1818,21 @@ export class RibbonThetaVaultWithSwap extends ethereum.SmartContract {
     );
   }
 
+  vaultPauser(): Address {
+    let result = super.call("vaultPauser", "vaultPauser():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_vaultPauser(): ethereum.CallResult<Address> {
+    let result = super.tryCall("vaultPauser", "vaultPauser():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   vaultState(): RibbonThetaVaultWithSwap__vaultStateResult {
     let result = super.call(
       "vaultState",
@@ -1995,32 +2098,6 @@ export class CompleteWithdrawCall__Outputs {
   }
 }
 
-export class CreateOfferCall extends ethereum.Call {
-  get inputs(): CreateOfferCall__Inputs {
-    return new CreateOfferCall__Inputs(this);
-  }
-
-  get outputs(): CreateOfferCall__Outputs {
-    return new CreateOfferCall__Outputs(this);
-  }
-}
-
-export class CreateOfferCall__Inputs {
-  _call: CreateOfferCall;
-
-  constructor(call: CreateOfferCall) {
-    this._call = call;
-  }
-}
-
-export class CreateOfferCall__Outputs {
-  _call: CreateOfferCall;
-
-  constructor(call: CreateOfferCall) {
-    this._call = call;
-  }
-}
-
 export class DecreaseAllowanceCall extends ethereum.Call {
   get inputs(): DecreaseAllowanceCall__Inputs {
     return new DecreaseAllowanceCall__Inputs(this);
@@ -2235,11 +2312,15 @@ export class InitializeCall__Inputs {
   }
 
   get _initParams(): InitializeCall_initParamsStruct {
-    return this._call.inputValues[0].value.toTuple() as InitializeCall_initParamsStruct;
+    return changetype<InitializeCall_initParamsStruct>(
+      this._call.inputValues[0].value.toTuple()
+    );
   }
 
   get _vaultParams(): InitializeCall_vaultParamsStruct {
-    return this._call.inputValues[1].value.toTuple() as InitializeCall_vaultParamsStruct;
+    return changetype<InitializeCall_vaultParamsStruct>(
+      this._call.inputValues[1].value.toTuple()
+    );
   }
 }
 
@@ -2286,10 +2367,6 @@ export class InitializeCall_initParamsStruct extends ethereum.Tuple {
 
   get _strikeSelection(): Address {
     return this[8].toAddress();
-  }
-
-  get _premiumDiscount(): BigInt {
-    return this[9].toBigInt();
   }
 }
 
@@ -2375,6 +2452,32 @@ export class MaxRedeemCall__Outputs {
   }
 }
 
+export class PausePositionCall extends ethereum.Call {
+  get inputs(): PausePositionCall__Inputs {
+    return new PausePositionCall__Inputs(this);
+  }
+
+  get outputs(): PausePositionCall__Outputs {
+    return new PausePositionCall__Outputs(this);
+  }
+}
+
+export class PausePositionCall__Inputs {
+  _call: PausePositionCall;
+
+  constructor(call: PausePositionCall) {
+    this._call = call;
+  }
+}
+
+export class PausePositionCall__Outputs {
+  _call: PausePositionCall;
+
+  constructor(call: PausePositionCall) {
+    this._call = call;
+  }
+}
+
 export class RedeemCall extends ethereum.Call {
   get inputs(): RedeemCall__Inputs {
     return new RedeemCall__Inputs(this);
@@ -2453,36 +2556,6 @@ export class RollToNextOptionCall__Outputs {
   _call: RollToNextOptionCall;
 
   constructor(call: RollToNextOptionCall) {
-    this._call = call;
-  }
-}
-
-export class SetAuctionDurationCall extends ethereum.Call {
-  get inputs(): SetAuctionDurationCall__Inputs {
-    return new SetAuctionDurationCall__Inputs(this);
-  }
-
-  get outputs(): SetAuctionDurationCall__Outputs {
-    return new SetAuctionDurationCall__Outputs(this);
-  }
-}
-
-export class SetAuctionDurationCall__Inputs {
-  _call: SetAuctionDurationCall;
-
-  constructor(call: SetAuctionDurationCall) {
-    this._call = call;
-  }
-
-  get newAuctionDuration(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class SetAuctionDurationCall__Outputs {
-  _call: SetAuctionDurationCall;
-
-  constructor(call: SetAuctionDurationCall) {
     this._call = call;
   }
 }
@@ -2727,36 +2800,6 @@ export class SetPerformanceFeeCall__Outputs {
   }
 }
 
-export class SetPremiumDiscountCall extends ethereum.Call {
-  get inputs(): SetPremiumDiscountCall__Inputs {
-    return new SetPremiumDiscountCall__Inputs(this);
-  }
-
-  get outputs(): SetPremiumDiscountCall__Outputs {
-    return new SetPremiumDiscountCall__Outputs(this);
-  }
-}
-
-export class SetPremiumDiscountCall__Inputs {
-  _call: SetPremiumDiscountCall;
-
-  constructor(call: SetPremiumDiscountCall) {
-    this._call = call;
-  }
-
-  get newPremiumDiscount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class SetPremiumDiscountCall__Outputs {
-  _call: SetPremiumDiscountCall;
-
-  constructor(call: SetPremiumDiscountCall) {
-    this._call = call;
-  }
-}
-
 export class SetStrikePriceCall extends ethereum.Call {
   get inputs(): SetStrikePriceCall__Inputs {
     return new SetStrikePriceCall__Inputs(this);
@@ -2813,6 +2856,36 @@ export class SetStrikeSelectionCall__Outputs {
   _call: SetStrikeSelectionCall;
 
   constructor(call: SetStrikeSelectionCall) {
+    this._call = call;
+  }
+}
+
+export class SetVaultPauserCall extends ethereum.Call {
+  get inputs(): SetVaultPauserCall__Inputs {
+    return new SetVaultPauserCall__Inputs(this);
+  }
+
+  get outputs(): SetVaultPauserCall__Outputs {
+    return new SetVaultPauserCall__Outputs(this);
+  }
+}
+
+export class SetVaultPauserCall__Inputs {
+  _call: SetVaultPauserCall;
+
+  constructor(call: SetVaultPauserCall) {
+    this._call = call;
+  }
+
+  get newVaultPauser(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class SetVaultPauserCall__Outputs {
+  _call: SetVaultPauserCall;
+
+  constructor(call: SetVaultPauserCall) {
     this._call = call;
   }
 }

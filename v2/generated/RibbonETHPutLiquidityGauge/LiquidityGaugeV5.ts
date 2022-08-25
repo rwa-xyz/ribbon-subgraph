@@ -1046,7 +1046,9 @@ export class LiquidityGaugeV5 extends ethereum.SmartContract {
       [ethereum.Value.fromAddress(arg0)]
     );
 
-    return result[0].toTuple() as LiquidityGaugeV5__reward_dataResultValue0Struct;
+    return changetype<LiquidityGaugeV5__reward_dataResultValue0Struct>(
+      result[0].toTuple()
+    );
   }
 
   try_reward_data(
@@ -1062,7 +1064,9 @@ export class LiquidityGaugeV5 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTuple() as LiquidityGaugeV5__reward_dataResultValue0Struct
+      changetype<LiquidityGaugeV5__reward_dataResultValue0Struct>(
+        value[0].toTuple()
+      )
     );
   }
 

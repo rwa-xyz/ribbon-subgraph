@@ -1,5 +1,8 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { Otoken } from "../generated/RibbonETHCoveredCall/Otoken";
+import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
+import { Vault, VaultPerformanceUpdate } from "../generated/schema";
+import { getVaultStartRound } from "./data/constant";
 
 let WAD = BigInt.fromString("1000000000000000000");
 let OTOKEN_DECIMALS = BigInt.fromString("100000000");
@@ -67,4 +70,52 @@ export function getTotalPendingDeposit(
     return depositAmount;
   }
   return BigInt.fromI32(0);
+}
+
+export function getOrCreateVault(vaultAddress: string, timestamp: i32): Vault {
+  let vault = Vault.load(vaultAddress);
+  if (vault === null) {
+    vault = newVault(vaultAddress, timestamp);
+    vault.save();
+  }
+  return vault;
+}
+
+export function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
+  let vault = new Vault(vaultAddress);
+  let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
+  let assetAddress = vaultContract.vaultParams().value2;
+  let asset = Otoken.bind(assetAddress);
+
+  vault.name = vaultContract.name();
+  vault.symbol = vaultContract.symbol();
+  vault.numDepositors = 0;
+  vault.depositors = [];
+  vault.totalPremiumEarned = BigInt.fromI32(0);
+  vault.totalNominalVolume = BigInt.fromI32(0);
+  vault.totalNotionalVolume = BigInt.fromI32(0);
+  vault.cap = vaultContract.cap();
+  vault.round = 1;
+  vault.totalBalance = vaultContract.totalBalance();
+  vault.underlyingAsset = assetAddress;
+  vault.underlyingName = asset.name();
+  vault.underlyingSymbol = asset.symbol();
+  vault.underlyingDecimals = asset.decimals();
+  vault.performanceFeeCollected = BigInt.fromI32(0);
+  vault.managementFeeCollected = BigInt.fromI32(0);
+  vault.totalFeeCollected = BigInt.fromI32(0);
+
+  if (getVaultStartRound(vault.symbol) == 0) {
+    // We create an initial VaultPerformanceUpdate with the default pricePerShare
+    let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
+    performanceUpdate.vault = vault.id;
+    performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
+      u8(vault.underlyingDecimals)
+    );
+    performanceUpdate.timestamp = creationTimestamp;
+    performanceUpdate.round = 0;
+    performanceUpdate.save();
+  }
+
+  return vault;
 }

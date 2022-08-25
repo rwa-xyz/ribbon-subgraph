@@ -1,13 +1,14 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
-import { Vault, VaultPerformanceUpdate } from "../generated/schema";
+import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
+import { VaultPerformanceUpdate } from "../generated/schema";
 import { getVaultStartRound } from "./data/constant";
+import { getOrCreateVault } from "./utils";
 
 export function updateVaultPerformance(
   vaultAddress: string,
   timestamp: number
 ): void {
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, i32(timestamp));
   let round = vault.round;
   let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
   let vaultPerformanceUpdateId = vault.id + "-" + round.toString();
@@ -51,7 +52,7 @@ export function finalizePrevRoundVaultPerformance(
   vaultAddress: string,
   timestamp: number
 ): void {
-  let vault = Vault.load(vaultAddress);
+  let vault = getOrCreateVault(vaultAddress, i32(timestamp));
   let finalizeRound = vault.round - 1;
   let vaultContract = RibbonThetaVault.bind(Address.fromString(vaultAddress));
   let vaultPerformanceUpdateId = vault.id + "-" + finalizeRound.toString();

@@ -237,6 +237,14 @@ export class SwapContract__checkResult {
     map.set("value1", ethereum.Value.fromFixedBytesArray(this.value1));
     return map;
   }
+
+  getValue0(): BigInt {
+    return this.value0;
+  }
+
+  getValue1(): Array<Bytes> {
+    return this.value1;
+  }
 }
 
 export class SwapContract__checkInputBidStruct extends ethereum.Tuple {
@@ -318,6 +326,38 @@ export class SwapContract__swapOffersResult {
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
     return map;
+  }
+
+  getSeller(): Address {
+    return this.value0;
+  }
+
+  getOToken(): Address {
+    return this.value1;
+  }
+
+  getMinPrice(): BigInt {
+    return this.value2;
+  }
+
+  getBiddingToken(): Address {
+    return this.value3;
+  }
+
+  getMinBidSize(): BigInt {
+    return this.value4;
+  }
+
+  getTotalSize(): BigInt {
+    return this.value5;
+  }
+
+  getAvailableSize(): BigInt {
+    return this.value6;
+  }
+
+  getTotalSales(): BigInt {
+    return this.value7;
   }
 }
 

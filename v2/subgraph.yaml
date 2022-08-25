@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -7,11 +7,11 @@ dataSources:
     network: mainnet
     source:
       address: "0x25751853Eab4D0eB3652B5eB6ecB102A2789644B"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 13201665
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -20,8 +20,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -54,7 +56,7 @@ dataSources:
       startBlock: 13195539
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -65,8 +67,8 @@ dataSources:
       abis:
         - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -97,11 +99,11 @@ dataSources:
     network: mainnet
     source:
       address: "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 13536539
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -110,8 +112,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -140,11 +144,11 @@ dataSources:
     network: mainnet
     source:
       address: "0x53773E034d9784153471813dacAFF53dBBB78E8c"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 13670377
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -153,8 +157,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -183,11 +189,11 @@ dataSources:
     network: mainnet
     source:
       address: "0xA1Da0580FA96129E753D736a5901C31Df5eC5edf"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 14978392
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -196,8 +202,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -226,11 +234,11 @@ dataSources:
     network: mainnet
     source:
       address: "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 14419690
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -239,8 +247,10 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -273,7 +283,7 @@ dataSources:
       startBlock: 13195539
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -284,8 +294,8 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: GnosisAuction
           file: ./abis/GnosisEasyAuction.json
       eventHandlers:
@@ -300,7 +310,7 @@ dataSources:
       startBlock: 14740669
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -314,8 +324,8 @@ dataSources:
       abis:
         - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: SwapContract
           file: ./abis/SwapContract.json
       eventHandlers:
@@ -334,7 +344,7 @@ dataSources:
       startBlock: 15126067
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -348,8 +358,8 @@ dataSources:
       abis:
         - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: SwapContract
           file: ./abis/SwapContract.json
       eventHandlers:
@@ -364,11 +374,11 @@ dataSources:
     network: mainnet
     source:
       address: "0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624"
-      abi: RibbonThetaVault
+      abi: RibbonThetaVaultWithSwap
       startBlock: 13757633
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -377,8 +387,8 @@ dataSources:
         - VaultAccount
         - BalanceUpdate
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -411,7 +421,7 @@ dataSources:
       startBlock: 13769714
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/yearn.ts
       entities:
@@ -421,8 +431,8 @@ dataSources:
       abis:
         - name: yvHEGIC
           file: ./abis/yvHEGIC.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
       eventHandlers:
         - event: StrategyReported(indexed address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleStrategyReported
@@ -435,7 +445,7 @@ dataSources:
       startBlock: 14285441
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -443,8 +453,8 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:
@@ -463,7 +473,7 @@ dataSources:
       startBlock: 14285606
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -471,8 +481,8 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:
@@ -491,7 +501,7 @@ dataSources:
       startBlock: 14285611
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -499,8 +509,8 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:
@@ -519,7 +529,7 @@ dataSources:
       startBlock: 14285617
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -527,8 +537,8 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:
@@ -547,7 +557,7 @@ dataSources:
       startBlock: 14285622
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -555,8 +565,8 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:
@@ -603,7 +613,7 @@ dataSources:
       startBlock: 14920856
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -613,8 +623,8 @@ dataSources:
       abis:
         - name: RibbonVaultPauser
           file: ./abis/RibbonVaultPauser.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
       eventHandlers:
         - event: Pause(indexed address,indexed address,uint256,uint256)
           handler: handlePause

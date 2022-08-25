@@ -1,5 +1,5 @@
 import { Address, dataSource, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Transfer } from "../../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { Transfer } from "../../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 
 /**
  * This function return the round of a vault officially started

@@ -1,5 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import {
   Deposit,
   Transfer,
@@ -8,8 +7,7 @@ import {
 import { createVaultAccount, triggerBalanceUpdate } from "./accounts";
 import { searchLiquidityGaugePoolsVaultAddress } from "./data/constant";
 import { newTransaction } from "./vault";
-import { sharesToAssets, getPricePerShare } from "./utils";
-import { Vault } from "../generated/schema";
+import { sharesToAssets, getPricePerShare, getOrCreateVault } from "./utils";
 
 export function handleStake(event: Deposit): void {
   let vaultAddress = searchLiquidityGaugePoolsVaultAddress(event.address);
@@ -21,7 +19,10 @@ export function handleStake(event: Deposit): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  let vault = Vault.load(vaultAddress.toHexString());
+  let vault = getOrCreateVault(
+    vaultAddress.toHexString(),
+    event.block.timestamp.toI32()
+  );
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params.value,
@@ -66,7 +67,10 @@ export function handleUnstake(event: Withdraw): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  let vault = Vault.load(vaultAddress.toHexString());
+  let vault = getOrCreateVault(
+    vaultAddress.toHexString(),
+    event.block.timestamp.toI32()
+  );
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params.value,
@@ -123,7 +127,10 @@ export function handleTransfer(event: Transfer): void {
     "-" +
     event.transactionLogIndex.toString();
 
-  let vault = Vault.load(vaultAddress.toHexString());
+  let vault = getOrCreateVault(
+    vaultAddress.toHexString(),
+    event.block.timestamp.toI32()
+  );
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params._value,

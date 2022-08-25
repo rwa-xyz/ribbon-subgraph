@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -11,7 +11,7 @@ dataSources:
       startBlock: 14125579
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -23,8 +23,8 @@ dataSources:
       abis:
         - name: RibbonTreasuryVault
           file: ./abis/RibbonTreasuryVault.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -57,7 +57,7 @@ dataSources:
       startBlock: 15038080
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -69,8 +69,8 @@ dataSources:
       abis:
         - name: RibbonTreasuryVault
           file: ./abis/RibbonTreasuryVault.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -103,7 +103,7 @@ dataSources:
       startBlock: 15034009
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -115,8 +115,8 @@ dataSources:
       abis:
         - name: RibbonTreasuryVault
           file: ./abis/RibbonTreasuryVault.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -146,10 +146,10 @@ dataSources:
     source:
       address: "0x42cf874bBe5564EfCF252bC90829551f4ec639DC"
       abi: RibbonTreasuryVault
-      startBlock:	15164332
+      startBlock: 15164332
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -161,8 +161,8 @@ dataSources:
       abis:
         - name: RibbonTreasuryVault
           file: ./abis/RibbonTreasuryVault.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: Otoken
           file: ./abis/Otoken.json
         - name: OptionsPremiumPricer
@@ -195,7 +195,7 @@ dataSources:
       startBlock: 14125579
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/vault.ts
       entities:
@@ -209,8 +209,8 @@ dataSources:
       abis:
         - name: RibbonTreasuryVault
           file: ./abis/RibbonTreasuryVault.json
-        - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: GnosisAuction
           file: ./abis/GnosisEasyAuction.json
       eventHandlers:

@@ -531,6 +531,18 @@ export class RibbonTreasuryVault__depositReceiptsResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getAmount(): BigInt {
+    return this.value1;
+  }
+
+  getUnredeemedShares(): BigInt {
+    return this.value2;
+  }
 }
 
 export class RibbonTreasuryVault__optionStateResult {
@@ -551,6 +563,18 @@ export class RibbonTreasuryVault__optionStateResult {
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
+
+  getNextOption(): Address {
+    return this.value0;
+  }
+
+  getCurrentOption(): Address {
+    return this.value1;
+  }
+
+  getNextOptionReadyAt(): BigInt {
+    return this.value2;
+  }
 }
 
 export class RibbonTreasuryVault__shareBalancesResult {
@@ -567,6 +591,14 @@ export class RibbonTreasuryVault__shareBalancesResult {
     map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
+  }
+
+  getHeldByAccount(): BigInt {
+    return this.value0;
+  }
+
+  getHeldByVault(): BigInt {
+    return this.value1;
   }
 }
 
@@ -607,6 +639,30 @@ export class RibbonTreasuryVault__vaultParamsResult {
     map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
     return map;
   }
+
+  getIsPut(): boolean {
+    return this.value0;
+  }
+
+  getDecimals(): i32 {
+    return this.value1;
+  }
+
+  getAsset(): Address {
+    return this.value2;
+  }
+
+  getUnderlying(): Address {
+    return this.value3;
+  }
+
+  getMinimumSupply(): BigInt {
+    return this.value4;
+  }
+
+  getCap(): BigInt {
+    return this.value5;
+  }
 }
 
 export class RibbonTreasuryVault__vaultStateResult {
@@ -642,6 +698,26 @@ export class RibbonTreasuryVault__vaultStateResult {
     map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
     return map;
   }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getLockedAmount(): BigInt {
+    return this.value1;
+  }
+
+  getLastLockedAmount(): BigInt {
+    return this.value2;
+  }
+
+  getTotalPending(): BigInt {
+    return this.value3;
+  }
+
+  getQueuedWithdrawShares(): BigInt {
+    return this.value4;
+  }
 }
 
 export class RibbonTreasuryVault__withdrawalsResult {
@@ -661,6 +737,14 @@ export class RibbonTreasuryVault__withdrawalsResult {
     );
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
+  }
+
+  getRound(): i32 {
+    return this.value0;
+  }
+
+  getShares(): BigInt {
+    return this.value1;
   }
 }
 
@@ -2190,11 +2274,15 @@ export class InitializeCall__Inputs {
   }
 
   get _initParams(): InitializeCall_initParamsStruct {
-    return this._call.inputValues[0].value.toTuple() as InitializeCall_initParamsStruct;
+    return changetype<InitializeCall_initParamsStruct>(
+      this._call.inputValues[0].value.toTuple()
+    );
   }
 
   get _vaultParams(): InitializeCall_vaultParamsStruct {
-    return this._call.inputValues[1].value.toTuple() as InitializeCall_vaultParamsStruct;
+    return changetype<InitializeCall_vaultParamsStruct>(
+      this._call.inputValues[1].value.toTuple()
+    );
   }
 }
 

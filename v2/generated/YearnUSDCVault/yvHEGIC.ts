@@ -502,6 +502,38 @@ export class yvHEGIC__strategiesResult {
     map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
     return map;
   }
+
+  getPerformanceFee(): BigInt {
+    return this.value0;
+  }
+
+  getActivation(): BigInt {
+    return this.value1;
+  }
+
+  getDebtRatio(): BigInt {
+    return this.value2;
+  }
+
+  getRateLimit(): BigInt {
+    return this.value3;
+  }
+
+  getLastReport(): BigInt {
+    return this.value4;
+  }
+
+  getTotalDebt(): BigInt {
+    return this.value5;
+  }
+
+  getTotalGain(): BigInt {
+    return this.value6;
+  }
+
+  getTotalLoss(): BigInt {
+    return this.value7;
+  }
 }
 
 export class yvHEGIC extends ethereum.SmartContract {

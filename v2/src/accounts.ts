@@ -1,14 +1,14 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts";
-import { RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVault";
+import { BigInt, Address, log } from "@graphprotocol/graph-ts";
+import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import { RibbonVaultPauser } from "../generated/RibbonVaultPauser/RibbonVaultPauser";
 import {
   BalanceUpdate,
   ERC20Token,
   ERC20TokenAccount,
-  Vault,
   VaultAccount
 } from "../generated/schema";
 import {
+  getOrCreateVault,
   getPricePerShare,
   getTotalPendingDeposit,
   sharesToAssets
@@ -18,8 +18,7 @@ export function refreshAllAccountBalances(
   vaultAddress: Address,
   timestamp: i32
 ): void {
-  let vault = Vault.load(vaultAddress.toHexString());
-  let round = vault.round;
+  let vault = getOrCreateVault(vaultAddress.toHexString(), timestamp);
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let decimals = vault.underlyingDecimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
@@ -32,18 +31,22 @@ export function refreshAllAccountBalances(
     for (let i = 0; i < vault.numDepositors; i++) {
       let depositors = vault.depositors;
       let depositorAddress = depositors[i];
-      if (depositorAddress != null) {
-        _triggerBalanceUpdate(
-          vaultAddress,
-          depositorAddress as Address,
-          timestamp,
-          true,
-          false,
-          false,
-          assetPerShare,
-          decimals
-        );
-      }
+      log.error("triggerBalanceUpdate {}, {}, {}", [
+        vaultAddress.toHexString(),
+        depositorAddress.toHexString(),
+        timestamp.toString()
+      ]);
+
+      _triggerBalanceUpdate(
+        vaultAddress,
+        Address.fromBytes(depositorAddress),
+        timestamp,
+        true,
+        false,
+        false,
+        assetPerShare,
+        decimals
+      );
     }
   }
 }
@@ -55,7 +58,7 @@ export function triggerBalanceUpdate(
   accruesYield: bool,
   isWithdraw: bool
 ): void {
-  let vault = Vault.load(vaultAddress.toHexString());
+  let vault = getOrCreateVault(vaultAddress.toHexString(), timestamp);
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let decimals = vault.underlyingDecimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
@@ -86,7 +89,7 @@ export function _triggerBalanceUpdate(
   decimals: number
 ): void {
   let vaultID = vaultAddress.toHexString();
-  let vault = Vault.load(vaultID);
+  let vault = getOrCreateVault(vaultID, timestamp);
   let vaultContract = RibbonThetaVault.bind(vaultAddress);
   let vaultAccount = VaultAccount.load(
     vaultAddress.toHexString() + "-" + accountAddress.toHexString()
@@ -126,7 +129,7 @@ export function _triggerBalanceUpdate(
     let shares = vaultContract.shares(accountAddress);
     let withdrawal = vaultContract.withdrawals(accountAddress);
 
-    let pauserRes = vaultContract.try_pauser();
+    let pauserRes = vaultContract.try_vaultPauser();
 
     let pausedShares = BigInt.fromI32(0);
     let pausedAssets = BigInt.fromI32(0);
@@ -139,7 +142,11 @@ export function _triggerBalanceUpdate(
       BigInt.fromI32(withdrawalRound)
     );
 
-    if (!pauserRes.reverted) {
+    if (
+      !pauserRes.reverted &&
+      pauserRes.value.toHexString() !=
+        "0x0000000000000000000000000000000000000000"
+    ) {
       let pauserContract = RibbonVaultPauser.bind(pauserRes.value);
 
       let pausePosition = pauserContract.getPausePosition(
@@ -206,6 +213,7 @@ export function _triggerBalanceUpdate(
 
       // Split out shares scheduled for withdrawal and shares that are not
       let nonWithdrawnShares = totalShares - scheduledWithdrawalShares;
+
       accountBalance =
         sharesToAssets(nonWithdrawnShares, assetPerShare, decimals) +
         sharesToAssets(
@@ -221,6 +229,7 @@ export function _triggerBalanceUpdate(
     assetPerShare,
     decimals
   );
+
   let balance = accountBalance + stakeBalance + totalPendingDeposit;
 
   let update = new BalanceUpdate(updateID);
@@ -274,7 +283,7 @@ export function createVaultAccount(
   let vaultAccount = VaultAccount.load(vaultAccountID);
 
   if (vaultAccount == null) {
-    let vault = Vault.load(vaultAddress.toHexString());
+    let vault = getOrCreateVault(vaultAddress.toHexString(), 0);
     let depositors = vault.depositors;
     depositors.push(accountAddress);
     vault.depositors = depositors;
