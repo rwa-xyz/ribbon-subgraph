@@ -14,5 +14,6 @@ export const vaultList: Array<string> = [
   // Treasury
   "0xe44edf7ad1d434afe3397687dd0a914674f2e405", //RibbonTreasuryVaultPERP
   "0x2a6b048eb15c7d4ddca27db4f9a454196898a0fe", //RibbonTreasuryVaultBAL
-  "0x42cf874bbe5564efcf252bc90829551f4ec639dc" //RibbonTreasuryVaultSPELL
+  "0x42cf874bbe5564efcf252bc90829551f4ec639dc", //RibbonTreasuryVaultSPELL
+  "0x270f4a26a3fe5766ccef9608718491bb057be238" //RibbonTreasuryVaultBADGER
 ];
