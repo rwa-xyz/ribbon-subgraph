@@ -1,0 +1,161 @@
+type Vault @entity {
+  id: ID! # vault contract address
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalPremiumEarned: BigInt!
+  totalNominalVolume: BigInt!
+  # We track this number by adding every open short. This value is in USD, with 16 decimals
+  totalNotionalVolume: BigInt!
+  numDepositors: Int!
+  depositors: [Bytes!]!
+  vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
+  totalBalance: BigInt!
+  cap: BigInt!
+  round: Int!
+  performanceFeeCollected: BigInt!
+  managementFeeCollected: BigInt!
+  totalFeeCollected: BigInt!
+}
+
+type VaultOpenLoan @entity {
+  id: ID! # option contract address
+  vault: Vault!
+  loanAmount: BigInt!
+  withdrawAmount: BigInt
+  optionAllocation: BigInt!
+  borrower: Bytes!
+  optionSeller: Bytes!
+  loanTermLength: BigInt!
+  optionPurchaseFreq: BigInt!
+  subRounds: BigInt!
+  isExercised: Boolean
+  expiry: BigInt!
+  openedAt: BigInt!
+  openTxhash: Bytes!
+}
+
+type VaultCloseLoan @entity {
+  id: ID! # option contract address
+  vault: Vault!
+  withdrawAmount: BigInt
+  borrower: Bytes!
+  _yield: BigInt
+  isExercised: Boolean
+  closedAt: BigInt!
+  premiumEarned: BigInt
+  closeTxhash: Bytes!
+}
+
+type VaultOptionSold @entity {
+  id: ID! # option contract address
+  vault: Vault!
+  premium: BigInt!
+  optionAllocation: BigInt!
+  optionSeller: Bytes!
+  optionPurchaseFreq: BigInt!
+  subRounds: BigInt!
+  soldAt: BigInt!
+  txhash: Bytes!
+}
+
+type VaultOptionYield @entity {
+  id: ID! # option contract address
+  vault: Vault!
+  _yield: BigInt!
+  optionAllocation: BigInt!
+  optionSeller: Bytes!
+  optionPurchaseFreq: BigInt!
+  subRounds: BigInt!
+  paidAt: BigInt!
+  txhash: Bytes!
+}
+
+type VaultOptionTrade @entity {
+  id: ID! # optionToken-txhash-logindex
+  vault: Vault!
+  VaultOpenLoan: VaultOpenLoan!
+  sellAmount: BigInt!
+  premium: BigInt!
+  timestamp: BigInt!
+  txhash: Bytes!
+}
+
+type VaultAccount @entity {
+  "vaultAddress-accountAddress"
+  id: ID!
+  vault: Vault!
+  account: Bytes!
+
+  "used internally to track BalanceUpdates"
+  updateCounter: Int!
+
+  "Account's lifetime yield earned from the vault"
+  totalYieldEarned: BigInt!
+
+  "Account's total deposits into the vault (Withdrawal as accounted)"
+  totalDeposits: BigInt!
+
+  "To track the current balance, so we can caluclate the net profit/loss"
+  totalBalance: BigInt!
+
+  "To track scheduled withdrawal amount (in shares)"
+  totalScheduledWithdrawal: BigInt!
+  "Track the price per share of the round that a withdrawal was scheduled"
+  scheduledWithdrawalRoundPricePerShare: BigInt!
+
+  "To track the total number of shares the user has, including scheduled withdrawal"
+  shares: BigInt!
+
+  "To track the pending deposit amount"
+  totalPendingDeposit: BigInt!
+
+  "Tracks the round number for the user's deposit receipt"
+  depositInRound: Int!
+}
+
+type VaultPerformanceUpdate @entity {
+  id: ID! # vaultId-round
+  vault: Vault!
+  pricePerShare: BigInt!
+  timestamp: Int!
+  round: Int!
+}
+
+type VaultTransaction @entity {
+  id: ID!
+  vault: Vault!
+  type: String!
+  address: Bytes!
+  txhash: Bytes!
+  timestamp: BigInt!
+  amount: BigInt!
+  underlyingAmount: BigInt! # Used to keep track with underlying amount of stake and unstake transaction
+}
+
+type BalanceUpdate @entity {
+  id: ID! # accountAddress-timestamp
+  vault: Vault!
+  account: Bytes!
+  timestamp: Int!
+  balance: BigInt! # Account's balance in the vault at a point in time
+  yieldEarned: BigInt! # Yield earned from a trade at a point in time
+  isWithdraw: Boolean!
+}
+
+type ERC20Token @entity {
+  id: ID! # token contract address
+  name: String!
+  symbol: String!
+  numHolders: Int!
+  holders: [Bytes!]!
+  tokenAccounts: [ERC20TokenAccount!]! @derivedFrom(field: "token")
+  totalSupply: BigInt!
+}
+
+type ERC20TokenAccount @entity {
+  id: ID! # ERC20TokenID-accountAddress
+  token: ERC20Token!
+  balance: BigInt!
+  account: Bytes!
+}
