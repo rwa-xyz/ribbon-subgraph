@@ -585,7 +585,7 @@ dataSources:
       startBlock: 15310590
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/liquidityGauge.ts
       entities:
@@ -594,7 +594,7 @@ dataSources:
         - VaultAccount
       abis:
         - name: RibbonThetaVault
-          file: ./abis/RibbonThetaVault.json
+          file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
       eventHandlers:

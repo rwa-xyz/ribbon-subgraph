@@ -304,12 +304,13 @@ export function handleSettleOffer(event: SettleOffer): void {
 export function handleDeposit(event: Deposit): void {
   let vaultAddress = event.address.toHexString();
 
-  // Dont handle any deposit into AVAX vaults if less than 0.001 AVAX
+  // Dont handle any deposit into AVAX / sAVAX vaults if less than 0.001 AVAX
   if (
-    vaultAddress == "0x98d03125c62dae2328d9d3cb32b7b969e6a87787" &&
-    event.params.amount < BigInt.fromString("1000000000000000")
+    (vaultAddress == "0x98d03125c62dae2328d9d3cb32b7b969e6a87787" ||
+      vaultAddress == "0x6bf686d99a4ce17798c45d09c21181fac29a9fb3") &&
+    event.params.amount <= BigInt.fromString("10000000000000000")
   ) {
-    log.error("Ignoring deposit {}", [event.transaction.hash.toHexString()])
+    log.error("Ignoring deposit {}", [event.transaction.hash.toHexString()]);
     return;
   }
 
