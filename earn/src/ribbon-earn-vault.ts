@@ -2,10 +2,6 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   RibbonEarnVault,
   Approval,
-<<<<<<< HEAD
-=======
-  BorrowerSet,
->>>>>>> main
   CapSet,
   CloseLoan,
   CollectVaultFees,
@@ -90,7 +86,7 @@ export function handleOpenLoan(event: OpenLoan): void {
   let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
   let loanPosition = new VaultOpenLoan(
-    event.address.toHexString() + "-" + round.toString()
+    event.address.toHexString() + "-" + round.toString() + "-" + event.params.borrower.toHexString()
   );
   loanPosition.vault = event.address.toHexString();
   loanPosition.loanAmount = event.params.amount;

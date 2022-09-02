@@ -973,15 +973,10 @@ export class RibbonEarnVault extends ethereum.SmartContract {
     return result[0].toAddress();
   }
 
-<<<<<<< HEAD
   try_borrowers(param0: BigInt): ethereum.CallResult<Address> {
     let result = super.tryCall("borrowers", "borrowers(uint256):(address)", [
       ethereum.Value.fromUnsignedBigInt(param0)
     ]);
-=======
-  try_borrower(): ethereum.CallResult<Address> {
-    let result = super.tryCall("borrower", "borrower():(address)", []);
->>>>>>> main
     if (result.reverted) {
       return new ethereum.CallResult();
     }
