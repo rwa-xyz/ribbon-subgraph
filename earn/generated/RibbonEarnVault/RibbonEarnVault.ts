@@ -36,25 +36,25 @@ export class Approval__Params {
   }
 }
 
-export class BorrowerSet extends ethereum.Event {
-  get params(): BorrowerSet__Params {
-    return new BorrowerSet__Params(this);
+export class BorrowerBasketUpdated extends ethereum.Event {
+  get params(): BorrowerBasketUpdated__Params {
+    return new BorrowerBasketUpdated__Params(this);
   }
 }
 
-export class BorrowerSet__Params {
-  _event: BorrowerSet;
+export class BorrowerBasketUpdated__Params {
+  _event: BorrowerBasketUpdated;
 
-  constructor(event: BorrowerSet) {
+  constructor(event: BorrowerBasketUpdated) {
     this._event = event;
   }
 
-  get oldBorrower(): Address {
-    return this._event.parameters[0].value.toAddress();
+  get borrowers(): Array<Address> {
+    return this._event.parameters[0].value.toAddressArray();
   }
 
-  get newBorrower(): Address {
-    return this._event.parameters[1].value.toAddress();
+  get borrowerWeights(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
   }
 }
 
@@ -101,12 +101,8 @@ export class CloseLoan__Params {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get yearlyInterest(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
   get borrower(): Address {
-    return this._event.parameters[3].value.toAddress();
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -137,6 +133,24 @@ export class CollectVaultFees__Params {
 
   get feeRecipient(): Address {
     return this._event.parameters[3].value.toAddress();
+  }
+}
+
+export class CommitBorrowerBasket extends ethereum.Event {
+  get params(): CommitBorrowerBasket__Params {
+    return new CommitBorrowerBasket__Params(this);
+  }
+}
+
+export class CommitBorrowerBasket__Params {
+  _event: CommitBorrowerBasket;
+
+  constructor(event: CommitBorrowerBasket) {
+    this._event = event;
+  }
+
+  get totalBorrowerWeight(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
   }
 }
 
@@ -401,12 +415,8 @@ export class PayOptionYield__Params {
     return this._event.parameters[1].value.toBigInt();
   }
 
-  get pctPayoff(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
   get seller(): Address {
-    return this._event.parameters[3].value.toAddress();
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -578,6 +588,26 @@ export class RibbonEarnVault__allocationStateResult {
     );
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
+    return map;
+  }
+}
+
+export class RibbonEarnVault__borrowerWeightsResult {
+  value0: boolean;
+  value1: BigInt;
+  value2: BigInt;
+
+  constructor(value0: boolean, value1: BigInt, value2: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     return map;
   }
 }
@@ -900,14 +930,58 @@ export class RibbonEarnVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  borrower(): Address {
-    let result = super.call("borrower", "borrower():(address)", []);
+  borrowerWeights(param0: Address): RibbonEarnVault__borrowerWeightsResult {
+    let result = super.call(
+      "borrowerWeights",
+      "borrowerWeights(address):(bool,uint128,uint128)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+
+    return new RibbonEarnVault__borrowerWeightsResult(
+      result[0].toBoolean(),
+      result[1].toBigInt(),
+      result[2].toBigInt()
+    );
+  }
+
+  try_borrowerWeights(
+    param0: Address
+  ): ethereum.CallResult<RibbonEarnVault__borrowerWeightsResult> {
+    let result = super.tryCall(
+      "borrowerWeights",
+      "borrowerWeights(address):(bool,uint128,uint128)",
+      [ethereum.Value.fromAddress(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new RibbonEarnVault__borrowerWeightsResult(
+        value[0].toBoolean(),
+        value[1].toBigInt(),
+        value[2].toBigInt()
+      )
+    );
+  }
+
+  borrowers(param0: BigInt): Address {
+    let result = super.call("borrowers", "borrowers(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
 
     return result[0].toAddress();
   }
 
+<<<<<<< HEAD
+  try_borrowers(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall("borrowers", "borrowers(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
+=======
   try_borrower(): ethereum.CallResult<Address> {
     let result = super.tryCall("borrower", "borrower():(address)", []);
+>>>>>>> main
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1097,20 +1171,20 @@ export class RibbonEarnVault extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  lastBorrowerChange(): BigInt {
+  lastBorrowerBasketChange(): BigInt {
     let result = super.call(
-      "lastBorrowerChange",
-      "lastBorrowerChange():(uint256)",
+      "lastBorrowerBasketChange",
+      "lastBorrowerBasketChange():(uint256)",
       []
     );
 
     return result[0].toBigInt();
   }
 
-  try_lastBorrowerChange(): ethereum.CallResult<BigInt> {
+  try_lastBorrowerBasketChange(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "lastBorrowerChange",
-      "lastBorrowerChange():(uint256)",
+      "lastBorrowerBasketChange",
+      "lastBorrowerBasketChange():(uint256)",
       []
     );
     if (result.reverted) {
@@ -1242,29 +1316,6 @@ export class RibbonEarnVault extends ethereum.SmartContract {
 
   try_owner(): ethereum.CallResult<Address> {
     let result = super.tryCall("owner", "owner():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  pendingBorrower(): Address {
-    let result = super.call(
-      "pendingBorrower",
-      "pendingBorrower():(address)",
-      []
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_pendingBorrower(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "pendingBorrower",
-      "pendingBorrower():(address)",
-      []
-    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1431,6 +1482,29 @@ export class RibbonEarnVault extends ethereum.SmartContract {
 
   try_totalBalance(): ethereum.CallResult<BigInt> {
     let result = super.tryCall("totalBalance", "totalBalance():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  totalBorrowerWeight(): BigInt {
+    let result = super.call(
+      "totalBorrowerWeight",
+      "totalBorrowerWeight():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_totalBorrowerWeight(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "totalBorrowerWeight",
+      "totalBorrowerWeight():(uint256)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1656,40 +1730,6 @@ export class RibbonEarnVault extends ethereum.SmartContract {
   }
 }
 
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
-  }
-
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
-  }
-}
-
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-
-  get _weth(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _usdc(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
 export class ApproveCall extends ethereum.Call {
   get inputs(): ApproveCall__Inputs {
     return new ApproveCall__Inputs(this);
@@ -1750,32 +1790,6 @@ export class BuyOptionCall__Outputs {
   _call: BuyOptionCall;
 
   constructor(call: BuyOptionCall) {
-    this._call = call;
-  }
-}
-
-export class CommitBorrowerCall extends ethereum.Call {
-  get inputs(): CommitBorrowerCall__Inputs {
-    return new CommitBorrowerCall__Inputs(this);
-  }
-
-  get outputs(): CommitBorrowerCall__Outputs {
-    return new CommitBorrowerCall__Outputs(this);
-  }
-}
-
-export class CommitBorrowerCall__Inputs {
-  _call: CommitBorrowerCall;
-
-  constructor(call: CommitBorrowerCall) {
-    this._call = call;
-  }
-}
-
-export class CommitBorrowerCall__Outputs {
-  _call: CommitBorrowerCall;
-
-  constructor(call: CommitBorrowerCall) {
     this._call = call;
   }
 }
@@ -2091,32 +2105,36 @@ export class InitializeCall_initParamsStruct extends ethereum.Tuple {
     return this[1].toAddress();
   }
 
-  get _borrower(): Address {
-    return this[2].toAddress();
+  get _borrowers(): Array<Address> {
+    return this[2].toAddressArray();
+  }
+
+  get _borrowerWeights(): Array<BigInt> {
+    return this[3].toBigIntArray();
   }
 
   get _optionSeller(): Address {
-    return this[3].toAddress();
-  }
-
-  get _feeRecipient(): Address {
     return this[4].toAddress();
   }
 
-  get _managementFee(): BigInt {
-    return this[5].toBigInt();
+  get _feeRecipient(): Address {
+    return this[5].toAddress();
   }
 
-  get _performanceFee(): BigInt {
+  get _managementFee(): BigInt {
     return this[6].toBigInt();
   }
 
+  get _performanceFee(): BigInt {
+    return this[7].toBigInt();
+  }
+
   get _tokenName(): string {
-    return this[7].toString();
+    return this[8].toString();
   }
 
   get _tokenSymbol(): string {
-    return this[8].toString();
+    return this[9].toString();
   }
 }
 
@@ -2518,36 +2536,6 @@ export class RollToNextRoundCall__Outputs {
   _call: RollToNextRoundCall;
 
   constructor(call: RollToNextRoundCall) {
-    this._call = call;
-  }
-}
-
-export class SetBorrowerCall extends ethereum.Call {
-  get inputs(): SetBorrowerCall__Inputs {
-    return new SetBorrowerCall__Inputs(this);
-  }
-
-  get outputs(): SetBorrowerCall__Outputs {
-    return new SetBorrowerCall__Outputs(this);
-  }
-}
-
-export class SetBorrowerCall__Inputs {
-  _call: SetBorrowerCall;
-
-  constructor(call: SetBorrowerCall) {
-    this._call = call;
-  }
-
-  get newBorrower(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class SetBorrowerCall__Outputs {
-  _call: SetBorrowerCall;
-
-  constructor(call: SetBorrowerCall) {
     this._call = call;
   }
 }
@@ -3018,6 +3006,40 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateBorrowerBasketCall extends ethereum.Call {
+  get inputs(): UpdateBorrowerBasketCall__Inputs {
+    return new UpdateBorrowerBasketCall__Inputs(this);
+  }
+
+  get outputs(): UpdateBorrowerBasketCall__Outputs {
+    return new UpdateBorrowerBasketCall__Outputs(this);
+  }
+}
+
+export class UpdateBorrowerBasketCall__Inputs {
+  _call: UpdateBorrowerBasketCall;
+
+  constructor(call: UpdateBorrowerBasketCall) {
+    this._call = call;
+  }
+
+  get borrowers(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+
+  get borrowerWeights(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+}
+
+export class UpdateBorrowerBasketCall__Outputs {
+  _call: UpdateBorrowerBasketCall;
+
+  constructor(call: UpdateBorrowerBasketCall) {
     this._call = call;
   }
 }

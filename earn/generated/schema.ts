@@ -96,6 +96,24 @@ export class Vault extends Entity {
     this.set("totalNotionalVolume", Value.fromBigInt(value));
   }
 
+  get totalBorrowed(): BigInt {
+    let value = this.get("totalBorrowed");
+    return value.toBigInt();
+  }
+
+  set totalBorrowed(value: BigInt) {
+    this.set("totalBorrowed", Value.fromBigInt(value));
+  }
+
+  get principalOutstanding(): BigInt {
+    let value = this.get("principalOutstanding");
+    return value.toBigInt();
+  }
+
+  set principalOutstanding(value: BigInt) {
+    this.set("principalOutstanding", Value.fromBigInt(value));
+  }
+
   get numDepositors(): i32 {
     let value = this.get("numDepositors");
     return value.toI32();
@@ -373,8 +391,8 @@ export class VaultCloseLoan extends Entity {
     this.set("vault", Value.fromString(value));
   }
 
-  get withdrawAmount(): BigInt | null {
-    let value = this.get("withdrawAmount");
+  get paidAmount(): BigInt | null {
+    let value = this.get("paidAmount");
     if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -382,11 +400,11 @@ export class VaultCloseLoan extends Entity {
     }
   }
 
-  set withdrawAmount(value: BigInt | null) {
+  set paidAmount(value: BigInt | null) {
     if (value === null) {
-      this.unset("withdrawAmount");
+      this.unset("paidAmount");
     } else {
-      this.set("withdrawAmount", Value.fromBigInt(value as BigInt));
+      this.set("paidAmount", Value.fromBigInt(value as BigInt));
     }
   }
 
@@ -413,6 +431,23 @@ export class VaultCloseLoan extends Entity {
       this.unset("_yield");
     } else {
       this.set("_yield", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get loanAmount(): BigInt | null {
+    let value = this.get("loanAmount");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set loanAmount(value: BigInt | null) {
+    if (value === null) {
+      this.unset("loanAmount");
+    } else {
+      this.set("loanAmount", Value.fromBigInt(value as BigInt));
     }
   }
 
@@ -610,6 +645,15 @@ export class VaultOptionYield extends Entity {
 
   set _yield(value: BigInt) {
     this.set("_yield", Value.fromBigInt(value));
+  }
+
+  get netYield(): BigInt {
+    let value = this.get("netYield");
+    return value.toBigInt();
+  }
+
+  set netYield(value: BigInt) {
+    this.set("netYield", Value.fromBigInt(value));
   }
 
   get optionAllocation(): BigInt {

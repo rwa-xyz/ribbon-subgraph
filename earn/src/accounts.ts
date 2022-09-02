@@ -124,48 +124,14 @@ export function _triggerBalanceUpdate(
   if (isRefresh) {
     let shares = vaultContract.shares(accountAddress);
     let withdrawal = vaultContract.withdrawals(accountAddress);
-
-    // let pauserRes = vaultContract.try_vaultPauser();
-
-    // let pausedShares = BigInt.fromI32(0);
-    // let pausedAssets = BigInt.fromI32(0);
-
     totalPendingDeposit = getTotalPendingDeposit(vaultContract, accountAddress);
-
     scheduledWithdrawalShares = withdrawal.value1;
     let withdrawalRound = withdrawal.value0;
     scheduledWithdrawalRoundPricePerShare = vaultContract.roundPricePerShare(
       BigInt.fromI32(withdrawalRound)
     );
 
-    // if (!pauserRes.reverted) {
-    //   let pauserContract = RibbonVaultPauser.bind(pauserRes.value);
-
-    //   let pausePosition = pauserContract.getPausePosition(
-    //     vaultAddress,
-    //     accountAddress
-    //   );
-    //   if (pausePosition.shares > BigInt.fromI32(0) && pausePosition.round > 0) {
-    //     let pausePricePerShare = vaultContract.roundPricePerShare(
-    //       BigInt.fromI32(pausePosition.round)
-    //     );
-
-    //     let pausePositionWithdrawn = vault.round > pausePosition.round;
-
-    //     if (pausePositionWithdrawn) {
-    //       pausedAssets = sharesToAssets(
-    //         pausedShares,
-    //         pausePricePerShare,
-    //         decimals
-    //       );
-    //     } else {
-    //       pausedShares = pausePosition.shares;
-    //     }
-    //   }
-    // }
-
     totalShares = shares + scheduledWithdrawalShares; //+ pausedShares;
-    log.warning(totalShares.toString(), [])
     // Account balance here is calculated based on 2 different pricePerShare.
     // the amount scheduled for withdrawal should be calculated with the round's pricePerShare
     // the remaining amount will be calculated using the latest pricePerShare
@@ -175,15 +141,13 @@ export function _triggerBalanceUpdate(
         scheduledWithdrawalShares,
         scheduledWithdrawalRoundPricePerShare,
         decimals
-      ); 
-      // + pausedAssets;
+      );
   } else {
     let depositIsProcessed = vault.round > vaultAccount.depositInRound;
 
     totalPendingDeposit = depositIsProcessed
       ? BigInt.fromI32(0)
       : vaultAccount.totalPendingDeposit;
-
     // We are doing a contract call here when there is a processed deposit
     // This would only be called for deposits that are processed for a single week
     // It short circuits for performance reasons bc contract calls are expensive
@@ -193,7 +157,6 @@ export function _triggerBalanceUpdate(
     if (depositIsProcessed) {
       let shares = vaultContract.shares(accountAddress);
       totalShares = shares + vaultAccount.totalScheduledWithdrawal;
-      log.warning(totalShares.toString(), [])
       accountBalance =
         sharesToAssets(shares, assetPerShare, decimals) +
         sharesToAssets(
@@ -203,8 +166,6 @@ export function _triggerBalanceUpdate(
         );
     } else {
       totalShares = vaultAccount.shares;
-      log.warning(totalShares.toString(), [])
-      log.warning("reached", [])
       // Split out shares scheduled for withdrawal and shares that are not
       let nonWithdrawnShares = totalShares - scheduledWithdrawalShares;
       accountBalance =

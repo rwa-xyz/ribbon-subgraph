@@ -7,6 +7,8 @@ type Vault @entity {
   totalNominalVolume: BigInt!
   # We track this number by adding every open short. This value is in USD, with 16 decimals
   totalNotionalVolume: BigInt!
+  totalBorrowed: BigInt!
+  principalOutstanding: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!
   vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
@@ -38,9 +40,10 @@ type VaultOpenLoan @entity {
 type VaultCloseLoan @entity {
   id: ID! # option contract address
   vault: Vault!
-  withdrawAmount: BigInt
+  paidAmount: BigInt
   borrower: Bytes!
   _yield: BigInt
+  loanAmount: BigInt
   isExercised: Boolean
   closedAt: BigInt!
   premiumEarned: BigInt
@@ -63,6 +66,7 @@ type VaultOptionYield @entity {
   id: ID! # option contract address
   vault: Vault!
   _yield: BigInt!
+  netYield: BigInt!
   optionAllocation: BigInt!
   optionSeller: Bytes!
   optionPurchaseFreq: BigInt!

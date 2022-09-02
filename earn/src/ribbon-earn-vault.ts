@@ -2,7 +2,10 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   RibbonEarnVault,
   Approval,
+<<<<<<< HEAD
+=======
   BorrowerSet,
+>>>>>>> main
   CapSet,
   CloseLoan,
   CollectVaultFees,
@@ -21,12 +24,12 @@ import {
   PurchaseOption,
   Redeem,
   Transfer,
-  Withdraw,
+  Withdraw
 } from "../generated/RibbonEarnVault/RibbonEarnVault";
 import {
   createVaultAccount,
   refreshAllAccountBalances,
-  triggerBalanceUpdate,
+  triggerBalanceUpdate
 } from "./accounts";
 import { getPricePerShare, sharesToAssets } from "./utils";
 import {
@@ -37,12 +40,12 @@ import {
   VaultOpenLoan,
   VaultCloseLoan,
   VaultOptionSold,
-  VaultOptionYield,
+  VaultOptionYield
 } from "../generated/schema";
 import { getVaultStartRound } from "./data/constant";
 import {
   finalizePrevRoundVaultPerformance,
-  updateVaultPerformance,
+  updateVaultPerformance
 } from "./vaultPerformance";
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
@@ -57,6 +60,8 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.totalPremiumEarned = BigInt.fromI32(0);
   vault.totalNominalVolume = BigInt.fromI32(0);
   vault.totalNotionalVolume = BigInt.fromI32(0);
+  vault.totalBorrowed = BigInt.fromI32(0);
+  vault.principalOutstanding = BigInt.fromI32(0);
   vault.cap = vaultContract.cap();
   vault.round = 1;
   vault.totalBalance = vaultContract.totalBalance();
@@ -84,15 +89,13 @@ export function handleOpenLoan(event: OpenLoan): void {
   let vaultAddress = event.address.toHexString();
   let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
-  log.warning(round.toString(), []);
   let loanPosition = new VaultOpenLoan(
     event.address.toHexString() + "-" + round.toString()
   );
-
   loanPosition.vault = event.address.toHexString();
   loanPosition.loanAmount = event.params.amount;
   loanPosition.optionAllocation = allocationState.value7;
-  loanPosition.borrower = vaultContract.borrower();
+  loanPosition.borrower = event.params.borrower;
   loanPosition.optionSeller = vaultContract.optionSeller();
   loanPosition.expiry = event.block.timestamp + allocationState.value2;
   loanPosition.loanTermLength = allocationState.value2;
@@ -101,40 +104,15 @@ export function handleOpenLoan(event: OpenLoan): void {
   loanPosition.openedAt = event.block.timestamp;
   loanPosition.openTxhash = event.transaction.hash;
   loanPosition.save();
-  // let strikePrice = otoken.strikePrice();
-  // let isPut = otoken.isPut();
-  // loanPosition.strikePrice = strikePrice;
-  // log.warning("4", []);
-  // let collateral = Otoken.bind(otoken.collateralAsset());
-  // log.warning("5", []);
-  // let collateralDecimals = collateral.decimals() as u8;
-  // log.warning("6", []);
-  // log.warning("7", []);
-  // loanPosition.vault = vaultAddress;
-  // loanPosition.option = optionAddress;
-  // loanPosition.depositAmount = event.params.amount;
-  // loanPosition.mintAmount = getOtokenMintAmount(
-  //   event.params.amount,
-  //   strikePrice,
-  //   collateralDecimals,
-  //   isPut
-  // );
-  // //loanPosition.initiatedBy = event.params.manager;
-  // loanPosition.openedAt = event.block.timestamp;
-  // loanPosition.openTxhash = event.transaction.hash;
-  // loanPosition.save();
-  // log.warning("8", []);
-  // Increment vault round and then update total notional volume of vault
   let vault = Vault.load(event.address.toHexString());
   vault.round = vault.round + 1;
-  // We first need to get the underlying price of the asset
-  // let vaultContract = RibbonEarnVault.bind(event.address);
-  // let pricerAddress = vaultContract.optionsPremiumPricer();
-  // let pricerContract = OptionsPremiumPricer.bind(pricerAddress);
-  vault.totalNotionalVolume +=
-    loanPosition.loanAmount + loanPosition.optionAllocation;
+  vault.totalNotionalVolume =
+    vault.totalNotionalVolume +
+    loanPosition.loanAmount +
+    loanPosition.optionAllocation;
+  vault.totalBorrowed = vault.totalBorrowed + loanPosition.loanAmount;
+  vault.principalOutstanding = loanPosition.loanAmount;
   vault.save();
-
   /**
    * We finalize last round pricePerShare here
    */
@@ -167,8 +145,9 @@ export function handleCloseLoan(event: CloseLoan): void {
   let difference = event.params.amount - loanPosition.loanAmount;
   loanClosePosition.vault = event.address.toHexString();
   loanClosePosition._yield = difference;
+  loanClosePosition.loanAmount = loanPosition.loanAmount;
   loanClosePosition.borrower = event.params.borrower;
-  loanClosePosition.withdrawAmount = event.params.amount;
+  loanClosePosition.paidAmount = event.params.amount;
   loanClosePosition.isExercised = difference < BigInt.fromI32(0);
   loanClosePosition.closedAt = event.block.timestamp;
   loanClosePosition.closeTxhash = event.transaction.hash;
@@ -409,6 +388,7 @@ export function handlePayOptionYield(event: PayOptionYield): void {
   // log.warning((event.params._yield - optionSold.premium).toString(), []);
   optionPaid.vault = vaultAddress;
   optionPaid._yield = event.params._yield;
+  optionPaid.netYield = event.params.netYield;
   optionPaid.optionAllocation = allocationState.value7;
   optionPaid.optionSeller = event.params.seller;
   optionPaid.optionPurchaseFreq = allocationState.value3;
@@ -426,7 +406,6 @@ export function handlePurchaseOption(event: PurchaseOption): void {
   let vaultAddress = event.address.toHexString();
   let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
-  log.warning(round.toString(), []);
   let option = new VaultOptionSold(
     event.address.toHexString() +
       "-" +
@@ -450,7 +429,5 @@ export function handleRedeem(event: Redeem): void {}
 export function handleTransfer(event: Transfer): void {}
 
 export function handleApproval(event: Approval): void {}
-
-export function handleBorrowerSet(event: BorrowerSet): void {}
 
 export function handleCapSet(event: CapSet): void {}

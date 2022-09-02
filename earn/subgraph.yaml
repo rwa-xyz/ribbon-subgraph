@@ -6,9 +6,9 @@ dataSources:
     name: RibbonEarnVault
     network: mainnet
     source:
-      address: "0xaBfA87fA88DE21f7beb017B37418985F608529fc"
+      address: "0x84c2b16fa6877a8ff4f3271db7ea837233dfd6f0"
       abi: RibbonEarnVault
-      startBlock: 15121200
+      startBlock: 15394088
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -24,11 +24,9 @@ dataSources:
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-        - event: BorrowerSet(address,address)
-          handler: handleBorrowerSet
         - event: CapSet(uint256,uint256)
           handler: handleCapSet
-        - event: CloseLoan(uint256,uint256,uint256,indexed address)
+        - event: CloseLoan(uint256,uint256,indexed address)
           handler: handleCloseLoan
         - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
           handler: handleCollectVaultFees
@@ -52,7 +50,7 @@ dataSources:
           handler: handleOptionSellerSet
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-        - event: PayOptionYield(uint256,uint256,uint256,indexed address)
+        - event: PayOptionYield(uint256,uint256,indexed address)
           handler: handlePayOptionYield
         - event: PerformanceFeeSet(uint256,uint256)
           handler: handlePerformanceFeeSet

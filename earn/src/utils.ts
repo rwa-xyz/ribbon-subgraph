@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { RibbonEarnVault } from "../generated/RibbonEarnVault/RibbonEarnVault";
 
 let WAD = BigInt.fromString("1000000000000000000");

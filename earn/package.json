@@ -5,10 +5,11 @@
     "cb": "graph codegen && graph build",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ ribbonearnvault2",
-    "deploy-studio": "graph deploy --studio ribbonearnvault2",
-    "create-local": "graph create --node http://localhost:8020/ ribbonearnvault2",
-    "remove-local": "graph remove --node http://localhost:8020/ ribbonearnvault2",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ ribbonearnvault",
+    "deploy-studio": "graph deploy --studio ribbonearnvault",
+    "deploy-test": "graph deploy --studio ribbonearnvault2",
+    "create-local": "graph create --node http://localhost:8020/ ribbonearnvault",
+    "remove-local": "graph remove --node http://localhost:8020/ ribbonearnvault",
     "deploy-local": "graph deploy ribbon-finance/ribbon-v2 --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
