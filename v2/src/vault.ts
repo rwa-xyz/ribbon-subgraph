@@ -128,10 +128,13 @@ export function handleCloseShort(event: CloseShort): void {
     shortPosition.closeTxhash = event.transaction.hash;
     shortPosition.save();
 
-    refreshAllAccountBalances(
-      Address.fromString(vaultAddress),
-      event.block.timestamp.toI32()
-    );
+    // Only refresh balances if theres a loss
+    if (shortPosition.isExercised) {
+      refreshAllAccountBalances(
+        Address.fromString(vaultAddress),
+        event.block.timestamp.toI32()
+      );
+    }
   }
 }
 
@@ -308,7 +311,7 @@ export function handleDeposit(event: Deposit): void {
   if (
     (vaultAddress == "0x98d03125c62dae2328d9d3cb32b7b969e6a87787" ||
       vaultAddress == "0x6bf686d99a4ce17798c45d09c21181fac29a9fb3") &&
-    event.params.amount <= BigInt.fromString("10000000000000000")
+    event.params.amount <= BigInt.fromString("100000000000000000")
   ) {
     log.error("Ignoring deposit {}", [event.transaction.hash.toHexString()]);
     return;

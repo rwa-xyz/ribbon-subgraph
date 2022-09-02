@@ -31,11 +31,6 @@ export function refreshAllAccountBalances(
     for (let i = 0; i < vault.numDepositors; i++) {
       let depositors = vault.depositors;
       let depositorAddress = depositors[i];
-      log.error("triggerBalanceUpdate {}, {}, {}", [
-        vaultAddress.toHexString(),
-        depositorAddress.toHexString(),
-        timestamp.toString()
-      ]);
 
       _triggerBalanceUpdate(
         vaultAddress,
