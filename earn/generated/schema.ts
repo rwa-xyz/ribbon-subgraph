@@ -96,15 +96,6 @@ export class Vault extends Entity {
     this.set("totalNotionalVolume", Value.fromBigInt(value));
   }
 
-  get totalBorrowed(): BigInt {
-    let value = this.get("totalBorrowed");
-    return value.toBigInt();
-  }
-
-  set totalBorrowed(value: BigInt) {
-    this.set("totalBorrowed", Value.fromBigInt(value));
-  }
-
   get principalOutstanding(): BigInt {
     let value = this.get("principalOutstanding");
     return value.toBigInt();

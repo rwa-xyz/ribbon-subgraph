@@ -7,7 +7,6 @@ type Vault @entity {
   totalNominalVolume: BigInt!
   # We track this number by adding every open short. This value is in USD, with 16 decimals
   totalNotionalVolume: BigInt!
-  totalBorrowed: BigInt!
   principalOutstanding: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!

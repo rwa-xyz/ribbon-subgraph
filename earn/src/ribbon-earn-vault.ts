@@ -56,7 +56,6 @@ function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   vault.totalPremiumEarned = BigInt.fromI32(0);
   vault.totalNominalVolume = BigInt.fromI32(0);
   vault.totalNotionalVolume = BigInt.fromI32(0);
-  vault.totalBorrowed = BigInt.fromI32(0);
   vault.principalOutstanding = BigInt.fromI32(0);
   vault.cap = vaultContract.cap();
   vault.round = 1;
@@ -98,17 +97,22 @@ export function handleOpenLoan(event: OpenLoan): void {
   loanPosition.optionPurchaseFreq = allocationState.value3;
   loanPosition.subRounds = allocationState.value2 / allocationState.value3;
   loanPosition.openedAt = event.block.timestamp;
+
+  let vault = Vault.load(event.address.toHexString());
+  // if the loan is from the same round, we increment, else refresh principaloutstanding
+  if (vault.round === round) {
+    vault.principalOutstanding = vault.principalOutstanding + loanPosition.loanAmount;
+  } else {
+    vault.round = round;
+    vault.principalOutstanding = loanPosition.loanAmount;
+  }
+  vault.totalNotionalVolume = vault.totalNotionalVolume + loanPosition.loanAmount;
+  vault.save();
+
   loanPosition.openTxhash = event.transaction.hash;
   loanPosition.save();
-  let vault = Vault.load(event.address.toHexString());
-  vault.round = vault.round + 1;
-  vault.totalNotionalVolume =
-    vault.totalNotionalVolume +
-    loanPosition.loanAmount +
-    loanPosition.optionAllocation;
-  vault.totalBorrowed = vault.totalBorrowed + loanPosition.loanAmount;
-  vault.principalOutstanding = loanPosition.loanAmount;
-  vault.save();
+
+
   /**
    * We finalize last round pricePerShare here
    */
