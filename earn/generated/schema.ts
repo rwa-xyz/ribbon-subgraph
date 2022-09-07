@@ -279,31 +279,31 @@ export class VaultOpenLoan extends Entity {
     this.set("optionSeller", Value.fromBytes(value));
   }
 
-  get loanTermLength(): BigInt {
+  get loanTermLength(): i32 {
     let value = this.get("loanTermLength");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set loanTermLength(value: BigInt) {
-    this.set("loanTermLength", Value.fromBigInt(value));
+  set loanTermLength(value: i32) {
+    this.set("loanTermLength", Value.fromI32(value));
   }
 
-  get optionPurchaseFreq(): BigInt {
+  get optionPurchaseFreq(): i32 {
     let value = this.get("optionPurchaseFreq");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set optionPurchaseFreq(value: BigInt) {
-    this.set("optionPurchaseFreq", Value.fromBigInt(value));
+  set optionPurchaseFreq(value: i32) {
+    this.set("optionPurchaseFreq", Value.fromI32(value));
   }
 
-  get subRounds(): BigInt {
+  get subRounds(): i32 {
     let value = this.get("subRounds");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set subRounds(value: BigInt) {
-    this.set("subRounds", Value.fromBigInt(value));
+  set subRounds(value: i32) {
+    this.set("subRounds", Value.fromI32(value));
   }
 
   get isExercised(): boolean {
@@ -315,22 +315,22 @@ export class VaultOpenLoan extends Entity {
     this.set("isExercised", Value.fromBoolean(value));
   }
 
-  get expiry(): BigInt {
+  get expiry(): i32 {
     let value = this.get("expiry");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set expiry(value: BigInt) {
-    this.set("expiry", Value.fromBigInt(value));
+  set expiry(value: i32) {
+    this.set("expiry", Value.fromI32(value));
   }
 
-  get openedAt(): BigInt {
+  get openedAt(): i32 {
     let value = this.get("openedAt");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set openedAt(value: BigInt) {
-    this.set("openedAt", Value.fromBigInt(value));
+  set openedAt(value: i32) {
+    this.set("openedAt", Value.fromI32(value));
   }
 
   get openTxhash(): Bytes {
@@ -553,31 +553,31 @@ export class VaultOptionSold extends Entity {
     this.set("optionSeller", Value.fromBytes(value));
   }
 
-  get optionPurchaseFreq(): BigInt {
+  get optionPurchaseFreq(): i32 {
     let value = this.get("optionPurchaseFreq");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set optionPurchaseFreq(value: BigInt) {
-    this.set("optionPurchaseFreq", Value.fromBigInt(value));
+  set optionPurchaseFreq(value: i32) {
+    this.set("optionPurchaseFreq", Value.fromI32(value));
   }
 
-  get subRounds(): BigInt {
+  get subRounds(): i32 {
     let value = this.get("subRounds");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set subRounds(value: BigInt) {
-    this.set("subRounds", Value.fromBigInt(value));
+  set subRounds(value: i32) {
+    this.set("subRounds", Value.fromI32(value));
   }
 
-  get soldAt(): BigInt {
+  get soldAt(): i32 {
     let value = this.get("soldAt");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set soldAt(value: BigInt) {
-    this.set("soldAt", Value.fromBigInt(value));
+  set soldAt(value: i32) {
+    this.set("soldAt", Value.fromI32(value));
   }
 
   get txhash(): Bytes {
@@ -665,31 +665,31 @@ export class VaultOptionYield extends Entity {
     this.set("optionSeller", Value.fromBytes(value));
   }
 
-  get optionPurchaseFreq(): BigInt {
+  get optionPurchaseFreq(): i32 {
     let value = this.get("optionPurchaseFreq");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set optionPurchaseFreq(value: BigInt) {
-    this.set("optionPurchaseFreq", Value.fromBigInt(value));
+  set optionPurchaseFreq(value: i32) {
+    this.set("optionPurchaseFreq", Value.fromI32(value));
   }
 
-  get subRounds(): BigInt {
+  get subRounds(): i32 {
     let value = this.get("subRounds");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set subRounds(value: BigInt) {
-    this.set("subRounds", Value.fromBigInt(value));
+  set subRounds(value: i32) {
+    this.set("subRounds", Value.fromI32(value));
   }
 
-  get paidAt(): BigInt {
+  get paidAt(): i32 {
     let value = this.get("paidAt");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set paidAt(value: BigInt) {
-    this.set("paidAt", Value.fromBigInt(value));
+  set paidAt(value: i32) {
+    this.set("paidAt", Value.fromI32(value));
   }
 
   get txhash(): Bytes {
@@ -768,13 +768,13 @@ export class VaultOptionTrade extends Entity {
     this.set("premium", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt {
+  get timestamp(): i32 {
     let value = this.get("timestamp");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
   }
 
   get txhash(): Bytes {
@@ -1056,13 +1056,13 @@ export class VaultTransaction extends Entity {
     this.set("txhash", Value.fromBytes(value));
   }
 
-  get timestamp(): BigInt {
+  get timestamp(): i32 {
     let value = this.get("timestamp");
-    return value.toBigInt();
+    return value.toI32();
   }
 
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
   }
 
   get amount(): BigInt {

@@ -1,0 +1,33 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RibbonLendVault
+    network: mainnet
+    source:
+      address: "0xa3A369bED8bDa02de33B8Af5aeF8aFa6fAb8E593"
+      abi: RibbonLendVault
+      startBlock: 15479589
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Borrowed
+        - Provided
+        - Redeemed
+        - Repaid
+      abis:
+        - name: RibbonLendVault
+          file: ./abis/RibbonLendVault.json
+      eventHandlers:
+        - event: Borrowed(uint256,indexed address)
+          handler: handleBorrowed
+        - event: Provided(indexed address,uint256,uint256)
+          handler: handleProvided
+        - event: Redeemed(indexed address,uint256,uint256)
+          handler: handleRedeemed
+        - event: Repaid(uint256)
+          handler: handleRepaid
+      file: ./src/vault.ts

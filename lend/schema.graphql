@@ -7,81 +7,30 @@ type Vault @entity {
   totalNominalVolume: BigInt!
   # We track this number by adding every open short. This value is in USD, with 16 decimals
   totalNotionalVolume: BigInt!
-  principalOutstanding: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!
   vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
   totalBalance: BigInt!
-  cap: BigInt!
-  round: Int!
   performanceFeeCollected: BigInt!
   managementFeeCollected: BigInt!
   totalFeeCollected: BigInt!
 }
 
-type VaultOpenLoan @entity {
+type VaultBorrow @entity {
   id: ID! # option contract address
   vault: Vault!
-  loanAmount: BigInt!
-  withdrawAmount: BigInt
-  optionAllocation: BigInt!
+  borrowAmount: BigInt!
   borrower: Bytes!
-  optionSeller: Bytes!
-  loanTermLength: Int!
-  optionPurchaseFreq: Int!
-  subRounds: Int!
-  isExercised: Boolean
-  expiry: Int!
-  openedAt: Int!
-  openTxhash: Bytes!
+  borrowedAt: Int!
+  borrowTxhash: Bytes!
 }
 
-type VaultCloseLoan @entity {
+type VaultRepay @entity {
   id: ID! # option contract address
   vault: Vault!
-  paidAmount: BigInt
-  borrower: Bytes!
-  _yield: BigInt
-  loanAmount: BigInt
-  isExercised: Boolean
-  closedAt: BigInt!
-  premiumEarned: BigInt
-  closeTxhash: Bytes!
-}
-
-type VaultOptionSold @entity {
-  id: ID! # option contract address
-  vault: Vault!
-  premium: BigInt!
-  optionAllocation: BigInt!
-  optionSeller: Bytes!
-  optionPurchaseFreq: Int!
-  subRounds: Int!
-  soldAt: Int!
-  txhash: Bytes!
-}
-
-type VaultOptionYield @entity {
-  id: ID! # option contract address
-  vault: Vault!
-  _yield: BigInt!
-  netYield: BigInt!
-  optionAllocation: BigInt!
-  optionSeller: Bytes!
-  optionPurchaseFreq: Int!
-  subRounds: Int!
-  paidAt: Int!
-  txhash: Bytes!
-}
-
-type VaultOptionTrade @entity {
-  id: ID! # optionToken-txhash-logindex
-  vault: Vault!
-  VaultOpenLoan: VaultOpenLoan!
-  sellAmount: BigInt!
-  premium: BigInt!
-  timestamp: Int!
-  txhash: Bytes!
+  repaidAmount: BigInt!
+  repaidAt: Int!
+  repayTxhash: Bytes!
 }
 
 type VaultAccount @entity {
@@ -102,27 +51,9 @@ type VaultAccount @entity {
   "To track the current balance, so we can caluclate the net profit/loss"
   totalBalance: BigInt!
 
-  "To track scheduled withdrawal amount (in shares)"
-  totalScheduledWithdrawal: BigInt!
-  "Track the price per share of the round that a withdrawal was scheduled"
-  scheduledWithdrawalRoundPricePerShare: BigInt!
-
   "To track the total number of shares the user has, including scheduled withdrawal"
   shares: BigInt!
 
-  "To track the pending deposit amount"
-  totalPendingDeposit: BigInt!
-
-  "Tracks the round number for the user's deposit receipt"
-  depositInRound: Int!
-}
-
-type VaultPerformanceUpdate @entity {
-  id: ID! # vaultId-round
-  vault: Vault!
-  pricePerShare: BigInt!
-  timestamp: Int!
-  round: Int!
 }
 
 type VaultTransaction @entity {

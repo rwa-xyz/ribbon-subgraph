@@ -1,0 +1,18 @@
+{
+  "name": "lend",
+  "license": "UNLICENSED",
+  "scripts": {
+    "cb": "graph codegen && graph build",
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ lend",
+    "deploy-studio": "graph deploy --studio ribbonlend",
+    "create-local": "graph create --node http://localhost:8020/ lend",
+    "remove-local": "graph remove --node http://localhost:8020/ lend",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 lend"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.21.0",
+    "@graphprotocol/graph-ts": "^0.20.0"
+  }
+}

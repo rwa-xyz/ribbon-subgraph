@@ -1,25 +1,14 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   RibbonEarnVault,
-  Approval,
-  CapSet,
   CloseLoan,
   CollectVaultFees,
   Deposit,
   InitiateWithdraw,
   InstantWithdraw,
-  ManagementFeeSet,
-  NewLoanOptionAllocationSet,
-  NewLoanTermLength,
-  NewOptionPurchaseFrequency,
   OpenLoan,
-  OptionSellerSet,
-  OwnershipTransferred,
   PayOptionYield,
-  PerformanceFeeSet,
   PurchaseOption,
-  Redeem,
-  Transfer,
   Withdraw
 } from "../generated/RibbonEarnVault/RibbonEarnVault";
 import {
@@ -92,11 +81,11 @@ export function handleOpenLoan(event: OpenLoan): void {
   loanPosition.optionAllocation = allocationState.value7;
   loanPosition.borrower = event.params.borrower;
   loanPosition.optionSeller = vaultContract.optionSeller();
-  loanPosition.expiry = event.block.timestamp + allocationState.value2;
-  loanPosition.loanTermLength = allocationState.value2;
-  loanPosition.optionPurchaseFreq = allocationState.value3;
-  loanPosition.subRounds = allocationState.value2 / allocationState.value3;
-  loanPosition.openedAt = event.block.timestamp;
+  loanPosition.expiry = event.block.timestamp.toI32() + allocationState.value2.toI32();
+  loanPosition.loanTermLength = allocationState.value2.toI32();
+  loanPosition.optionPurchaseFreq = allocationState.value3.toI32();
+  loanPosition.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
+  loanPosition.openedAt = event.block.timestamp.toI32();
 
   let vault = Vault.load(event.address.toHexString());
   // if the loan is from the same round, we increment, else refresh principaloutstanding
@@ -352,26 +341,11 @@ export function newTransaction(
   transaction.vault = vaultAddress;
   transaction.address = account;
   transaction.txhash = txhash;
-  transaction.timestamp = timestamp;
+  transaction.timestamp = timestamp.toI32();
   transaction.amount = amount;
   transaction.underlyingAmount = underlyingAmount || amount;
   transaction.save();
 }
-
-export function handleManagementFeeSet(event: ManagementFeeSet): void {}
-
-export function handleNewLoanOptionAllocationSet(
-  event: NewLoanOptionAllocationSet
-): void {}
-
-export function handleNewLoanTermLength(event: NewLoanTermLength): void {}
-
-export function handleNewOptionPurchaseFrequency(
-  event: NewOptionPurchaseFrequency
-): void {}
-
-export function handleOptionSellerSet(event: OptionSellerSet): void {}
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
 
 export function handlePayOptionYield(event: PayOptionYield): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
@@ -385,21 +359,18 @@ export function handlePayOptionYield(event: PayOptionYield): void {
       "-" +
       round.toString()
   );
-  // log.warning((event.params._yield - optionSold.premium).toString(), []);
   optionPaid.vault = vaultAddress;
   optionPaid._yield = event.params._yield;
   optionPaid.netYield = event.params.netYield;
   optionPaid.optionAllocation = allocationState.value7;
   optionPaid.optionSeller = event.params.seller;
-  optionPaid.optionPurchaseFreq = allocationState.value3;
-  optionPaid.subRounds = allocationState.value2 / allocationState.value3;
-  optionPaid.paidAt = event.block.timestamp;
+  optionPaid.optionPurchaseFreq = allocationState.value3.toI32();
+  optionPaid.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
+  optionPaid.paidAt = event.block.timestamp.toI32();
   optionPaid.txhash = event.transaction.hash;
 
   optionPaid.save();
 }
-
-export function handlePerformanceFeeSet(event: PerformanceFeeSet): void {}
 
 export function handlePurchaseOption(event: PurchaseOption): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
@@ -417,17 +388,9 @@ export function handlePurchaseOption(event: PurchaseOption): void {
   option.premium = event.params.premium;
   option.optionAllocation = allocationState.value7;
   option.optionSeller = vaultContract.optionSeller();
-  option.optionPurchaseFreq = allocationState.value3;
-  option.subRounds = allocationState.value2 / allocationState.value3;
-  option.soldAt = event.block.timestamp;
+  option.optionPurchaseFreq = allocationState.value3.toI32();
+  option.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
+  option.soldAt = event.block.timestamp.toI32();
   option.txhash = event.transaction.hash;
   option.save();
 }
-
-export function handleRedeem(event: Redeem): void {}
-
-export function handleTransfer(event: Transfer): void {}
-
-export function handleApproval(event: Approval): void {}
-
-export function handleCapSet(event: CapSet): void {}

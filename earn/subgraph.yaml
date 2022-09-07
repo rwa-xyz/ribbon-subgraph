@@ -22,10 +22,6 @@ dataSources:
         - name: RibbonEarnVault
           file: ./abis/RibbonEarnVault.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: CapSet(uint256,uint256)
-          handler: handleCapSet
         - event: CloseLoan(uint256,uint256,indexed address)
           handler: handleCloseLoan
         - event: CollectVaultFees(uint256,uint256,uint256,indexed address)
@@ -36,30 +32,12 @@ dataSources:
           handler: handleInitiateWithdraw
         - event: InstantWithdraw(indexed address,uint256,uint256)
           handler: handleInstantWithdraw
-        - event: ManagementFeeSet(uint256,uint256)
-          handler: handleManagementFeeSet
-        - event: NewLoanOptionAllocationSet(uint256,uint256,uint256,uint256)
-          handler: handleNewLoanOptionAllocationSet
-        - event: NewLoanTermLength(uint256,uint256)
-          handler: handleNewLoanTermLength
-        - event: NewOptionPurchaseFrequency(uint256,uint256)
-          handler: handleNewOptionPurchaseFrequency
         - event: OpenLoan(uint256,indexed address)
           handler: handleOpenLoan
-        - event: OptionSellerSet(address,address)
-          handler: handleOptionSellerSet
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: PayOptionYield(uint256,uint256,indexed address)
           handler: handlePayOptionYield
-        - event: PerformanceFeeSet(uint256,uint256)
-          handler: handlePerformanceFeeSet
         - event: PurchaseOption(uint256,indexed address)
           handler: handlePurchaseOption
-        - event: Redeem(indexed address,uint256,uint256)
-          handler: handleRedeem
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
         - event: Withdraw(indexed address,uint256,uint256)
           handler: handleWithdraw
-      file: ./src/ribbon-earn-vault.ts
+      file: ./src/vault.ts
