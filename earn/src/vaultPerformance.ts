@@ -3,6 +3,33 @@ import { RibbonEarnVault } from "../generated/RibbonEarnVault/RibbonEarnVault";
 import { Vault, VaultPerformanceUpdate } from "../generated/schema";
 import { getVaultStartRound } from "./data/constant";
 
+export function updateVaultPerformanceForOptions(
+  vaultAddress: string,
+  timestamp: number
+): void {
+  let vault = Vault.load(vaultAddress);
+  let round = vault.round;
+  let vaultContract = RibbonEarnVault.bind(Address.fromString(vaultAddress));
+  let vaultPerformanceUpdateId =
+    vault.id + "-" + round.toString() + "-" + timestamp.toString();
+
+  /**
+   * Skip if we had not reach the round for indexing
+   */
+  if (getVaultStartRound(vault.symbol) > vault.round) {
+    return;
+  }
+
+  let performanceUpdate = VaultPerformanceUpdate.load(vaultPerformanceUpdateId);
+  let newPricePerShare = vaultContract.pricePerShare();
+  performanceUpdate = new VaultPerformanceUpdate(vaultPerformanceUpdateId);
+  performanceUpdate.vault = vault.id;
+  performanceUpdate.pricePerShare = newPricePerShare;
+  performanceUpdate.round = vault.round;
+  performanceUpdate.timestamp = i32(timestamp);
+  performanceUpdate.save();
+}
+
 export function updateVaultPerformance(
   vaultAddress: string,
   timestamp: number

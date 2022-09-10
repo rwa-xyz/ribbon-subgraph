@@ -1,4 +1,10 @@
-import { Address, dataSource, log, TypedMap } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  dataSource,
+  log,
+  TypedMap,
+  BigInt
+} from "@graphprotocol/graph-ts";
 import { Transfer } from "../../generated/RibbonEarnVault/RibbonEarnVault";
 
 /**
@@ -26,5 +32,12 @@ export function ignoreTransfer(transfer: Transfer): boolean {
     return true;
   }
 
+  return false;
+}
+
+export function isTestAmount(vaultSymbol: string, amount: BigInt): boolean {
+  if (vaultSymbol == "rEARN") {
+    return amount.lt(BigInt.fromI32(5000000));
+  }
   return false;
 }

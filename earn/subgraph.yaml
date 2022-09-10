@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x84c2b16fa6877a8ff4f3271db7ea837233dfd6f0"
       abi: RibbonEarnVault
-      startBlock: 15394088
+      startBlock: 15394000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

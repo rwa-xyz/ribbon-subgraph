@@ -27,10 +27,11 @@ import {
   VaultOptionSold,
   VaultOptionYield
 } from "../generated/schema";
-import { getVaultStartRound } from "./data/constant";
+import { getVaultStartRound, isTestAmount } from "./data/constant";
 import {
   finalizePrevRoundVaultPerformance,
-  updateVaultPerformance
+  updateVaultPerformance,
+  updateVaultPerformanceForOptions
 } from "./vaultPerformance";
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
@@ -74,33 +75,40 @@ export function handleOpenLoan(event: OpenLoan): void {
   let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
   let loanPosition = new VaultOpenLoan(
-    event.address.toHexString() + "-" + round.toString() + "-" + event.params.borrower.toHexString()
+    event.address.toHexString() +
+      "-" +
+      round.toString() +
+      "-" +
+      event.params.borrower.toHexString()
   );
   loanPosition.vault = event.address.toHexString();
   loanPosition.loanAmount = event.params.amount;
   loanPosition.optionAllocation = allocationState.value7;
   loanPosition.borrower = event.params.borrower;
   loanPosition.optionSeller = vaultContract.optionSeller();
-  loanPosition.expiry = event.block.timestamp.toI32() + allocationState.value2.toI32();
+  loanPosition.expiry =
+    event.block.timestamp.toI32() + allocationState.value2.toI32();
   loanPosition.loanTermLength = allocationState.value2.toI32();
   loanPosition.optionPurchaseFreq = allocationState.value3.toI32();
-  loanPosition.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
+  loanPosition.subRounds =
+    allocationState.value2.toI32() / allocationState.value3.toI32();
   loanPosition.openedAt = event.block.timestamp.toI32();
 
   let vault = Vault.load(event.address.toHexString());
   // if the loan is from the same round, we increment, else refresh principaloutstanding
   if (vault.round === round) {
-    vault.principalOutstanding = vault.principalOutstanding + loanPosition.loanAmount;
+    vault.principalOutstanding =
+      vault.principalOutstanding + loanPosition.loanAmount;
   } else {
     vault.round = round;
     vault.principalOutstanding = loanPosition.loanAmount;
   }
-  vault.totalNotionalVolume = vault.totalNotionalVolume + loanPosition.loanAmount;
+  vault.totalNotionalVolume =
+    vault.totalNotionalVolume + loanPosition.loanAmount;
   vault.save();
 
   loanPosition.openTxhash = event.transaction.hash;
   loanPosition.save();
-
 
   /**
    * We finalize last round pricePerShare here
@@ -348,28 +356,40 @@ export function newTransaction(
 }
 
 export function handlePayOptionYield(event: PayOptionYield): void {
-  let vaultContract = RibbonEarnVault.bind(event.address);
-  let vaultAddress = event.address.toHexString();
-  let allocationState = vaultContract.allocationState();
-  let round = vaultContract.vaultState().value0;
-  let optionPaid = new VaultOptionYield(
-    event.address.toHexString() +
-      "-" +
-      event.transaction.hash.toHexString() +
-      "-" +
-      round.toString()
-  );
-  optionPaid.vault = vaultAddress;
-  optionPaid._yield = event.params._yield;
-  optionPaid.netYield = event.params.netYield;
-  optionPaid.optionAllocation = allocationState.value7;
-  optionPaid.optionSeller = event.params.seller;
-  optionPaid.optionPurchaseFreq = allocationState.value3.toI32();
-  optionPaid.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
-  optionPaid.paidAt = event.block.timestamp.toI32();
-  optionPaid.txhash = event.transaction.hash;
-
-  optionPaid.save();
+  let vault = Vault.load(event.address.toHexString());
+  //filter out test option yields
+  if (!isTestAmount(vault.symbol, event.params._yield)) {
+    let vaultContract = RibbonEarnVault.bind(event.address);
+    let vaultAddress = event.address.toHexString();
+    let allocationState = vaultContract.allocationState();
+    let round = vaultContract.vaultState().value0;
+    let optionPaid = new VaultOptionYield(
+      event.address.toHexString() +
+        "-" +
+        event.transaction.hash.toHexString() +
+        "-" +
+        round.toString()
+    );
+    optionPaid.vault = vaultAddress;
+    optionPaid._yield = event.params._yield;
+    optionPaid.netYield = event.params.netYield;
+    optionPaid.optionAllocation = allocationState.value7;
+    optionPaid.optionSeller = event.params.seller;
+    optionPaid.optionPurchaseFreq = allocationState.value3.toI32();
+    optionPaid.subRounds =
+      allocationState.value2.toI32() / allocationState.value3.toI32();
+    optionPaid.paidAt = event.block.timestamp.toI32();
+    optionPaid.txhash = event.transaction.hash;
+    optionPaid.save();
+    updateVaultPerformanceForOptions(
+      vaultAddress,
+      event.block.timestamp.toI32()
+    );
+    refreshAllAccountBalances(
+      Address.fromString(vaultAddress),
+      event.block.timestamp.toI32()
+    );
+  }
 }
 
 export function handlePurchaseOption(event: PurchaseOption): void {
@@ -389,7 +409,8 @@ export function handlePurchaseOption(event: PurchaseOption): void {
   option.optionAllocation = allocationState.value7;
   option.optionSeller = vaultContract.optionSeller();
   option.optionPurchaseFreq = allocationState.value3.toI32();
-  option.subRounds = allocationState.value2.toI32() / allocationState.value3.toI32();
+  option.subRounds =
+    allocationState.value2.toI32() / allocationState.value3.toI32();
   option.soldAt = event.block.timestamp.toI32();
   option.txhash = event.transaction.hash;
   option.save();
