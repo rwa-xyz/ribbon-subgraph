@@ -24,9 +24,14 @@ export function updateVaultPerformanceForOptions(
   let newPricePerShare = vaultContract.pricePerShare();
   performanceUpdate = new VaultPerformanceUpdate(vaultPerformanceUpdateId);
   performanceUpdate.vault = vault.id;
-  performanceUpdate.pricePerShare = newPricePerShare;
   performanceUpdate.round = vault.round;
   performanceUpdate.timestamp = i32(timestamp);
+  //handle edge case erroneous pricePerShare for usdc Earn graph before upgrade
+  if (timestamp === 1662713343) {
+    performanceUpdate.pricePerShare = BigInt.fromI32(1002421);
+  } else {
+    performanceUpdate.pricePerShare = newPricePerShare;
+  }
   performanceUpdate.save();
 }
 

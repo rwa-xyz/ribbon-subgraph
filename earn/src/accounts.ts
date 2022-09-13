@@ -22,9 +22,16 @@ export function refreshAllAccountBalances(
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let decimals = vault.decimals;
   let assetPerShare = getPricePerShare(vaultContract, decimals);
-
   let totalBalance = vaultContract.totalBalance();
   vault.totalBalance = totalBalance;
+  // for first usdc payoptionyield
+  if (timestamp === 1662713343) {
+    assetPerShare = BigInt.fromI32(1002421);
+  }
+  // for first usdc openloan
+  if (timestamp === 1662126923) {
+    assetPerShare = BigInt.fromI32(1000000);
+  }
   vault.save();
 
   if (vault != null) {
@@ -184,7 +191,6 @@ export function _triggerBalanceUpdate(
   //   decimals
   // );
   let balance = accountBalance + totalPendingDeposit;
-
   let update = new BalanceUpdate(updateID);
   update.vault = vaultID;
   update.account = accountAddress;
@@ -205,7 +211,6 @@ export function _triggerBalanceUpdate(
     let prevUpdate = BalanceUpdate.load(prevUpdateID);
     if (prevUpdate != null) {
       let yieldEarned = balance.minus(prevUpdate.balance);
-
       if (yieldEarned.gt(BigInt.fromI32(0))) {
         update.yieldEarned = yieldEarned;
         vaultAccount.totalYieldEarned = vaultAccount.totalYieldEarned.plus(
