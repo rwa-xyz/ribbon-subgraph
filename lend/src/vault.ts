@@ -2,6 +2,7 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   Borrowed,
   Provided,
+  Provided1,
   Redeemed,
   Repaid,
   RibbonLendVault
@@ -88,6 +89,51 @@ export function handleBorrowed(event: Borrowed): void {
 }
 
 export function handleProvided(event: Provided): void {
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+
+  if (vault == null) {
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
+    vault.save();
+  }
+
+  vault.totalNominalVolume =
+    vault.totalNominalVolume + event.params.currencyAmount;
+  vault.save();
+
+  let vaultAccount = createVaultAccount(event.address, event.params.provider);
+  vaultAccount.totalDeposits =
+    vaultAccount.totalDeposits + event.params.currencyAmount;
+  vaultAccount.save();
+
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  newTransaction(
+    txid,
+    "deposit",
+    vaultAddress,
+    event.params.provider,
+    event.transaction.hash,
+    event.block.timestamp.toI32(),
+    event.params.currencyAmount,
+    event.params.currencyAmount
+  );
+
+  triggerBalanceUpdate(
+    event.address,
+    event.params.provider,
+    event.block.timestamp.toI32(),
+    false,
+    false
+  );
+}
+
+export function handleProvided1(event: Provided1): void {
   let vaultAddress = event.address.toHexString();
   let vault = Vault.load(vaultAddress);
 

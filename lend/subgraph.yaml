@@ -24,8 +24,10 @@ dataSources:
       eventHandlers:
         - event: Borrowed(uint256,indexed address)
           handler: handleBorrowed
-        - event: Provided(indexed address,uint256,uint256)
+        - event: Provided(indexed address,indexed address,uint256,uint256)
           handler: handleProvided
+        - event: Provided(indexed address,uint256,uint256)
+          handler: handleProvided1  
         - event: Redeemed(indexed address,uint256,uint256)
           handler: handleRedeemed
         - event: Repaid(uint256)

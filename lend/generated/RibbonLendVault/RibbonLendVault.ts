@@ -107,6 +107,36 @@ export class Provided__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
+  get referral(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get currencyAmount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get tokens(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class Provided1 extends ethereum.Event {
+  get params(): Provided1__Params {
+    return new Provided1__Params(this);
+  }
+}
+
+export class Provided1__Params {
+  _event: Provided1;
+
+  constructor(event: Provided1) {
+    this._event = event;
+  }
+
+  get provider(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
   get currencyAmount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
@@ -1503,6 +1533,10 @@ export class ProvideCall__Inputs {
   get currencyAmount(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
+
+  get referral(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
 }
 
 export class ProvideCall__Outputs {
@@ -1534,20 +1568,24 @@ export class ProvideWithPermitCall__Inputs {
     return this._call.inputValues[0].value.toBigInt();
   }
 
+  get referral(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
   get deadline(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt();
   }
 
   get v(): i32 {
-    return this._call.inputValues[2].value.toI32();
+    return this._call.inputValues[3].value.toI32();
   }
 
   get r(): Bytes {
-    return this._call.inputValues[3].value.toBytes();
+    return this._call.inputValues[4].value.toBytes();
   }
 
   get s(): Bytes {
-    return this._call.inputValues[4].value.toBytes();
+    return this._call.inputValues[5].value.toBytes();
   }
 }
 
