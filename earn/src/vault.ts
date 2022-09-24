@@ -131,29 +131,25 @@ export function handleCloseLoan(event: CloseLoan): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
   let vaultAddress = event.address.toHexString();
   let round = vaultContract.vaultState().value0;
-  let loanPosition = VaultOpenLoan.load(
-    event.address.toHexString() + "-" + round.toString()
-  );
+  let pricePerShare = vaultContract.pricePerShare();
   let loanClosePosition = new VaultCloseLoan(
     event.address.toHexString() + "-" + round.toString()
   );
-  updateVaultPerformance(vaultAddress, event.block.timestamp.toI32());
 
-  let difference = event.params.amount - loanPosition.loanAmount;
   loanClosePosition.vault = event.address.toHexString();
-  loanClosePosition._yield = difference;
-  loanClosePosition.loanAmount = loanPosition.loanAmount;
+  loanClosePosition._yield = event.params._yield;
   loanClosePosition.borrower = event.params.borrower;
   loanClosePosition.paidAmount = event.params.amount;
-  loanClosePosition.isExercised = difference < BigInt.fromI32(0);
   loanClosePosition.closedAt = event.block.timestamp;
   loanClosePosition.closeTxhash = event.transaction.hash;
   loanClosePosition.save();
-
-  refreshAllAccountBalances(
-    Address.fromString(vaultAddress),
-    event.block.timestamp.toI32()
-  );
+  if (pricePerShare.ge(BigInt.fromI32(1000000))) {
+    updateVaultPerformance(vaultAddress, event.block.timestamp.toI32());
+    refreshAllAccountBalances(
+      Address.fromString(vaultAddress),
+      event.block.timestamp.toI32()
+    );
+  }
 }
 
 export function handleDeposit(event: Deposit): void {

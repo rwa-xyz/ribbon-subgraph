@@ -42,8 +42,6 @@ type VaultCloseLoan @entity {
   paidAmount: BigInt
   borrower: Bytes!
   _yield: BigInt
-  loanAmount: BigInt
-  isExercised: Boolean
   closedAt: BigInt!
   premiumEarned: BigInt
   closeTxhash: Bytes!

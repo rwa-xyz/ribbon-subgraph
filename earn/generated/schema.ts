@@ -425,32 +425,6 @@ export class VaultCloseLoan extends Entity {
     }
   }
 
-  get loanAmount(): BigInt | null {
-    let value = this.get("loanAmount");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set loanAmount(value: BigInt | null) {
-    if (value === null) {
-      this.unset("loanAmount");
-    } else {
-      this.set("loanAmount", Value.fromBigInt(value as BigInt));
-    }
-  }
-
-  get isExercised(): boolean {
-    let value = this.get("isExercised");
-    return value.toBoolean();
-  }
-
-  set isExercised(value: boolean) {
-    this.set("isExercised", Value.fromBoolean(value));
-  }
-
   get closedAt(): BigInt {
     let value = this.get("closedAt");
     return value.toBigInt();

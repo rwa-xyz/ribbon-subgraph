@@ -187,6 +187,50 @@ export function handleRedeemed(event: Redeemed): void {
     vault.save();
   }
 
+  vault.totalNominalVolume =
+    vault.totalNominalVolume + event.params.currencyAmount;
+  vault.save();
+
+  let vaultAccount = createVaultAccount(event.address, event.params.provider);
+  vaultAccount.totalDeposits =
+    vaultAccount.totalDeposits + event.params.currencyAmount;
+  vaultAccount.save();
+
+  let txid =
+    vaultAddress +
+    "-" +
+    event.transaction.hash.toHexString() +
+    "-" +
+    event.transactionLogIndex.toString();
+
+  newTransaction(
+    txid,
+    "deposit",
+    vaultAddress,
+    event.params.provider,
+    event.transaction.hash,
+    event.block.timestamp.toI32(),
+    event.params.currencyAmount,
+    event.params.currencyAmount
+  );
+
+  triggerBalanceUpdate(
+    event.address,
+    event.params.provider,
+    event.block.timestamp.toI32(),
+    false,
+    false
+  );
+}
+
+export function handleRedeemed(event: Redeemed): void {
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+
+  if (vault == null) {
+    vault = newVault(vaultAddress, event.block.timestamp.toI32());
+    vault.save();
+  }
   let vaultAccount = createVaultAccount(event.address, event.params.redeemer);
   vaultAccount.totalDeposits =
     vaultAccount.totalDeposits - event.params.currencyAmount;
