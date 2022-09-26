@@ -148,3 +148,57 @@ export const getThetaVaultFromYearnVault = (symbol: string): string | null => {
 
   return null;
 };
+
+export function blockNumberToUpgradedCloseRoundMap(): TypedMap<string, string> {
+  let blockNumberMap = new TypedMap<string, string>();
+
+  if (dataSource.network() == "mainnet") {
+    // ETH Call
+    blockNumberMap.set(
+      "0x25751853eab4d0eb3652b5eb6ecb102a2789644b",
+      "15236459"
+    );
+    // RETH Call
+    blockNumberMap.set(
+      "0xa1da0580fa96129e753d736a5901c31df5ec5edf",
+      "15326137"
+    );
+    // WBTC Call
+    blockNumberMap.set(
+      "0x65a833afdc250d9d38f8cd9bc2b1e3132db13b2f",
+      "14853582"
+    );
+    // AAVE Call
+    blockNumberMap.set(
+      "0xe63151a0ed4e5fafdc951d877102cf0977abd365",
+      "14937853"
+    );
+    // stETH Call
+    blockNumberMap.set(
+      "0x53773e034d9784153471813dacaff53dbbb78e8c",
+      "15326306"
+    );
+    // ETH Put
+    blockNumberMap.set(
+      "0xcc323557c71c0d1d20a1861dc69c06c5f3cc9624",
+      "15191458"
+    );
+  } else if (dataSource.network() == "kovan") {
+    // Nothing here
+  }
+
+  return blockNumberMap;
+}
+
+export function blockNumberOfUpgradedCloseRound(
+  vaultAddress: Address
+): number {
+  let addressMap = blockNumberToUpgradedCloseRoundMap();
+  let block = addressMap.get(vaultAddress.toHexString())
+
+  if (block == null) {
+    return 0
+  }
+
+  return parseInt(block as string)
+}

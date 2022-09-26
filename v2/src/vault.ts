@@ -49,7 +49,8 @@ import {
   finalizePrevRoundVaultPerformance,
   updateVaultPerformance
 } from "./vaultPerformance";
-import { ignoreTransfer } from "./data/constant";
+import { blockNumberOfUpgradedCloseRound, ignoreTransfer } from "./data/constant";
+
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
@@ -79,10 +80,14 @@ export function handleOpenShort(event: OpenShort): void {
   shortPosition.openTxhash = event.transaction.hash;
   shortPosition.save();
 
-  // Increment vault round and then update total notional volume of vault
   let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
 
-  vault.round = vault.round + 1;
+  // Only increment vault if NO upgraded block, or if block is less than upgraded block
+  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address)
+  if (upgradedBlock == 0 || event.block.number.toI32() < upgradedBlock) {
+    vault.round = vault.round + 1;
+  }
+
   // We first need to get the underlying price of the asset
   let vaultContract = RibbonThetaVault.bind(event.address);
   let pricerAddress = vaultContract.optionsPremiumPricer();
@@ -110,6 +115,14 @@ export function handleOpenShort(event: OpenShort): void {
 
 export function handleCloseShort(event: CloseShort): void {
   let vaultAddress = event.address.toHexString();
+
+  // Only increment vault round if more than upgraded block
+  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address)
+  if (upgradedBlock != 0 && event.block.number.toI32() >= upgradedBlock) {
+    let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
+    vault.round = vault.round + 1;
+    vault.save();
+  }
 
   let shortPosition = VaultShortPosition.load(
     event.params.options.toHexString()

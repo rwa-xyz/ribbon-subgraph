@@ -459,6 +459,8 @@ dataSources:
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
@@ -487,6 +489,8 @@ dataSources:
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
@@ -515,6 +519,8 @@ dataSources:
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
@@ -543,6 +549,8 @@ dataSources:
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
@@ -571,6 +579,8 @@ dataSources:
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
@@ -595,10 +605,12 @@ dataSources:
         - VaultTransaction
         - VaultAccount
       abis:
-        - name: RibbonThetaVault
+        - name: RibbonThetaVaultWithSwap
           file: ./abis/RibbonThetaVaultWithSwap.json
         - name: LiquidityGaugeV5
           file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleStake
