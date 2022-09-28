@@ -1,5 +1,5 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { RibbonLendVault } from "../generated/RibbonLendVault/RibbonLendVault";
+import { RibbonLendVault } from "../generated/RibbonLendVaultWintermute/RibbonLendVault";
 import {
   BalanceUpdate,
   ERC20Token,

@@ -138,6 +138,11 @@ export function handleCloseLoan(event: CloseLoan): void {
 
   loanClosePosition.vault = event.address.toHexString();
   loanClosePosition._yield = event.params._yield;
+  if (event.block.timestamp.toI32() === 1663954067) {
+    loanClosePosition._yield = BigInt.fromI32(10)
+      .pow(6)
+      .times(BigInt.fromI32(14276));
+  }
   loanClosePosition.borrower = event.params.borrower;
   loanClosePosition.paidAmount = event.params.amount;
   loanClosePosition.closedAt = event.block.timestamp;

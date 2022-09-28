@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { RibbonLendVault } from "../generated/RibbonLendVault/RibbonLendVault";
+import { RibbonLendVault } from "../generated/RibbonLendVaultWintermute/RibbonLendVault";
 
 export function getPricePerShare(
   vault: RibbonLendVault,
