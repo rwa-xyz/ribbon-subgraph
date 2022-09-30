@@ -133,7 +133,11 @@ export function handleCloseLoan(event: CloseLoan): void {
   let round = vaultContract.vaultState().value0;
   let pricePerShare = vaultContract.pricePerShare();
   let loanClosePosition = new VaultCloseLoan(
-    event.address.toHexString() + "-" + round.toString()
+    event.address.toHexString() +
+      "-" +
+      round.toString() +
+      "-" +
+      event.params.borrower.toHexString()
   );
 
   loanClosePosition.vault = event.address.toHexString();

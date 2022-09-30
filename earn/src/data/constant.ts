@@ -37,7 +37,7 @@ export function ignoreTransfer(transfer: Transfer): boolean {
 
 export function isTestAmount(vaultSymbol: string, amount: BigInt): boolean {
   if (vaultSymbol == "rEARN") {
-    return amount.lt(BigInt.fromI32(5000000));
+    return amount.lt(BigInt.fromI32(100000000));
   }
   return false;
 }
