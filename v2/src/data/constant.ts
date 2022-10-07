@@ -58,7 +58,7 @@ export function getLiquidityGaugePoolsMap(): TypedMap<string, string> {
     );
     // REARN
     gaugeMap.set(
-      "0x9674126Ff31e5EcE36De0CF03A49351a7C814587",
+      "0x9674126ff31e5ece36de0cf03a49351a7c814587",
       "0x84c2b16fa6877a8ff4f3271db7ea837233dfd6f0"
     );
   } else if (dataSource.network() == "kovan") {
@@ -195,15 +195,13 @@ export function blockNumberToUpgradedCloseRoundMap(): TypedMap<string, string> {
   return blockNumberMap;
 }
 
-export function blockNumberOfUpgradedCloseRound(
-  vaultAddress: Address
-): number {
+export function blockNumberOfUpgradedCloseRound(vaultAddress: Address): number {
   let addressMap = blockNumberToUpgradedCloseRoundMap();
-  let block = addressMap.get(vaultAddress.toHexString())
+  let block = addressMap.get(vaultAddress.toHexString());
 
   if (block == null) {
-    return 0
+    return 0;
   }
 
-  return parseInt(block as string)
+  return parseInt(block as string);
 }
