@@ -619,6 +619,36 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
   - kind: ethereum/contract
+    name: RibbonEarnLiquidityGauge
+    network: mainnet
+    source:
+      address: "0x9674126Ff31e5EcE36De0CF03A49351a7C814587"
+      abi: LiquidityGaugeV5
+      startBlock: 15656654
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/liquidityGauge.ts
+      entities:
+        - Vault
+        - VaultTransaction
+        - VaultAccount
+      abis:
+        - name: RibbonThetaVaultWithSwap
+          file: ./abis/RibbonThetaVaultWithSwap.json
+        - name: LiquidityGaugeV5
+          file: ./abis/LiquidityGaugeV5.json
+        - name: RibbonVaultPauser
+          file: ./abis/RibbonVaultPauser.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256)
+          handler: handleStake
+        - event: Withdraw(indexed address,uint256)
+          handler: handleUnstake
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+  - kind: ethereum/contract
     name: RibbonVaultPauser
     network: mainnet
     source:
