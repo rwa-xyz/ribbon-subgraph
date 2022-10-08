@@ -12,7 +12,7 @@ import { Transfer } from "../../generated/RibbonEarnVault/RibbonEarnVault";
  */
 export function getVaultStartRound(vaultSymbol: string): i32 {
   if (vaultSymbol == "rEARN") {
-    return 0;
+    return 1;
   }
 
   return 0;

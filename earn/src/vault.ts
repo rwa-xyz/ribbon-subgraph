@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   RibbonEarnVault,
   CloseLoan,
@@ -28,11 +28,7 @@ import {
   VaultOptionYield
 } from "../generated/schema";
 import { getVaultStartRound, isTestAmount } from "./data/constant";
-import {
-  finalizePrevRoundVaultPerformance,
-  updateVaultPerformance,
-  updateVaultPerformanceForOptions
-} from "./vaultPerformance";
+import { finalizePrevRoundVaultPerformance } from "./vaultPerformance";
 
 function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
   let vault = new Vault(vaultAddress);
@@ -129,9 +125,7 @@ export function handleOpenLoan(event: OpenLoan): void {
 
 export function handleCloseLoan(event: CloseLoan): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
-  let vaultAddress = event.address.toHexString();
   let round = vaultContract.vaultState().value0;
-  let pricePerShare = vaultContract.pricePerShare();
   let loanClosePosition = new VaultCloseLoan(
     event.address.toHexString() +
       "-" +
@@ -152,13 +146,6 @@ export function handleCloseLoan(event: CloseLoan): void {
   loanClosePosition.closedAt = event.block.timestamp;
   loanClosePosition.closeTxhash = event.transaction.hash;
   loanClosePosition.save();
-  if (pricePerShare.ge(BigInt.fromI32(1000000))) {
-    updateVaultPerformance(vaultAddress, event.block.timestamp.toI32());
-    refreshAllAccountBalances(
-      Address.fromString(vaultAddress),
-      event.block.timestamp.toI32()
-    );
-  }
 }
 
 export function handleDeposit(event: Deposit): void {
@@ -386,20 +373,11 @@ export function handlePayOptionYield(event: PayOptionYield): void {
     optionPaid.paidAt = event.block.timestamp.toI32();
     optionPaid.txhash = event.transaction.hash;
     optionPaid.save();
-    updateVaultPerformanceForOptions(
-      vaultAddress,
-      event.block.timestamp.toI32()
-    );
-    refreshAllAccountBalances(
-      Address.fromString(vaultAddress),
-      event.block.timestamp.toI32()
-    );
   }
 }
 
 export function handlePurchaseOption(event: PurchaseOption): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
-  let vaultAddress = event.address.toHexString();
   let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
   let option = new VaultOptionSold(
