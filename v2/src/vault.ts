@@ -8,11 +8,11 @@ import {
   InitiateGnosisAuction,
   InitiateWithdraw,
   InstantWithdraw,
-  CollectVaultFees
+  CollectVaultFees,
 } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import {
   Pause,
-  Resume
+  Resume,
 } from "../generated/RibbonVaultPauser/RibbonVaultPauser";
 import { DistributePremium } from "../generated/RibbonTreasuryVaultPERP/RibbonTreasuryVault";
 import {
@@ -21,7 +21,7 @@ import {
   GnosisAuction,
   VaultOptionTrade,
   VaultTransaction,
-  SwapOffer
+  SwapOffer,
 } from "../generated/schema";
 import { RibbonThetaVaultWithSwap as RibbonThetaVault } from "../generated/RibbonETHCoveredCall/RibbonThetaVaultWithSwap";
 import { OptionsPremiumPricer } from "../generated/RibbonETHCoveredCall/OptionsPremiumPricer";
@@ -30,27 +30,29 @@ import { AuctionCleared } from "../generated/GnosisAuction/GnosisAuction";
 import {
   NewOffer,
   SettleOffer,
-  Swap
+  Swap,
 } from "../generated/RibbonSwap/SwapContract";
 
 import {
   createVaultAccount,
   refreshAllAccountBalances,
-  triggerBalanceUpdate
+  triggerBalanceUpdate,
 } from "./accounts";
 import {
   getOrCreateVault,
   newVault,
   getOtokenMintAmount,
   getPricePerShare,
-  sharesToAssets
+  sharesToAssets,
 } from "./utils";
 import {
   finalizePrevRoundVaultPerformance,
-  updateVaultPerformance
+  updateVaultPerformance,
 } from "./vaultPerformance";
-import { blockNumberOfUpgradedCloseRound, ignoreTransfer } from "./data/constant";
-
+import {
+  blockNumberOfUpgradedCloseRound,
+  ignoreTransfer,
+} from "./data/constant";
 
 export function handleOpenShort(event: OpenShort): void {
   let optionAddress = event.params.options;
@@ -83,7 +85,7 @@ export function handleOpenShort(event: OpenShort): void {
   let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
 
   // Only increment vault if NO upgraded block, or if block is less than upgraded block
-  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address)
+  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address);
   if (upgradedBlock == 0 || event.block.number.toI32() < upgradedBlock) {
     vault.round = vault.round + 1;
   }
@@ -117,7 +119,7 @@ export function handleCloseShort(event: CloseShort): void {
   let vaultAddress = event.address.toHexString();
 
   // Only increment vault round if more than upgraded block
-  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address)
+  let upgradedBlock = blockNumberOfUpgradedCloseRound(event.address);
   if (upgradedBlock != 0 && event.block.number.toI32() >= upgradedBlock) {
     let vault = getOrCreateVault(vaultAddress, event.block.timestamp.toI32());
     vault.round = vault.round + 1;

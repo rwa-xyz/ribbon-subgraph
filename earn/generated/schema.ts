@@ -185,6 +185,24 @@ export class Vault extends Entity {
   set totalFeeCollected(value: BigInt) {
     this.set("totalFeeCollected", Value.fromBigInt(value));
   }
+
+  get optionsTraded(): i32 {
+    let value = this.get("optionsTraded");
+    return value.toI32();
+  }
+
+  set optionsTraded(value: i32) {
+    this.set("optionsTraded", Value.fromI32(value));
+  }
+
+  get numberOfHits(): i32 {
+    let value = this.get("numberOfHits");
+    return value.toI32();
+  }
+
+  set numberOfHits(value: i32) {
+    this.set("numberOfHits", Value.fromI32(value));
+  }
 }
 
 export class VaultOpenLoan extends Entity {
@@ -889,6 +907,24 @@ export class VaultAccount extends Entity {
   set depositInRound(value: i32) {
     this.set("depositInRound", Value.fromI32(value));
   }
+
+  get totalStakedShares(): BigInt {
+    let value = this.get("totalStakedShares");
+    return value.toBigInt();
+  }
+
+  set totalStakedShares(value: BigInt) {
+    this.set("totalStakedShares", Value.fromBigInt(value));
+  }
+
+  get totalStakedBalance(): BigInt {
+    let value = this.get("totalStakedBalance");
+    return value.toBigInt();
+  }
+
+  set totalStakedBalance(value: BigInt) {
+    this.set("totalStakedBalance", Value.fromBigInt(value));
+  }
 }
 
 export class VaultPerformanceUpdate extends Entity {
@@ -1140,6 +1176,15 @@ export class BalanceUpdate extends Entity {
 
   set isWithdraw(value: boolean) {
     this.set("isWithdraw", Value.fromBoolean(value));
+  }
+
+  get stakedBalance(): BigInt {
+    let value = this.get("stakedBalance");
+    return value.toBigInt();
+  }
+
+  set stakedBalance(value: BigInt) {
+    this.set("stakedBalance", Value.fromBigInt(value));
   }
 }
 

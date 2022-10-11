@@ -16,54 +16,18 @@ import {
   refreshAllAccountBalances,
   triggerBalanceUpdate
 } from "./accounts";
-import { getPricePerShare, sharesToAssets } from "./utils";
+import { getPricePerShare, newVault, sharesToAssets } from "./utils";
 import {
   Vault,
   VaultAccount,
   VaultTransaction,
-  VaultPerformanceUpdate,
   VaultOpenLoan,
   VaultCloseLoan,
   VaultOptionSold,
   VaultOptionYield
 } from "../generated/schema";
-import { getVaultStartRound, isTestAmount } from "./data/constant";
+import { isTestAmount } from "./data/constant";
 import { finalizePrevRoundVaultPerformance } from "./vaultPerformance";
-
-function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
-  let vault = new Vault(vaultAddress);
-  let vaultContract = RibbonEarnVault.bind(Address.fromString(vaultAddress));
-
-  vault.name = vaultContract.name();
-  vault.symbol = vaultContract.symbol();
-  vault.numDepositors = 0;
-  vault.depositors = [];
-  vault.decimals = vaultContract.decimals();
-  vault.totalPremiumEarned = BigInt.fromI32(0);
-  vault.totalNominalVolume = BigInt.fromI32(0);
-  vault.totalNotionalVolume = BigInt.fromI32(0);
-  vault.principalOutstanding = BigInt.fromI32(0);
-  vault.cap = vaultContract.cap();
-  vault.round = 1;
-  vault.totalBalance = vaultContract.totalBalance();
-  vault.performanceFeeCollected = BigInt.fromI32(0);
-  vault.managementFeeCollected = BigInt.fromI32(0);
-  vault.totalFeeCollected = BigInt.fromI32(0);
-
-  if (getVaultStartRound(vault.symbol) == 0) {
-    // We create an initial VaultPerformanceUpdate with the default pricePerShare
-    let performanceUpdate = new VaultPerformanceUpdate(vaultAddress + "-0");
-    performanceUpdate.vault = vault.id;
-    performanceUpdate.pricePerShare = BigInt.fromI32(10).pow(
-      u8(vault.decimals)
-    );
-    performanceUpdate.timestamp = creationTimestamp;
-    performanceUpdate.round = 0;
-    performanceUpdate.save();
-  }
-
-  return vault;
-}
 
 export function handleOpenLoan(event: OpenLoan): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
@@ -353,6 +317,9 @@ export function handlePayOptionYield(event: PayOptionYield): void {
   if (!isTestAmount(vault.symbol, event.params._yield)) {
     let vaultContract = RibbonEarnVault.bind(event.address);
     let vaultAddress = event.address.toHexString();
+    let vault = Vault.load(vaultAddress);
+    vault.numberOfHits = vault.numberOfHits + 1;
+    vault.save();
     let allocationState = vaultContract.allocationState();
     let round = vaultContract.vaultState().value0;
     let optionPaid = new VaultOptionYield(
@@ -387,6 +354,10 @@ export function handlePurchaseOption(event: PurchaseOption): void {
       "-" +
       round.toString()
   );
+  let vaultAddress = event.address.toHexString();
+  let vault = Vault.load(vaultAddress);
+  vault.optionsTraded = vault.optionsTraded + 1;
+  vault.save();
   option.vault = event.address.toHexString();
   option.premium = event.params.premium;
   option.optionAllocation = allocationState.value7;

@@ -17,6 +17,8 @@ type Vault @entity {
   performanceFeeCollected: BigInt!
   managementFeeCollected: BigInt!
   totalFeeCollected: BigInt!
+  optionsTraded: Int!
+  numberOfHits: Int!
 }
 
 type VaultOpenLoan @entity {
@@ -113,6 +115,12 @@ type VaultAccount @entity {
 
   "Tracks the round number for the user's deposit receipt"
   depositInRound: Int!
+
+  "Shares staked in a mining pool"
+  totalStakedShares: BigInt!
+
+  "Asset amount staked in a mining pool"
+  totalStakedBalance: BigInt!
 }
 
 type VaultPerformanceUpdate @entity {
@@ -142,6 +150,7 @@ type BalanceUpdate @entity {
   balance: BigInt! # Account's balance in the vault at a point in time
   yieldEarned: BigInt! # Yield earned from a trade at a point in time
   isWithdraw: Boolean!
+  stakedBalance: BigInt!
 }
 
 type ERC20Token @entity {

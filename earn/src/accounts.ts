@@ -185,11 +185,11 @@ export function _triggerBalanceUpdate(
     }
   }
 
-  // let stakeBalance = sharesToAssets(
-  //   vaultAccount.totalStakedShares,
-  //   assetPerShare,
-  //   decimals
-  // );
+  let stakeBalance = sharesToAssets(
+    vaultAccount.totalStakedShares,
+    assetPerShare,
+    decimals
+  );
   let balance = accountBalance + totalPendingDeposit;
   let update = new BalanceUpdate(updateID);
   update.vault = vaultID;
@@ -198,7 +198,7 @@ export function _triggerBalanceUpdate(
   update.balance = balance;
   update.yieldEarned = BigInt.fromI32(0);
   update.isWithdraw = isWithdraw;
-  // update.stakedBalance = stakeBalance;
+  update.stakedBalance = stakeBalance;
 
   if (accruesYield) {
     let prevUpdateID =
@@ -223,6 +223,7 @@ export function _triggerBalanceUpdate(
   update.save();
 
   vaultAccount.updateCounter = updateCounter;
+  vaultAccount.totalStakedBalance = stakeBalance;
   vaultAccount.totalBalance = balance;
   vaultAccount.shares = totalShares;
   vaultAccount.totalPendingDeposit = totalPendingDeposit;
@@ -260,6 +261,8 @@ export function createVaultAccount(
     vaultAccount.totalBalance = BigInt.fromI32(0);
     vaultAccount.totalYieldEarned = BigInt.fromI32(0);
     vaultAccount.updateCounter = 0;
+    vaultAccount.totalStakedShares = BigInt.fromI32(0);
+    vaultAccount.totalStakedBalance = BigInt.fromI32(0);
     vaultAccount.save();
   }
   return vaultAccount as VaultAccount;
