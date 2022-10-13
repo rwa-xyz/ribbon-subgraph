@@ -190,7 +190,7 @@ export function _triggerBalanceUpdate(
     assetPerShare,
     decimals
   );
-  let balance = accountBalance + totalPendingDeposit;
+  let balance = accountBalance + totalPendingDeposit + stakeBalance;
   let update = new BalanceUpdate(updateID);
   update.vault = vaultID;
   update.account = accountAddress;
