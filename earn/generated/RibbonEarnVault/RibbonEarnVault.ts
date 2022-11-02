@@ -254,16 +254,16 @@ export class ManagementFeeSet__Params {
   }
 }
 
-export class NewLoanOptionAllocationSet extends ethereum.Event {
-  get params(): NewLoanOptionAllocationSet__Params {
-    return new NewLoanOptionAllocationSet__Params(this);
+export class NewAllocationSet extends ethereum.Event {
+  get params(): NewAllocationSet__Params {
+    return new NewAllocationSet__Params(this);
   }
 }
 
-export class NewLoanOptionAllocationSet__Params {
-  _event: NewLoanOptionAllocationSet;
+export class NewAllocationSet__Params {
+  _event: NewAllocationSet;
 
-  constructor(event: NewLoanOptionAllocationSet) {
+  constructor(event: NewAllocationSet) {
     this._event = event;
   }
 
@@ -547,8 +547,8 @@ export class RibbonEarnVault__allocationStateResult {
   value1: BigInt;
   value2: BigInt;
   value3: BigInt;
-  value4: i32;
-  value5: i32;
+  value4: BigInt;
+  value5: BigInt;
   value6: BigInt;
   value7: BigInt;
 
@@ -557,8 +557,8 @@ export class RibbonEarnVault__allocationStateResult {
     value1: BigInt,
     value2: BigInt,
     value3: BigInt,
-    value4: i32,
-    value5: i32,
+    value4: BigInt,
+    value5: BigInt,
     value6: BigInt,
     value7: BigInt
   ) {
@@ -578,14 +578,8 @@ export class RibbonEarnVault__allocationStateResult {
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
     map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
-    map.set(
-      "value4",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value4))
-    );
-    map.set(
-      "value5",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value5))
-    );
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
+    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
     map.set("value6", ethereum.Value.fromUnsignedBigInt(this.value6));
     map.set("value7", ethereum.Value.fromUnsignedBigInt(this.value7));
     return map;
@@ -754,19 +748,19 @@ export class RibbonEarnVault extends ethereum.SmartContract {
     return new RibbonEarnVault("RibbonEarnVault", address);
   }
 
-  TOTAL_PCT(): i32 {
-    let result = super.call("TOTAL_PCT", "TOTAL_PCT():(uint16)", []);
+  TOTAL_PCT(): BigInt {
+    let result = super.call("TOTAL_PCT", "TOTAL_PCT():(uint32)", []);
 
-    return result[0].toI32();
+    return result[0].toBigInt();
   }
 
-  try_TOTAL_PCT(): ethereum.CallResult<i32> {
-    let result = super.tryCall("TOTAL_PCT", "TOTAL_PCT():(uint16)", []);
+  try_TOTAL_PCT(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("TOTAL_PCT", "TOTAL_PCT():(uint32)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   USDC(): Address {
@@ -777,21 +771,6 @@ export class RibbonEarnVault extends ethereum.SmartContract {
 
   try_USDC(): ethereum.CallResult<Address> {
     let result = super.tryCall("USDC", "USDC():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  WETH(): Address {
-    let result = super.call("WETH", "WETH():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_WETH(): ethereum.CallResult<Address> {
-    let result = super.tryCall("WETH", "WETH():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -825,7 +804,7 @@ export class RibbonEarnVault extends ethereum.SmartContract {
   allocationState(): RibbonEarnVault__allocationStateResult {
     let result = super.call(
       "allocationState",
-      "allocationState():(uint32,uint32,uint32,uint32,uint16,uint16,uint256,uint256)",
+      "allocationState():(uint32,uint32,uint32,uint32,uint32,uint32,uint256,uint256)",
       []
     );
 
@@ -834,8 +813,8 @@ export class RibbonEarnVault extends ethereum.SmartContract {
       result[1].toBigInt(),
       result[2].toBigInt(),
       result[3].toBigInt(),
-      result[4].toI32(),
-      result[5].toI32(),
+      result[4].toBigInt(),
+      result[5].toBigInt(),
       result[6].toBigInt(),
       result[7].toBigInt()
     );
@@ -846,7 +825,7 @@ export class RibbonEarnVault extends ethereum.SmartContract {
   > {
     let result = super.tryCall(
       "allocationState",
-      "allocationState():(uint32,uint32,uint32,uint32,uint16,uint16,uint256,uint256)",
+      "allocationState():(uint32,uint32,uint32,uint32,uint32,uint32,uint256,uint256)",
       []
     );
     if (result.reverted) {
@@ -859,8 +838,8 @@ export class RibbonEarnVault extends ethereum.SmartContract {
         value[1].toBigInt(),
         value[2].toBigInt(),
         value[3].toBigInt(),
-        value[4].toI32(),
-        value[5].toI32(),
+        value[4].toBigInt(),
+        value[5].toBigInt(),
         value[6].toBigInt(),
         value[7].toBigInt()
       )
@@ -1909,32 +1888,6 @@ export class DepositCall__Outputs {
   }
 }
 
-export class DepositETHCall extends ethereum.Call {
-  get inputs(): DepositETHCall__Inputs {
-    return new DepositETHCall__Inputs(this);
-  }
-
-  get outputs(): DepositETHCall__Outputs {
-    return new DepositETHCall__Outputs(this);
-  }
-}
-
-export class DepositETHCall__Inputs {
-  _call: DepositETHCall;
-
-  constructor(call: DepositETHCall) {
-    this._call = call;
-  }
-}
-
-export class DepositETHCall__Outputs {
-  _call: DepositETHCall;
-
-  constructor(call: DepositETHCall) {
-    this._call = call;
-  }
-}
-
 export class DepositForCall extends ethereum.Call {
   get inputs(): DepositForCall__Inputs {
     return new DepositForCall__Inputs(this);
@@ -2168,12 +2121,12 @@ export class InitializeCall_allocationStateStruct extends ethereum.Tuple {
     return this[3].toBigInt();
   }
 
-  get loanAllocationPCT(): i32 {
-    return this[4].toI32();
+  get loanAllocationPCT(): BigInt {
+    return this[4].toBigInt();
   }
 
-  get optionAllocationPCT(): i32 {
-    return this[5].toI32();
+  get optionAllocationPCT(): BigInt {
+    return this[5].toBigInt();
   }
 
   get loanAllocation(): BigInt {
@@ -2535,6 +2488,40 @@ export class RollToNextRoundCall__Outputs {
   }
 }
 
+export class SetAllocationPCTCall extends ethereum.Call {
+  get inputs(): SetAllocationPCTCall__Inputs {
+    return new SetAllocationPCTCall__Inputs(this);
+  }
+
+  get outputs(): SetAllocationPCTCall__Outputs {
+    return new SetAllocationPCTCall__Outputs(this);
+  }
+}
+
+export class SetAllocationPCTCall__Inputs {
+  _call: SetAllocationPCTCall;
+
+  constructor(call: SetAllocationPCTCall) {
+    this._call = call;
+  }
+
+  get _loanAllocationPCT(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get _optionAllocationPCT(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class SetAllocationPCTCall__Outputs {
+  _call: SetAllocationPCTCall;
+
+  constructor(call: SetAllocationPCTCall) {
+    this._call = call;
+  }
+}
+
 export class SetCapCall extends ethereum.Call {
   get inputs(): SetCapCall__Inputs {
     return new SetCapCall__Inputs(this);
@@ -2621,36 +2608,6 @@ export class SetLiquidityGaugeCall__Outputs {
   _call: SetLiquidityGaugeCall;
 
   constructor(call: SetLiquidityGaugeCall) {
-    this._call = call;
-  }
-}
-
-export class SetLoanAllocationPCTCall extends ethereum.Call {
-  get inputs(): SetLoanAllocationPCTCall__Inputs {
-    return new SetLoanAllocationPCTCall__Inputs(this);
-  }
-
-  get outputs(): SetLoanAllocationPCTCall__Outputs {
-    return new SetLoanAllocationPCTCall__Outputs(this);
-  }
-}
-
-export class SetLoanAllocationPCTCall__Inputs {
-  _call: SetLoanAllocationPCTCall;
-
-  constructor(call: SetLoanAllocationPCTCall) {
-    this._call = call;
-  }
-
-  get _loanAllocationPCT(): i32 {
-    return this._call.inputValues[0].value.toI32();
-  }
-}
-
-export class SetLoanAllocationPCTCall__Outputs {
-  _call: SetLoanAllocationPCTCall;
-
-  constructor(call: SetLoanAllocationPCTCall) {
     this._call = call;
   }
 }

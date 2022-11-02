@@ -18,12 +18,11 @@ export function getVaultStartRound(vaultSymbol: string): i32 {
   return 0;
 }
 
-
 /**
  * Keys: Liquidity Guage Address
  * Value: Vault address
  */
- export function getLiquidityGaugePoolsMap(): TypedMap<string, string> {
+export function getLiquidityGaugePoolsMap(): TypedMap<string, string> {
   let gaugeMap = new TypedMap<string, string>();
   if (dataSource.network() == "mainnet") {
     // REARN
@@ -83,3 +82,7 @@ export function isTestAmount(vaultSymbol: string, amount: BigInt): boolean {
   }
   return false;
 }
+
+export const earnVaultList: Array<string> = [
+  "0x84c2b16fa6877a8ff4f3271db7ea837233dfd6f0", //RibbonEarn
+];

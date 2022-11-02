@@ -31,19 +31,6 @@ export function getOtokenMintAmount(
   return depositAmount.div(scaleByDecimals);
 }
 
-export function getPricePerShare(
-  vault: RibbonEarnVault,
-  decimals: number
-): BigInt {
-  let callResult = vault.try_pricePerShare();
-  // If it reverts it means that the supply is 0, so we return a single share
-  if (callResult.reverted) {
-    let decimalsU8: u8 = u8(decimals);
-    return BigInt.fromI32(10).pow(decimalsU8);
-  }
-  return callResult.value;
-}
-
 export function sharesToAssets(
   shareAmount: BigInt,
   assetPerShare: BigInt,

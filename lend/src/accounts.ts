@@ -1,34 +1,34 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { RibbonLendVault } from "../generated/RibbonLendVaultWintermute/RibbonLendVault";
+import { RibbonLendPool } from "../generated/templates/RibbonLendPool/RibbonLendPool";
 import {
   BalanceUpdate,
   ERC20Token,
   ERC20TokenAccount,
-  Vault,
-  VaultAccount
+  Pool,
+  PoolAccount
 } from "../generated/schema";
 import { getPricePerShare, sharesToAssets } from "./utils";
 
 export function refreshAllAccountBalances(
-  vaultAddress: Address,
+  poolAddress: Address,
   timestamp: i32
 ): void {
-  let vault = Vault.load(vaultAddress.toHexString());
-  let vaultContract = RibbonLendVault.bind(vaultAddress);
-  let decimals = vault.decimals;
-  let assetPerShare = getPricePerShare(vaultContract, 18 - decimals); // this gives back pricePerShare in usdc terms (18-6)
+  let pool = Pool.load(poolAddress.toHexString());
+  let poolContract = RibbonLendPool.bind(poolAddress);
+  let decimals = pool.decimals;
+  let assetPerShare = getPricePerShare(poolContract, 18 - decimals); // this gives back pricePerShare in usdc terms (18-6)
 
-  let totalBalance = vaultContract.poolSize();
-  vault.totalBalance = totalBalance;
-  vault.save();
+  let totalBalance = poolContract.poolSize();
+  pool.totalBalance = totalBalance;
+  pool.save();
 
-  if (vault != null) {
-    for (let i = 0; i < vault.numDepositors; i++) {
-      let depositors = vault.depositors;
+  if (pool != null) {
+    for (let i = 0; i < pool.numDepositors; i++) {
+      let depositors = pool.depositors;
       let depositorAddress = depositors[i];
       if (depositorAddress != null) {
         _triggerBalanceUpdate(
-          vaultAddress,
+          poolAddress,
           depositorAddress as Address,
           timestamp,
           true,
@@ -43,22 +43,22 @@ export function refreshAllAccountBalances(
 }
 
 export function triggerBalanceUpdate(
-  vaultAddress: Address,
+  poolAddress: Address,
   accountAddress: Address,
   timestamp: i32,
   accruesYield: bool,
   isWithdraw: bool
 ): void {
-  let vault = Vault.load(vaultAddress.toHexString());
-  let vaultContract = RibbonLendVault.bind(vaultAddress);
-  let decimals = vault.decimals;
-  let assetPerShare = getPricePerShare(vaultContract, 18 - decimals) // this gives back pricePerShare in usdc terms (18-6)
-  let totalBalance = vaultContract.poolSize();
-  vault.totalBalance = totalBalance;
-  vault.save();
+  let pool = Pool.load(poolAddress.toHexString());
+  let poolContract = RibbonLendPool.bind(poolAddress);
+  let decimals = pool.decimals;
+  let assetPerShare = getPricePerShare(poolContract, 18 - decimals) // this gives back pricePerShare in usdc terms (18-6)
+  let totalBalance = poolContract.poolSize();
+  pool.totalBalance = totalBalance;
+  pool.save();
 
   _triggerBalanceUpdate(
-    vaultAddress,
+    poolAddress,
     accountAddress,
     timestamp,
     accruesYield,
@@ -70,7 +70,7 @@ export function triggerBalanceUpdate(
 }
 
 export function _triggerBalanceUpdate(
-  vaultAddress: Address,
+  poolAddress: Address,
   accountAddress: Address,
   timestamp: i32,
   accruesYield: bool,
@@ -79,33 +79,33 @@ export function _triggerBalanceUpdate(
   assetPerShare: BigInt,
   decimals: number
 ): void {
-  let vaultID = vaultAddress.toHexString();
-  let vaultContract = RibbonLendVault.bind(vaultAddress);
-  let vaultAccount = VaultAccount.load(
-    vaultAddress.toHexString() + "-" + accountAddress.toHexString()
+  let poolID = poolAddress.toHexString();
+  let poolContract = RibbonLendPool.bind(poolAddress);
+  let poolAccount = PoolAccount.load(
+    poolAddress.toHexString() + "-" + accountAddress.toHexString()
   );
 
-  if (vaultAccount == null) {
+  if (poolAccount == null) {
     return;
   }
 
-  let prevUpdateCounter = vaultAccount.updateCounter;
+  let prevUpdateCounter = poolAccount.updateCounter;
   let updateCounter = prevUpdateCounter + 1;
   let updateID =
-    vaultAddress.toHexString() +
+    poolAddress.toHexString() +
     "-" +
     accountAddress.toHexString() +
     "-" +
     updateCounter.toString();
 
   let accountBalance = sharesToAssets(
-    vaultContract.balanceOf(accountAddress),
+    poolContract.balanceOf(accountAddress),
     assetPerShare,
     decimals
   );
 
   let update = new BalanceUpdate(updateID);
-  update.vault = vaultID;
+  update.pool = poolID;
   update.account = accountAddress;
   update.timestamp = timestamp;
   update.balance = accountBalance;
@@ -114,7 +114,7 @@ export function _triggerBalanceUpdate(
 
   if (accruesYield) {
     let prevUpdateID =
-      vaultAddress.toHexString() +
+      poolAddress.toHexString() +
       "-" +
       accountAddress.toHexString() +
       "-" +
@@ -125,7 +125,7 @@ export function _triggerBalanceUpdate(
       let yieldEarned = accountBalance.minus(prevUpdate.balance);
       if (yieldEarned.gt(BigInt.fromI32(0))) {
         update.yieldEarned = yieldEarned;
-        vaultAccount.totalYieldEarned = vaultAccount.totalYieldEarned.plus(
+        poolAccount.totalYieldEarned = poolAccount.totalYieldEarned.plus(
           yieldEarned
         );
       }
@@ -134,40 +134,40 @@ export function _triggerBalanceUpdate(
 
   update.save();
 
-  vaultAccount.updateCounter = updateCounter;
-  vaultAccount.totalBalance = accountBalance;
-  vaultAccount.shares = vaultContract.balanceOf(accountAddress);
-  vaultAccount.save();
+  poolAccount.updateCounter = updateCounter;
+  poolAccount.totalBalance = accountBalance;
+  poolAccount.shares = poolContract.balanceOf(accountAddress);
+  poolAccount.save();
 }
 
-export function createVaultAccount(
-  vaultAddress: Address,
+export function createPoolAccount(
+  poolAddress: Address,
   accountAddress: Address
-): VaultAccount {
-  let vaultAccountID =
-    vaultAddress.toHexString() + "-" + accountAddress.toHexString();
-  let vaultAccount = VaultAccount.load(vaultAccountID);
+): PoolAccount {
+  let poolAccountID =
+    poolAddress.toHexString() + "-" + accountAddress.toHexString();
+  let poolAccount = PoolAccount.load(poolAccountID);
 
-  if (vaultAccount == null) {
-    let vault = Vault.load(vaultAddress.toHexString());
-    let depositors = vault.depositors;
+  if (poolAccount == null) {
+    let pool = Pool.load(poolAddress.toHexString());
+    let depositors = pool.depositors;
     depositors.push(accountAddress);
-    vault.depositors = depositors;
+    pool.depositors = depositors;
 
-    vault.numDepositors = vault.numDepositors + 1;
-    vault.save();
+    pool.numDepositors = pool.numDepositors + 1;
+    pool.save();
 
-    vaultAccount = new VaultAccount(vaultAccountID);
-    vaultAccount.vault = vaultAddress.toHexString();
-    vaultAccount.account = accountAddress;
-    vaultAccount.shares = BigInt.fromI32(0);
-    vaultAccount.totalDeposits = BigInt.fromI32(0);
-    vaultAccount.totalBalance = BigInt.fromI32(0);
-    vaultAccount.totalYieldEarned = BigInt.fromI32(0);
-    vaultAccount.updateCounter = 0;
-    vaultAccount.save();
+    poolAccount = new PoolAccount(poolAccountID);
+    poolAccount.pool = poolAddress.toHexString();
+    poolAccount.account = accountAddress;
+    poolAccount.shares = BigInt.fromI32(0);
+    poolAccount.totalDeposits = BigInt.fromI32(0);
+    poolAccount.totalBalance = BigInt.fromI32(0);
+    poolAccount.totalYieldEarned = BigInt.fromI32(0);
+    poolAccount.updateCounter = 0;
+    poolAccount.save();
   }
-  return vaultAccount as VaultAccount;
+  return poolAccount as PoolAccount;
 }
 
 export function getOrCreateTokenAccount(

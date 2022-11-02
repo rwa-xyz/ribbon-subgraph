@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   RibbonEarnVault,
   CloseLoan,
@@ -12,11 +12,15 @@ import {
   Withdraw
 } from "../generated/RibbonEarnVault/RibbonEarnVault";
 import {
+  Provided,
+  Redeemed
+} from "../generated/templates/RibbonLendPool/RibbonLendPool";
+import {
   createVaultAccount,
   refreshAllAccountBalances,
   triggerBalanceUpdate
 } from "./accounts";
-import { getPricePerShare, newVault, sharesToAssets } from "./utils";
+import { newVault, sharesToAssets } from "./utils";
 import {
   Vault,
   VaultAccount,
@@ -26,13 +30,12 @@ import {
   VaultOptionSold,
   VaultOptionYield
 } from "../generated/schema";
-import { isTestAmount } from "./data/constant";
+import { isTestAmount, earnVaultList } from "./data/constant";
 import { finalizePrevRoundVaultPerformance } from "./vaultPerformance";
 
 export function handleOpenLoan(event: OpenLoan): void {
   let vaultContract = RibbonEarnVault.bind(event.address);
   let vaultAddress = event.address.toHexString();
-  let allocationState = vaultContract.allocationState();
   let round = vaultContract.vaultState().value0;
   let loanPosition = new VaultOpenLoan(
     event.address.toHexString() +
@@ -43,44 +46,17 @@ export function handleOpenLoan(event: OpenLoan): void {
   );
   loanPosition.vault = event.address.toHexString();
   loanPosition.loanAmount = event.params.amount;
-  loanPosition.optionAllocation = allocationState.value7;
-  loanPosition.borrower = event.params.borrower;
-  loanPosition.optionSeller = vaultContract.optionSeller();
-  loanPosition.expiry =
-    event.block.timestamp.toI32() + allocationState.value2.toI32();
-  loanPosition.loanTermLength = allocationState.value2.toI32();
-  loanPosition.optionPurchaseFreq = allocationState.value3.toI32();
-  loanPosition.subRounds =
-    allocationState.value2.toI32() / allocationState.value3.toI32();
   loanPosition.openedAt = event.block.timestamp.toI32();
 
   let vault = Vault.load(event.address.toHexString());
-  // if the loan is from the same round, we increment, else refresh principaloutstanding
-  if (vault.round === round) {
-    vault.principalOutstanding =
-      vault.principalOutstanding + loanPosition.loanAmount;
-  } else {
+  if (vault.round !== round) {
     vault.round = round;
-    vault.principalOutstanding = loanPosition.loanAmount;
   }
-  vault.totalNotionalVolume =
-    vault.totalNotionalVolume + loanPosition.loanAmount;
   vault.save();
 
   loanPosition.openTxhash = event.transaction.hash;
   loanPosition.save();
 
-  /**
-   * We finalize last round pricePerShare here
-   */
-  finalizePrevRoundVaultPerformance(
-    vaultAddress,
-    event.block.timestamp.toI32()
-  );
-
-  // /**
-  //  * Refresh all account balances to turn their balance locked
-  //  */
   refreshAllAccountBalances(
     Address.fromString(vaultAddress),
     event.block.timestamp.toI32()
@@ -99,17 +75,56 @@ export function handleCloseLoan(event: CloseLoan): void {
   );
 
   loanClosePosition.vault = event.address.toHexString();
-  loanClosePosition._yield = event.params._yield;
-  if (event.block.timestamp.toI32() === 1663954067) {
-    loanClosePosition._yield = BigInt.fromI32(10)
-      .pow(6)
-      .times(BigInt.fromI32(14276));
-  }
-  loanClosePosition.borrower = event.params.borrower;
   loanClosePosition.paidAmount = event.params.amount;
   loanClosePosition.closedAt = event.block.timestamp;
   loanClosePosition.closeTxhash = event.transaction.hash;
   loanClosePosition.save();
+}
+
+export function handleProvided(event: Provided): void {
+  let vaultExist = earnVaultList.includes(event.params.provider.toHexString());
+  if (vaultExist) {
+    let vaultContract = RibbonEarnVault.bind(event.params.provider);
+    let round = vaultContract.vaultState().value0;
+    let loanPosition = new VaultOpenLoan(
+      event.address.toHexString() +
+        "-" +
+        event.params.provider.toHexString() +
+        "-" +
+        event.block.timestamp.toString()
+    );
+    loanPosition.vault = event.params.provider.toHexString();
+    loanPosition.loanAmount = event.params.currencyAmount;
+    loanPosition.openedAt = event.block.timestamp.toI32();
+    let vault = Vault.load(event.params.provider.toHexString());
+    // if the loan is from the same round, we increment, else refresh principaloutstanding
+    if (vault.round !== round) {
+      vault.round = round;
+    }
+    vault.save();
+
+    loanPosition.openTxhash = event.transaction.hash;
+    loanPosition.save();
+  }
+}
+
+export function handleRedeemed(event: Redeemed): void {
+  let vaultExist = earnVaultList.includes(event.params.redeemer.toHexString());
+  if (vaultExist) {
+    let loanClosePosition = new VaultCloseLoan(
+      event.address.toHexString() +
+        "-" +
+        event.params.redeemer.toHexString() +
+        "-" +
+        event.block.timestamp.toHexString()
+    );
+
+    loanClosePosition.vault = event.params.redeemer.toHexString();
+    loanClosePosition.paidAmount = event.params.currencyAmount;
+    loanClosePosition.closedAt = event.block.timestamp;
+    loanClosePosition.closeTxhash = event.transaction.hash;
+    loanClosePosition.save();
+  }
 }
 
 export function handleDeposit(event: Deposit): void {
@@ -163,12 +178,22 @@ export function handleCollectVaultFees(event: CollectVaultFees): void {
   let performanceFee = event.params.performanceFee;
   let totalFee = event.params.vaultFee;
   let managementFee = totalFee - performanceFee;
-
   vault.performanceFeeCollected =
     vault.performanceFeeCollected + performanceFee;
+  vault.round = vault.round + 1;
   vault.managementFeeCollected = vault.managementFeeCollected + managementFee;
   vault.totalFeeCollected = vault.totalFeeCollected + totalFee;
   vault.save();
+
+  refreshAllAccountBalances(
+    Address.fromString(vaultAddress),
+    event.block.timestamp.toI32()
+  );
+
+  finalizePrevRoundVaultPerformance(
+    vaultAddress,
+    event.block.timestamp.toI32()
+  );
 }
 
 export function handleInitiateWithdraw(event: InitiateWithdraw): void {
@@ -189,7 +214,7 @@ export function handleInitiateWithdraw(event: InitiateWithdraw): void {
   let decimals = vault.decimals;
   let assetAmount = sharesToAssets(
     event.params.shares,
-    getPricePerShare(vaultContract, decimals),
+    vaultContract.roundPricePerShare(BigInt.fromI32(vault.round - 1)),
     decimals
   );
 

@@ -12,7 +12,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class Vault extends Entity {
+export class Pool extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -20,17 +20,17 @@ export class Vault extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Vault entity without an ID");
+    assert(id !== null, "Cannot save Pool entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save Vault entity with non-string ID. " +
+      "Cannot save Pool entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("Vault", id.toString(), this);
+    store.set("Pool", id.toString(), this);
   }
 
-  static load(id: string): Vault | null {
-    return store.get("Vault", id) as Vault | null;
+  static load(id: string): Pool | null {
+    return store.get("Pool", id) as Pool | null;
   }
 
   get id(): string {
@@ -114,13 +114,13 @@ export class Vault extends Entity {
     this.set("depositors", Value.fromBytesArray(value));
   }
 
-  get vaultAccounts(): Array<string> {
-    let value = this.get("vaultAccounts");
+  get poolAccounts(): Array<string> {
+    let value = this.get("poolAccounts");
     return value.toStringArray();
   }
 
-  set vaultAccounts(value: Array<string>) {
-    this.set("vaultAccounts", Value.fromStringArray(value));
+  set poolAccounts(value: Array<string>) {
+    this.set("poolAccounts", Value.fromStringArray(value));
   }
 
   get totalBalance(): BigInt {
@@ -160,7 +160,7 @@ export class Vault extends Entity {
   }
 }
 
-export class VaultBorrow extends Entity {
+export class PoolBorrow extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -168,17 +168,17 @@ export class VaultBorrow extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save VaultBorrow entity without an ID");
+    assert(id !== null, "Cannot save PoolBorrow entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save VaultBorrow entity with non-string ID. " +
+      "Cannot save PoolBorrow entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("VaultBorrow", id.toString(), this);
+    store.set("PoolBorrow", id.toString(), this);
   }
 
-  static load(id: string): VaultBorrow | null {
-    return store.get("VaultBorrow", id) as VaultBorrow | null;
+  static load(id: string): PoolBorrow | null {
+    return store.get("PoolBorrow", id) as PoolBorrow | null;
   }
 
   get id(): string {
@@ -190,13 +190,13 @@ export class VaultBorrow extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): string {
-    let value = this.get("vault");
+  get pool(): string {
+    let value = this.get("pool");
     return value.toString();
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 
   get borrowAmount(): BigInt {
@@ -236,7 +236,7 @@ export class VaultBorrow extends Entity {
   }
 }
 
-export class VaultRepay extends Entity {
+export class PoolRepay extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -244,17 +244,17 @@ export class VaultRepay extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save VaultRepay entity without an ID");
+    assert(id !== null, "Cannot save PoolRepay entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save VaultRepay entity with non-string ID. " +
+      "Cannot save PoolRepay entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("VaultRepay", id.toString(), this);
+    store.set("PoolRepay", id.toString(), this);
   }
 
-  static load(id: string): VaultRepay | null {
-    return store.get("VaultRepay", id) as VaultRepay | null;
+  static load(id: string): PoolRepay | null {
+    return store.get("PoolRepay", id) as PoolRepay | null;
   }
 
   get id(): string {
@@ -266,13 +266,13 @@ export class VaultRepay extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): string {
-    let value = this.get("vault");
+  get pool(): string {
+    let value = this.get("pool");
     return value.toString();
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 
   get repaidAmount(): BigInt {
@@ -303,7 +303,7 @@ export class VaultRepay extends Entity {
   }
 }
 
-export class VaultAccount extends Entity {
+export class PoolAccount extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -311,17 +311,17 @@ export class VaultAccount extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save VaultAccount entity without an ID");
+    assert(id !== null, "Cannot save PoolAccount entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save VaultAccount entity with non-string ID. " +
+      "Cannot save PoolAccount entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("VaultAccount", id.toString(), this);
+    store.set("PoolAccount", id.toString(), this);
   }
 
-  static load(id: string): VaultAccount | null {
-    return store.get("VaultAccount", id) as VaultAccount | null;
+  static load(id: string): PoolAccount | null {
+    return store.get("PoolAccount", id) as PoolAccount | null;
   }
 
   get id(): string {
@@ -333,13 +333,13 @@ export class VaultAccount extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): string {
-    let value = this.get("vault");
+  get pool(): string {
+    let value = this.get("pool");
     return value.toString();
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 
   get account(): Bytes {
@@ -397,7 +397,7 @@ export class VaultAccount extends Entity {
   }
 }
 
-export class VaultTransaction extends Entity {
+export class PoolTransaction extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -405,17 +405,17 @@ export class VaultTransaction extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save VaultTransaction entity without an ID");
+    assert(id !== null, "Cannot save PoolTransaction entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save VaultTransaction entity with non-string ID. " +
+      "Cannot save PoolTransaction entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("VaultTransaction", id.toString(), this);
+    store.set("PoolTransaction", id.toString(), this);
   }
 
-  static load(id: string): VaultTransaction | null {
-    return store.get("VaultTransaction", id) as VaultTransaction | null;
+  static load(id: string): PoolTransaction | null {
+    return store.get("PoolTransaction", id) as PoolTransaction | null;
   }
 
   get id(): string {
@@ -427,13 +427,13 @@ export class VaultTransaction extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): string {
-    let value = this.get("vault");
+  get pool(): string {
+    let value = this.get("pool");
     return value.toString();
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 
   get type(): string {
@@ -521,13 +521,13 @@ export class BalanceUpdate extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get vault(): string {
-    let value = this.get("vault");
+  get pool(): string {
+    let value = this.get("pool");
     return value.toString();
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 
   get account(): Bytes {

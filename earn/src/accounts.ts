@@ -7,21 +7,18 @@ import {
   Vault,
   VaultAccount
 } from "../generated/schema";
-import {
-  getPricePerShare,
-  getTotalPendingDeposit,
-  sharesToAssets
-} from "./utils";
+import { getTotalPendingDeposit, sharesToAssets } from "./utils";
 
 export function refreshAllAccountBalances(
   vaultAddress: Address,
   timestamp: i32
 ): void {
   let vault = Vault.load(vaultAddress.toHexString());
-  let round = vault.round;
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let decimals = vault.decimals;
-  let assetPerShare = getPricePerShare(vaultContract, decimals);
+  let assetPerShare = vaultContract.roundPricePerShare(
+    BigInt.fromI32(vault.round - 1)
+  );
   let totalBalance = vaultContract.totalBalance();
   vault.totalBalance = totalBalance;
   // for first usdc payoptionyield
@@ -64,7 +61,9 @@ export function triggerBalanceUpdate(
   let vault = Vault.load(vaultAddress.toHexString());
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let decimals = vault.decimals;
-  let assetPerShare = getPricePerShare(vaultContract, decimals);
+  let assetPerShare = vaultContract.roundPricePerShare(
+    BigInt.fromI32(vault.round - 1)
+  );
   let totalBalance = vaultContract.totalBalance();
   vault.totalBalance = totalBalance;
   vault.save();

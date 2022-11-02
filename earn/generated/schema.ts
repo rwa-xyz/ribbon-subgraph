@@ -253,95 +253,6 @@ export class VaultOpenLoan extends Entity {
     this.set("loanAmount", Value.fromBigInt(value));
   }
 
-  get withdrawAmount(): BigInt | null {
-    let value = this.get("withdrawAmount");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set withdrawAmount(value: BigInt | null) {
-    if (value === null) {
-      this.unset("withdrawAmount");
-    } else {
-      this.set("withdrawAmount", Value.fromBigInt(value as BigInt));
-    }
-  }
-
-  get optionAllocation(): BigInt {
-    let value = this.get("optionAllocation");
-    return value.toBigInt();
-  }
-
-  set optionAllocation(value: BigInt) {
-    this.set("optionAllocation", Value.fromBigInt(value));
-  }
-
-  get borrower(): Bytes {
-    let value = this.get("borrower");
-    return value.toBytes();
-  }
-
-  set borrower(value: Bytes) {
-    this.set("borrower", Value.fromBytes(value));
-  }
-
-  get optionSeller(): Bytes {
-    let value = this.get("optionSeller");
-    return value.toBytes();
-  }
-
-  set optionSeller(value: Bytes) {
-    this.set("optionSeller", Value.fromBytes(value));
-  }
-
-  get loanTermLength(): i32 {
-    let value = this.get("loanTermLength");
-    return value.toI32();
-  }
-
-  set loanTermLength(value: i32) {
-    this.set("loanTermLength", Value.fromI32(value));
-  }
-
-  get optionPurchaseFreq(): i32 {
-    let value = this.get("optionPurchaseFreq");
-    return value.toI32();
-  }
-
-  set optionPurchaseFreq(value: i32) {
-    this.set("optionPurchaseFreq", Value.fromI32(value));
-  }
-
-  get subRounds(): i32 {
-    let value = this.get("subRounds");
-    return value.toI32();
-  }
-
-  set subRounds(value: i32) {
-    this.set("subRounds", Value.fromI32(value));
-  }
-
-  get isExercised(): boolean {
-    let value = this.get("isExercised");
-    return value.toBoolean();
-  }
-
-  set isExercised(value: boolean) {
-    this.set("isExercised", Value.fromBoolean(value));
-  }
-
-  get expiry(): i32 {
-    let value = this.get("expiry");
-    return value.toI32();
-  }
-
-  set expiry(value: i32) {
-    this.set("expiry", Value.fromI32(value));
-  }
-
   get openedAt(): i32 {
     let value = this.get("openedAt");
     return value.toI32();
@@ -417,32 +328,6 @@ export class VaultCloseLoan extends Entity {
     }
   }
 
-  get borrower(): Bytes {
-    let value = this.get("borrower");
-    return value.toBytes();
-  }
-
-  set borrower(value: Bytes) {
-    this.set("borrower", Value.fromBytes(value));
-  }
-
-  get _yield(): BigInt | null {
-    let value = this.get("_yield");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set _yield(value: BigInt | null) {
-    if (value === null) {
-      this.unset("_yield");
-    } else {
-      this.set("_yield", Value.fromBigInt(value as BigInt));
-    }
-  }
-
   get closedAt(): BigInt {
     let value = this.get("closedAt");
     return value.toBigInt();
@@ -450,23 +335,6 @@ export class VaultCloseLoan extends Entity {
 
   set closedAt(value: BigInt) {
     this.set("closedAt", Value.fromBigInt(value));
-  }
-
-  get premiumEarned(): BigInt | null {
-    let value = this.get("premiumEarned");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set premiumEarned(value: BigInt | null) {
-    if (value === null) {
-      this.unset("premiumEarned");
-    } else {
-      this.set("premiumEarned", Value.fromBigInt(value as BigInt));
-    }
   }
 
   get closeTxhash(): Bytes {

@@ -1,5 +1,5 @@
-type Vault @entity {
-  id: ID! # vault contract address
+type Pool @entity {
+  id: ID! # pool contract address
   name: String!
   symbol: String!
   decimals: Int!
@@ -9,43 +9,43 @@ type Vault @entity {
   totalNotionalVolume: BigInt!
   numDepositors: Int!
   depositors: [Bytes!]!
-  vaultAccounts: [VaultAccount!]! @derivedFrom(field: "vault")
+  poolAccounts: [PoolAccount!]! @derivedFrom(field: "pool")
   totalBalance: BigInt!
   performanceFeeCollected: BigInt!
   managementFeeCollected: BigInt!
   totalFeeCollected: BigInt!
 }
 
-type VaultBorrow @entity {
+type PoolBorrow @entity {
   id: ID! # option contract address
-  vault: Vault!
+  pool: Pool!
   borrowAmount: BigInt!
   borrower: Bytes!
   borrowedAt: Int!
   borrowTxhash: Bytes!
 }
 
-type VaultRepay @entity {
+type PoolRepay @entity {
   id: ID! # option contract address
-  vault: Vault!
+  pool: Pool!
   repaidAmount: BigInt!
   repaidAt: Int!
   repayTxhash: Bytes!
 }
 
-type VaultAccount @entity {
-  "vaultAddress-accountAddress"
+type PoolAccount @entity {
+  "poolAddress-accountAddress"
   id: ID!
-  vault: Vault!
+  pool: Pool!
   account: Bytes!
 
   "used internally to track BalanceUpdates"
   updateCounter: Int!
 
-  "Account's lifetime yield earned from the vault"
+  "Account's lifetime yield earned from the pool"
   totalYieldEarned: BigInt!
 
-  "Account's total deposits into the vault (Withdrawal as accounted)"
+  "Account's total deposits into the pool (Withdrawal as accounted)"
   totalDeposits: BigInt!
 
   "To track the current balance, so we can caluclate the net profit/loss"
@@ -56,9 +56,9 @@ type VaultAccount @entity {
 
 }
 
-type VaultTransaction @entity {
+type PoolTransaction @entity {
   id: ID!
-  vault: Vault!
+  pool: Pool!
   type: String!
   address: Bytes!
   txhash: Bytes!
@@ -69,10 +69,10 @@ type VaultTransaction @entity {
 
 type BalanceUpdate @entity {
   id: ID! # accountAddress-timestamp
-  vault: Vault!
+  pool: Pool!
   account: Bytes!
   timestamp: Int!
-  balance: BigInt! # Account's balance in the vault at a point in time
+  balance: BigInt! # Account's balance in the pool at a point in time
   yieldEarned: BigInt! # Yield earned from a trade at a point in time
   isWithdraw: Boolean!
 }

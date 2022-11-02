@@ -69,3 +69,49 @@ dataSources:
           handler: handleUnstake
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+  - kind: ethereum/contract
+    name: PoolFactory
+    network: mainnet
+    source:
+      address: "0x312853485a41f76f20A14f927Cd0ea676588936C"
+      abi: PoolFactory
+      startBlock: 15538772
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      abis:
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
+      entities:
+        - PoolCreated
+      eventHandlers:
+        - event: PoolCreated(indexed address,indexed address,indexed address)
+          handler: handleNewPool
+      file: ./src/factory.ts
+templates:
+  - kind: ethereum/contract
+    name: RibbonLendPool
+    network: mainnet
+    source:
+      abi: RibbonLendPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Provided
+        - Redeemed
+      abis:
+        - name: RibbonLendPool
+          file: ./abis/RibbonLendPool.json
+        - name: RibbonEarnVault
+          file: ./abis/RibbonEarnVault.json
+      eventHandlers:
+        - event: Provided(indexed address,indexed address,uint256,uint256)
+          handler: handleProvided
+        - event: Provided(indexed address,uint256,uint256)
+          handler: handleProvided1
+        - event: Redeemed(indexed address,uint256,uint256)
+          handler: handleRedeemed
+      file: ./src/vault.ts

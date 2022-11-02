@@ -256,9 +256,9 @@ export class Transfer__Params {
   }
 }
 
-export class RibbonLendVault extends ethereum.SmartContract {
-  static bind(address: Address): RibbonLendVault {
-    return new RibbonLendVault("RibbonLendVault", address);
+export class RibbonLendPool extends ethereum.SmartContract {
+  static bind(address: Address): RibbonLendPool {
+    return new RibbonLendPool("RibbonLendPool", address);
   }
 
   accumulativeRewardOf(account: Address): BigInt {

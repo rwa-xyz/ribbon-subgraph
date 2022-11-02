@@ -1,11 +1,11 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { RibbonLendVault } from "../generated/RibbonLendVaultWintermute/RibbonLendVault";
+import { RibbonLendPool } from "../generated/templates/RibbonLendPool/RibbonLendPool";
 
 export function getPricePerShare(
-  vault: RibbonLendVault,
+  pool: RibbonLendPool,
   decimals: number
 ): BigInt {
-  let callResult = vault.try_getCurrentExchangeRate();
+  let callResult = pool.try_getCurrentExchangeRate();
   // If it reverts it means that the supply is 0, so we return a single share
   let decimalsU8: u8 = u8(decimals);
   return callResult.value / BigInt.fromI32(10).pow(decimalsU8);

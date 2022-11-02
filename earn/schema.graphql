@@ -25,15 +25,6 @@ type VaultOpenLoan @entity {
   id: ID! # option contract address
   vault: Vault!
   loanAmount: BigInt!
-  withdrawAmount: BigInt
-  optionAllocation: BigInt!
-  borrower: Bytes!
-  optionSeller: Bytes!
-  loanTermLength: Int!
-  optionPurchaseFreq: Int!
-  subRounds: Int!
-  isExercised: Boolean
-  expiry: Int!
   openedAt: Int!
   openTxhash: Bytes!
 }
@@ -42,10 +33,7 @@ type VaultCloseLoan @entity {
   id: ID! # option contract address
   vault: Vault!
   paidAmount: BigInt
-  borrower: Bytes!
-  _yield: BigInt
   closedAt: BigInt!
-  premiumEarned: BigInt
   closeTxhash: Bytes!
 }
 

@@ -7,8 +7,9 @@ import {
 import { createVaultAccount, triggerBalanceUpdate } from "./accounts";
 import { searchLiquidityGaugePoolsVaultAddress } from "./data/constant";
 import { newTransaction } from "./vault";
-import { sharesToAssets, getPricePerShare, newVault } from "./utils";
+import { sharesToAssets, newVault } from "./utils";
 import { Vault } from "../generated/schema";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 export function handleStake(event: Deposit): void {
   let vaultAddress = searchLiquidityGaugePoolsVaultAddress(event.address);
@@ -29,7 +30,7 @@ export function handleStake(event: Deposit): void {
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params.value,
-    getPricePerShare(vaultContract, vault.decimals),
+    vaultContract.roundPricePerShare(BigInt.fromI32(vault.round - 1)),
     vault.decimals
   );
 
@@ -79,7 +80,7 @@ export function handleUnstake(event: Withdraw): void {
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params.value,
-    getPricePerShare(vaultContract, vault.decimals),
+    vaultContract.roundPricePerShare(BigInt.fromI32(vault.round - 1)),
     vault.decimals
   );
 
@@ -141,7 +142,7 @@ export function handleTransfer(event: Transfer): void {
   let vaultContract = RibbonEarnVault.bind(vaultAddress);
   let underlyingAmount = sharesToAssets(
     event.params._value,
-    getPricePerShare(vaultContract, vault.decimals),
+    vaultContract.roundPricePerShare(BigInt.fromI32(vault.round - 1)),
     vault.decimals
   );
 

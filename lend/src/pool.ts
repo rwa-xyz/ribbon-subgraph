@@ -5,55 +5,55 @@ import {
   Provided1,
   Redeemed,
   Repaid,
-  RibbonLendVault
-} from "../generated/RibbonLendVaultWintermute/RibbonLendVault";
+  RibbonLendPool
+} from "../generated/templates/RibbonLendPool/RibbonLendPool";
 
 import {
-  createVaultAccount,
+  createPoolAccount,
   refreshAllAccountBalances,
   triggerBalanceUpdate
 } from "./accounts";
 
 import {
-  Vault,
-  VaultTransaction,
-  VaultBorrow,
-  VaultRepay
+  Pool,
+  PoolTransaction,
+  PoolBorrow,
+  PoolRepay
 } from "../generated/schema";
 
-function newVault(vaultAddress: string, creationTimestamp: i32): Vault {
-  let vault = new Vault(vaultAddress);
-  let vaultContract = RibbonLendVault.bind(Address.fromString(vaultAddress));
+function newPool(poolAddress: string, creationTimestamp: i32): Pool {
+  let pool = new Pool(poolAddress);
+  let poolContract = RibbonLendPool.bind(Address.fromString(poolAddress));
 
-  vault.name = vaultContract.name();
-  vault.symbol = vaultContract.symbol();
-  vault.numDepositors = 0;
-  vault.depositors = [];
-  vault.decimals = vaultContract.decimals();
-  vault.totalPremiumEarned = BigInt.fromI32(0);
-  vault.totalNominalVolume = BigInt.fromI32(0);
-  vault.totalNotionalVolume = BigInt.fromI32(0);
-  vault.totalBalance = vaultContract.poolSize();
-  vault.performanceFeeCollected = BigInt.fromI32(0);
-  vault.managementFeeCollected = BigInt.fromI32(0);
-  vault.totalFeeCollected = BigInt.fromI32(0);
+  pool.name = poolContract.name();
+  pool.symbol = poolContract.symbol();
+  pool.numDepositors = 0;
+  pool.depositors = [];
+  pool.decimals = poolContract.decimals();
+  pool.totalPremiumEarned = BigInt.fromI32(0);
+  pool.totalNominalVolume = BigInt.fromI32(0);
+  pool.totalNotionalVolume = BigInt.fromI32(0);
+  pool.totalBalance = poolContract.poolSize();
+  pool.performanceFeeCollected = BigInt.fromI32(0);
+  pool.managementFeeCollected = BigInt.fromI32(0);
+  pool.totalFeeCollected = BigInt.fromI32(0);
 
-  return vault;
+  return pool;
 }
 
 export function newTransaction(
   txid: string,
   type: string,
-  vaultAddress: string,
+  poolAddress: string,
   account: Address,
   txhash: Bytes,
   timestamp: i32,
   amount: BigInt,
   underlyingAmount: BigInt
 ): void {
-  let transaction = new VaultTransaction(txid);
+  let transaction = new PoolTransaction(txid);
   transaction.type = type;
-  transaction.vault = vaultAddress;
+  transaction.pool = poolAddress;
   transaction.address = account;
   transaction.txhash = txhash;
   transaction.timestamp = timestamp;
@@ -63,51 +63,51 @@ export function newTransaction(
 }
 
 export function handleBorrowed(event: Borrowed): void {
-  let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(event.address.toHexString());
-  let borrowTransaction = new VaultBorrow(
+  let poolAddress = event.address.toHexString();
+  let pool = Pool.load(event.address.toHexString());
+  let borrowTransaction = new PoolBorrow(
     event.address.toHexString() + "-" + event.transaction.hash.toHexString()
   );
-  borrowTransaction.vault = event.address.toHexString();
+  borrowTransaction.pool = event.address.toHexString();
   borrowTransaction.borrowAmount = event.params.amount;
   borrowTransaction.borrower = event.params.receiver;
   borrowTransaction.borrowedAt = event.block.timestamp.toI32();
   borrowTransaction.borrowTxhash = event.transaction.hash;
   borrowTransaction.save();
 
-  vault.totalNotionalVolume =
-    vault.totalNotionalVolume + borrowTransaction.borrowAmount;
-  vault.save();
+  pool.totalNotionalVolume =
+    pool.totalNotionalVolume + borrowTransaction.borrowAmount;
+  pool.save();
 
   // /**
   //  * Refresh all account balances to turn their balance locked
   //  */
   refreshAllAccountBalances(
-    Address.fromString(vaultAddress),
+    Address.fromString(poolAddress),
     event.block.timestamp.toI32()
   );
 }
 
 export function handleProvided(event: Provided): void {
-  let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let poolAddress = event.address.toHexString();
+  let pool = Pool.load(poolAddress);
 
-  if (vault == null) {
-    vault = newVault(vaultAddress, event.block.timestamp.toI32());
-    vault.save();
+  if (pool == null) {
+    pool = newPool(poolAddress, event.block.timestamp.toI32());
+    pool.save();
   }
 
-  vault.totalNominalVolume =
-    vault.totalNominalVolume + event.params.currencyAmount;
-  vault.save();
+  pool.totalNominalVolume =
+    pool.totalNominalVolume + event.params.currencyAmount;
+  pool.save();
 
-  let vaultAccount = createVaultAccount(event.address, event.params.provider);
-  vaultAccount.totalDeposits =
-    vaultAccount.totalDeposits + event.params.currencyAmount;
-  vaultAccount.save();
+  let poolAccount = createPoolAccount(event.address, event.params.provider);
+  poolAccount.totalDeposits =
+    poolAccount.totalDeposits + event.params.currencyAmount;
+  poolAccount.save();
 
   let txid =
-    vaultAddress +
+    poolAddress +
     "-" +
     event.transaction.hash.toHexString() +
     "-" +
@@ -116,7 +116,7 @@ export function handleProvided(event: Provided): void {
   newTransaction(
     txid,
     "deposit",
-    vaultAddress,
+    poolAddress,
     event.params.provider,
     event.transaction.hash,
     event.block.timestamp.toI32(),
@@ -134,25 +134,25 @@ export function handleProvided(event: Provided): void {
 }
 
 export function handleProvided1(event: Provided1): void {
-  let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let poolAddress = event.address.toHexString();
+  let pool = Pool.load(poolAddress);
 
-  if (vault == null) {
-    vault = newVault(vaultAddress, event.block.timestamp.toI32());
-    vault.save();
+  if (pool == null) {
+    pool = newPool(poolAddress, event.block.timestamp.toI32());
+    pool.save();
   }
 
-  vault.totalNominalVolume =
-    vault.totalNominalVolume + event.params.currencyAmount;
-  vault.save();
+  pool.totalNominalVolume =
+    pool.totalNominalVolume + event.params.currencyAmount;
+  pool.save();
 
-  let vaultAccount = createVaultAccount(event.address, event.params.provider);
-  vaultAccount.totalDeposits =
-    vaultAccount.totalDeposits + event.params.currencyAmount;
-  vaultAccount.save();
+  let poolAccount = createPoolAccount(event.address, event.params.provider);
+  poolAccount.totalDeposits =
+    poolAccount.totalDeposits + event.params.currencyAmount;
+  poolAccount.save();
 
   let txid =
-    vaultAddress +
+    poolAddress +
     "-" +
     event.transaction.hash.toHexString() +
     "-" +
@@ -161,7 +161,7 @@ export function handleProvided1(event: Provided1): void {
   newTransaction(
     txid,
     "deposit",
-    vaultAddress,
+    poolAddress,
     event.params.provider,
     event.transaction.hash,
     event.block.timestamp.toI32(),
@@ -179,21 +179,21 @@ export function handleProvided1(event: Provided1): void {
 }
 
 export function handleRedeemed(event: Redeemed): void {
-  let vaultAddress = event.address.toHexString();
-  let vault = Vault.load(vaultAddress);
+  let poolAddress = event.address.toHexString();
+  let pool = Pool.load(poolAddress);
 
-  if (vault == null) {
-    vault = newVault(vaultAddress, event.block.timestamp.toI32());
-    vault.save();
+  if (pool == null) {
+    pool = newPool(poolAddress, event.block.timestamp.toI32());
+    pool.save();
   }
 
-  let vaultAccount = createVaultAccount(event.address, event.params.redeemer);
-  vaultAccount.totalDeposits =
-    vaultAccount.totalDeposits - event.params.currencyAmount;
-  vaultAccount.save();
+  let poolAccount = createPoolAccount(event.address, event.params.redeemer);
+  poolAccount.totalDeposits =
+    poolAccount.totalDeposits - event.params.currencyAmount;
+  poolAccount.save();
 
   let txid =
-    vaultAddress +
+    poolAddress +
     "-" +
     event.transaction.hash.toHexString() +
     "-" +
@@ -202,7 +202,7 @@ export function handleRedeemed(event: Redeemed): void {
   newTransaction(
     txid,
     "withdraw",
-    vaultAddress,
+    poolAddress,
     event.params.redeemer,
     event.transaction.hash,
     event.block.timestamp.toI32(),
@@ -220,19 +220,19 @@ export function handleRedeemed(event: Redeemed): void {
 }
 
 export function handleRepaid(event: Repaid): void {
-  let vaultAddress = event.address.toHexString();
-  let repayTransaction = new VaultRepay(
+  let poolAddress = event.address.toHexString();
+  let repayTransaction = new PoolRepay(
     event.address.toHexString() + "-" + event.transaction.hash.toHexString()
   );
 
-  repayTransaction.vault = event.address.toHexString();
+  repayTransaction.pool = event.address.toHexString();
   repayTransaction.repaidAmount = event.params.amount;
   repayTransaction.repaidAt = event.block.timestamp.toI32();
   repayTransaction.repayTxhash = event.transaction.hash;
   repayTransaction.save();
 
   refreshAllAccountBalances(
-    Address.fromString(vaultAddress),
+    Address.fromString(poolAddress),
     event.block.timestamp.toI32()
   );
 }
