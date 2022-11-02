@@ -1,5 +1,5 @@
 {
-  "name": "ribbonearnvault2",
+  "name": "ribbon-earn",
   "license": "UNLICENSED",
   "scripts": {
     "cb": "graph codegen && graph build",
