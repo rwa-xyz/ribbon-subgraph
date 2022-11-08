@@ -14,6 +14,13 @@ type Pool @entity {
   performanceFeeCollected: BigInt!
   managementFeeCollected: BigInt!
   totalFeeCollected: BigInt!
+  borrowRate: BigInt!
+  supplyRate: BigInt!
+  rewardPerSecond: BigInt!
+  utilization: BigInt!
+  principal: BigInt!
+  borrows: BigInt!
+  state: Int!
 }
 
 type PoolBorrow @entity {

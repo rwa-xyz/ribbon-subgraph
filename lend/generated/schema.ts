@@ -158,6 +158,69 @@ export class Pool extends Entity {
   set totalFeeCollected(value: BigInt) {
     this.set("totalFeeCollected", Value.fromBigInt(value));
   }
+
+  get borrowRate(): BigInt {
+    let value = this.get("borrowRate");
+    return value.toBigInt();
+  }
+
+  set borrowRate(value: BigInt) {
+    this.set("borrowRate", Value.fromBigInt(value));
+  }
+
+  get supplyRate(): BigInt {
+    let value = this.get("supplyRate");
+    return value.toBigInt();
+  }
+
+  set supplyRate(value: BigInt) {
+    this.set("supplyRate", Value.fromBigInt(value));
+  }
+
+  get rewardPerSecond(): BigInt {
+    let value = this.get("rewardPerSecond");
+    return value.toBigInt();
+  }
+
+  set rewardPerSecond(value: BigInt) {
+    this.set("rewardPerSecond", Value.fromBigInt(value));
+  }
+
+  get utilization(): BigInt {
+    let value = this.get("utilization");
+    return value.toBigInt();
+  }
+
+  set utilization(value: BigInt) {
+    this.set("utilization", Value.fromBigInt(value));
+  }
+
+  get principal(): BigInt {
+    let value = this.get("principal");
+    return value.toBigInt();
+  }
+
+  set principal(value: BigInt) {
+    this.set("principal", Value.fromBigInt(value));
+  }
+
+  get borrows(): BigInt {
+    let value = this.get("borrows");
+    return value.toBigInt();
+  }
+
+  set borrows(value: BigInt) {
+    this.set("borrows", Value.fromBigInt(value));
+  }
+
+  get state(): i32 {
+    let value = this.get("state");
+    return value.toI32();
+  }
+
+  set state(value: i32) {
+    this.set("state", Value.fromI32(value));
+  }
 }
 
 export class PoolBorrow extends Entity {

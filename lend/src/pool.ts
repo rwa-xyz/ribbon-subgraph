@@ -37,6 +37,13 @@ function newPool(poolAddress: string, creationTimestamp: i32): Pool {
   pool.performanceFeeCollected = BigInt.fromI32(0);
   pool.managementFeeCollected = BigInt.fromI32(0);
   pool.totalFeeCollected = BigInt.fromI32(0);
+  pool.borrowRate = BigInt.fromI32(0);
+  pool.supplyRate = BigInt.fromI32(0);
+  pool.rewardPerSecond = BigInt.fromI32(0);
+  pool.utilization = BigInt.fromI32(0);
+  pool.principal = BigInt.fromI32(0);
+  pool.borrows = BigInt.fromI32(0);
+  pool.state = 0;
 
   return pool;
 }

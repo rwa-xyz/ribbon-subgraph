@@ -9,18 +9,31 @@ import {
 } from "../generated/schema";
 import { getPricePerShare, sharesToAssets } from "./utils";
 
+export function _refreshVaultStats(
+    pool: Pool,
+    poolContract: RibbonLendPool
+): void {
+    pool.totalBalance = poolContract.poolSize();
+    pool.borrowRate = poolContract.getBorrowRate();
+    pool.supplyRate = poolContract.getSupplyRate();
+    pool.rewardPerSecond = poolContract.rewardPerSecond();
+    pool.utilization = poolContract.getUtilizationRate();
+    pool.principal = poolContract.principal();
+    pool.borrows = poolContract.borrows();
+    pool.state = poolContract.state();
+    pool.save();
+}
+
 export function refreshAllAccountBalances(
   poolAddress: Address,
   timestamp: i32
 ): void {
-  let pool = Pool.load(poolAddress.toHexString());
+  let pool = Pool.load(poolAddress.toHexString())!;
   let poolContract = RibbonLendPool.bind(poolAddress);
   let decimals = pool.decimals;
   let assetPerShare = getPricePerShare(poolContract, 18 - decimals); // this gives back pricePerShare in usdc terms (18-6)
 
-  let totalBalance = poolContract.poolSize();
-  pool.totalBalance = totalBalance;
-  pool.save();
+  _refreshVaultStats(pool, poolContract);
 
   if (pool != null) {
     for (let i = 0; i < pool.numDepositors; i++) {
@@ -49,13 +62,12 @@ export function triggerBalanceUpdate(
   accruesYield: bool,
   isWithdraw: bool
 ): void {
-  let pool = Pool.load(poolAddress.toHexString());
+  let pool = Pool.load(poolAddress.toHexString())!;
   let poolContract = RibbonLendPool.bind(poolAddress);
   let decimals = pool.decimals;
   let assetPerShare = getPricePerShare(poolContract, 18 - decimals) // this gives back pricePerShare in usdc terms (18-6)
-  let totalBalance = poolContract.poolSize();
-  pool.totalBalance = totalBalance;
-  pool.save();
+
+  _refreshVaultStats(pool, poolContract);
 
   _triggerBalanceUpdate(
     poolAddress,
@@ -149,7 +161,7 @@ export function createPoolAccount(
   let poolAccount = PoolAccount.load(poolAccountID);
 
   if (poolAccount == null) {
-    let pool = Pool.load(poolAddress.toHexString());
+    let pool = Pool.load(poolAddress.toHexString())!;
     let depositors = pool.depositors;
     depositors.push(accountAddress);
     pool.depositors = depositors;
