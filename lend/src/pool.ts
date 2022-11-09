@@ -29,7 +29,9 @@ function newPool(poolAddress: string, creationTimestamp: i32): Pool {
   pool.symbol = poolContract.symbol();
   pool.numDepositors = 0;
   pool.depositors = [];
+  pool.manager = poolContract.manager().toHexString();
   pool.decimals = poolContract.decimals();
+  pool.creationTimestamp = creationTimestamp;
   pool.totalPremiumEarned = BigInt.fromI32(0);
   pool.totalNominalVolume = BigInt.fromI32(0);
   pool.totalNotionalVolume = BigInt.fromI32(0);
@@ -43,6 +45,8 @@ function newPool(poolAddress: string, creationTimestamp: i32): Pool {
   pool.utilization = BigInt.fromI32(0);
   pool.principal = BigInt.fromI32(0);
   pool.borrows = BigInt.fromI32(0);
+  pool.cash = BigInt.fromI32(0);
+  pool.interest = BigInt.fromI32(0);
   pool.state = 0;
 
   return pool;

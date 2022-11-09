@@ -3,6 +3,8 @@ type Pool @entity {
   name: String!
   symbol: String!
   decimals: Int!
+  manager: String!
+  creationTimestamp: Int!
   totalPremiumEarned: BigInt!
   totalNominalVolume: BigInt!
   # We track this number by adding every open short. This value is in USD, with 16 decimals
@@ -20,6 +22,8 @@ type Pool @entity {
   utilization: BigInt!
   principal: BigInt!
   borrows: BigInt!
+  cash: BigInt!
+  interest:BigInt!
   state: Int!
 }
 

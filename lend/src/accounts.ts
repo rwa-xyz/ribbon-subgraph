@@ -20,6 +20,8 @@ export function _refreshVaultStats(
     pool.utilization = poolContract.getUtilizationRate();
     pool.principal = poolContract.principal();
     pool.borrows = poolContract.borrows();
+    pool.cash = poolContract.cash();
+    pool.interest = poolContract.interest();
     pool.state = poolContract.state();
     pool.save();
 }

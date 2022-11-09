@@ -69,6 +69,24 @@ export class Pool extends Entity {
     this.set("decimals", Value.fromI32(value));
   }
 
+  get manager(): string {
+    let value = this.get("manager");
+    return value.toString();
+  }
+
+  set manager(value: string) {
+    this.set("manager", Value.fromString(value));
+  }
+
+  get creationTimestamp(): i32 {
+    let value = this.get("creationTimestamp");
+    return value.toI32();
+  }
+
+  set creationTimestamp(value: i32) {
+    this.set("creationTimestamp", Value.fromI32(value));
+  }
+
   get totalPremiumEarned(): BigInt {
     let value = this.get("totalPremiumEarned");
     return value.toBigInt();
@@ -211,6 +229,24 @@ export class Pool extends Entity {
 
   set borrows(value: BigInt) {
     this.set("borrows", Value.fromBigInt(value));
+  }
+
+  get cash(): BigInt {
+    let value = this.get("cash");
+    return value.toBigInt();
+  }
+
+  set cash(value: BigInt) {
+    this.set("cash", Value.fromBigInt(value));
+  }
+
+  get interest(): BigInt {
+    let value = this.get("interest");
+    return value.toBigInt();
+  }
+
+  set interest(value: BigInt) {
+    this.set("interest", Value.fromBigInt(value));
   }
 
   get state(): i32 {
